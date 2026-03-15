@@ -705,13 +705,19 @@ function rbud(){
   }
 
   // ── CONSOLIDATED: always visible, arrow toggles store list ─────────────
+  const toggle_html=`<div style="display:flex;gap:8px;margin:10px 0 6px">
+          <button onclick="window.BUD_MODE='as-is';render();" style="flex:1;padding:9px;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;box-sizing:border-box;border:1px solid ${BUD_MODE==="as-is"?"rgba(56,189,248,0.5)":"rgba(255,255,255,0.1)"};background:${BUD_MODE==="as-is"?"rgba(56,189,248,0.18)":"transparent"};color:${BUD_MODE==="as-is"?"#38bdf8":"#64748b"}">As-Is</button>
+          <button onclick="window.BUD_MODE='storm';render();" style="flex:1;padding:9px;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;box-sizing:border-box;border:1px solid ${BUD_MODE==="storm"?"rgba(165,180,252,0.5)":"rgba(255,255,255,0.1)"};background:${BUD_MODE==="storm"?"rgba(165,180,252,0.15)":"transparent"};color:${BUD_MODE==="storm"?"#a5b4fc":"#64748b"}">⛈ Storm Adjusted</button>
+        </div>`;
   const consolStores = EX["bud_all"];
   const consolBlock=`<div style="border-radius:12px;margin-bottom:10px;overflow:hidden;border:1px solid rgba(56,189,248,0.3)">
     <div style="padding:14px 16px;background:rgba(56,189,248,0.06)">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <div style="font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.1em;text-transform:uppercase">Consolidated</div>
         <button onclick="tog('bud_all')" style="background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);color:#38bdf8;border-radius:6px;padding:4px 12px;font-size:11px;font-family:inherit;cursor:pointer">${consolStores?"▲ Hide Stores":"▼ All Stores"}</button>
       </div>
+      ${toggle_html}
+      ${BUD_MODE==="storm"?`<div style="background:rgba(165,180,252,0.08);border:1px solid rgba(165,180,252,0.2);border-radius:8px;padding:8px 12px;margin-bottom:8px;font-size:11px;color:#a5b4fc">⛈ +$97.5k distributed pro rata (Las Cruces at 35%)</div>`:""}
       ${metricsGrid(all)}
     </div>
     ${consolStores?`<div style="border-top:1px solid rgba(255,255,255,0.07)">${storeList(()=>true)}</div>`:""}
@@ -749,13 +755,7 @@ function rbud(){
 
   return`<div class="section">
     <div style="font-size:10px;color:var(--muted);margin-bottom:12px">YTD through ${co}</div>
-    <div style="position:sticky;top:120px;z-index:50;background:#080e1a;padding:8px 0;margin-bottom:6px">
-      <div style="display:flex;gap:8px">
-        <button onclick="window.BUD_MODE='as-is';render();" style="flex:1;padding:9px;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid ${BUD_MODE==="as-is"?"rgba(56,189,248,0.5)":"rgba(255,255,255,0.1)"};background:${BUD_MODE==="as-is"?"rgba(56,189,248,0.18)":"transparent"};color:${BUD_MODE==="as-is"?"#38bdf8":"#64748b"}">As-Is</button>
-        <button onclick="window.BUD_MODE='storm';render();" style="flex:1;padding:9px;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid ${BUD_MODE==="storm"?"rgba(165,180,252,0.5)":"rgba(255,255,255,0.1)"};background:${BUD_MODE==="storm"?"rgba(165,180,252,0.15)":"transparent"};color:${BUD_MODE==="storm"?"#a5b4fc":"#64748b"}">⛈ Storm Adjusted</button>
-      </div>
-    </div>
-    ${BUD_MODE==="storm"?`<div style="background:rgba(165,180,252,0.08);border:1px solid rgba(165,180,252,0.2);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:11px;color:#a5b4fc">⛈ Storm adjustment applied: +$97.5k distributed pro rata (Las Cruces at 35%)</div>`:""}
+
     ${consolBlock}
     ${regionBlock("Midwest",mw,"bud_mw",r=>r.region==="Midwest")}
     ${regionBlock("West TX",wtx,"bud_wtx",r=>r.region==="West TX")}
@@ -1015,26 +1015,14 @@ function rhi(){
     let storeListHtml='';
     sorted.forEach(r=>{
       const key=`h${r.store.id}`;const open=EX[key];const w=r.adj;
-      const exp=open&&!r.error&&w?`<div class="expand-body">
-        <div class="components">
-          <div class="comp-card"><div class="comp-label">🌡 Temp 40%</div><div class="comp-val" style="color:${ac(w.tAdj)}">${fp(w.tAdj)}</div><div class="comp-sub">${w.dev>0?"+":""}${w.dev.toFixed(1)}°F dev</div></div>
-          <div class="comp-card"><div class="comp-label">☁️ Cloud 50%</div><div class="comp-val" style="color:${ac(w.cAdj)}">${fp(w.cAdj)}</div><div class="comp-sub">${w.cN}</div></div>
-          <div class="comp-card"><div class="comp-label">🌧 Rain 10%</div><div class="comp-val" style="color:${ac(w.rAdj)}">${fp(w.rAdj)}</div><div class="comp-sub">${w.rN}</div></div>
-        </div>
-        <div class="weekly-banner">
-          <div><div style="font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">Implied Weekly</div><div style="font-size:9px;color:var(--dim);margin-top:2px">weather-normalized</div></div>
-          <div style="font-size:22px;font-weight:800;color:var(--sky)">${f$(r.weekly)}</div>
-        </div>
-        ${budgetBanner}
-      </div>`:(open&&r.error?`<div class="expand-body" style="color:#fca5a5;font-size:12px">Error: ${r.error}</div>`:"");
       // ── Budget comparison banner per store ──
-      const storeBudgetWeekly = HIST.date ? getWeeklyBase(r.store.id, HIST.date) : null;
-      const dowWeeklyStore = r.dowW ? r.actual/(r.dowW/100) : null;
-      const impliedWeeklyStore = r.weekly || null;
-      const dowVsBudPct = (storeBudgetWeekly && dowWeeklyStore) ? (dowWeeklyStore-storeBudgetWeekly)/storeBudgetWeekly*100 : null;
-      const implVsBudPct = (storeBudgetWeekly && impliedWeeklyStore) ? (impliedWeeklyStore-storeBudgetWeekly)/storeBudgetWeekly*100 : null;
+      let storeBudgetWeekly = HIST.date ? getWeeklyBase(r.store.id, HIST.date) : null;
+      let dowWeeklyStore = r.dowW ? r.actual/(r.dowW/100) : null;
+      let impliedWeeklyStore = r.weekly || null;
+      let dowVsBudPct = (storeBudgetWeekly && dowWeeklyStore) ? (dowWeeklyStore-storeBudgetWeekly)/storeBudgetWeekly*100 : null;
+      let implVsBudPct = (storeBudgetWeekly && impliedWeeklyStore) ? (impliedWeeklyStore-storeBudgetWeekly)/storeBudgetWeekly*100 : null;
 
-      const budgetBanner = storeBudgetWeekly ? `
+      let budgetBanner = storeBudgetWeekly ? `
         <div style="background:rgba(56,189,248,0.09);border:1px solid rgba(56,189,248,0.2);border-radius:9px;padding:11px 13px;margin-top:10px">
           <div style="font-size:9px;color:var(--sky);letter-spacing:.08em;text-transform:uppercase;font-weight:700;margin-bottom:8px">vs Budget</div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
@@ -1055,6 +1043,18 @@ function rhi(){
           </div>
         </div>` : '';
 
+      const exp=open&&!r.error&&w?`<div class="expand-body">
+        <div class="components">
+          <div class="comp-card"><div class="comp-label">🌡 Temp 40%</div><div class="comp-val" style="color:${ac(w.tAdj)}">${fp(w.tAdj)}</div><div class="comp-sub">${w.dev>0?"+":""}${w.dev.toFixed(1)}°F dev</div></div>
+          <div class="comp-card"><div class="comp-label">☁️ Cloud 50%</div><div class="comp-val" style="color:${ac(w.cAdj)}">${fp(w.cAdj)}</div><div class="comp-sub">${w.cN}</div></div>
+          <div class="comp-card"><div class="comp-label">🌧 Rain 10%</div><div class="comp-val" style="color:${ac(w.rAdj)}">${fp(w.rAdj)}</div><div class="comp-sub">${w.rN}</div></div>
+        </div>
+        <div class="weekly-banner">
+          <div><div style="font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">Implied Weekly</div><div style="font-size:9px;color:var(--dim);margin-top:2px">weather-normalized</div></div>
+          <div style="font-size:22px;font-weight:800;color:var(--sky)">${f$(r.weekly)}</div>
+        </div>
+        ${budgetBanner}
+      </div>`:(open&&r.error?`<div class="expand-body" style="color:#fca5a5;font-size:12px">Error: ${r.error}</div>`:"");
       storeListHtml+=`<div class="store-card" style="background:${ab(w?w.total:null)}">
         <div class="store-header" onclick="tog('${key}')">
           <div class="store-left">
