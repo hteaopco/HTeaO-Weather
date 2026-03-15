@@ -25,10 +25,10 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .tabs{display:flex;gap:8px;}
 .tab{padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid rgba(255,255,255,0.08);background:transparent;color:var(--muted);font-family:inherit;letter-spacing:.04em;transition:all .2s;}
 .tab.active{background:var(--sky-dim);color:var(--sky);border-color:var(--sky-border);}
-.btn{background:var(--sky-dim);border:1px solid var(--sky-border);color:var(--sky);padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:.05em;display:inline-block;width:100%;text-align:center;}
+.btn{background:var(--sky-dim);border:1px solid var(--sky-border);color:var(--sky);padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:.05em;display:inline-block;width:100%;text-align:center;box-sizing:border-box;}
 .btn:active{opacity:.7;}
 .btn-sm{padding:6px 12px;font-size:11px;background:transparent;border-color:rgba(255,255,255,0.1);color:var(--muted);}
-.input{background:rgba(56,189,248,0.07);border:1px solid rgba(56,189,248,0.2);color:var(--text);padding:10px 12px;border-radius:10px;font-size:14px;font-family:inherit;outline:none;width:100%;}
+.input{background:rgba(56,189,248,0.07);border:1px solid rgba(56,189,248,0.2);color:var(--text);padding:10px 12px;border-radius:10px;font-size:14px;font-family:inherit;outline:none;width:100%;box-sizing:border-box;}
 .label{font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;display:block;}
 textarea.input{resize:vertical;font-family:'Menlo','Courier New',monospace;font-size:11px;line-height:1.6;}
 .section{padding:14px 16px;}
@@ -931,10 +931,10 @@ function rhi(){
   let h=`<div class="section">`;
   
   if(SHOW_IN){
-    h+=`<div style="margin-bottom:10px">
+    h+=`<div style="margin-bottom:10px;box-sizing:border-box">
       <label class="label">Date</label>
-      <input type="date" class="input" id="hist-date" value="${SAVED_DATE}" style="margin-bottom:8px;width:100%">
-      <button class="btn" onclick="runHistorical()" style="width:100%;display:block">▶ Run Data</button>
+      <input type="date" class="input" id="hist-date" value="${SAVED_DATE}" style="margin-bottom:8px;width:100%;box-sizing:border-box">
+      <button class="btn" onclick="runHistorical()" style="width:100%;display:block;box-sizing:border-box">▶ Run Data</button>
     </div>`;
   }else if(!LOADING){
     h+=`<button class="btn" onclick="runHistorical()" style="margin-bottom:12px">▶ Run Model for ${SAVED_DATE}</button>`;
