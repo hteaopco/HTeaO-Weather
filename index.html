@@ -270,26 +270,7 @@ function wkly(actual,sid,dow,wadj){
 
 // ── State ──────────────────────────────────────────────────────────────────
 let MODE="forecast",FC=null,HIST=null,SEL=0,EX={},LOADING=false,SHOW_IN=true;
-let SAVED_DATE="2026-03-14",SAVED_SALES=`3-14-2026	02 - The Village	3645.95
-3-14-2026	04 - SW OKC	2945.77
-3-14-2026	05 - Uptown	1697.33
-3-14-2026	06 - Norman1	2034.79
-3-14-2026	01 - Yukon	2274.58
-3-14-2026	07 - Shawnee	2554.11
-3-14-2026	03 - Bartlesville	4089.92
-3-14-2026	08 - Duncan	2163.96
-3-14-2026	09 - Lawton	2401.65
-3-14-2026	18 - Hutchinson	4143.25
-3-14-2026	10 - Chickasha	1975.22
-3-14-2026	20 - Hereford	2302.28
-3-14-2026	14 - Webb City	1599.49
-3-14-2026	13 - Norman2	1690.06
-3-14-2026	11 - OU Med	0
-3-14-2026	12 - Moore	1850.61
-3-14-2026	15 - Pecos	2504.8
-3-14-2026	17 - Las Cruces	6457.88
-3-14-2026	19 - Clovis	5991.26
-3-14-2026	16 - Carlsbad	4869.08`;
+let SAVED_DATE="2026-03-14",SAVED_SALES="3-14-2026\t02 - The Village\t3645.95\n3-14-2026\t04 - SW OKC\t2945.77\n3-14-2026\t05 - Uptown\t1697.33\n3-14-2026\t06 - Norman1\t2034.79\n3-14-2026\t01 - Yukon\t2274.58\n3-14-2026\t07 - Shawnee\t2554.11\n3-14-2026\t03 - Bartlesville\t4089.92\n3-14-2026\t08 - Duncan\t2163.96\n3-14-2026\t09 - Lawton\t2401.65\n3-14-2026\t18 - Hutchinson\t4143.25\n3-14-2026\t10 - Chickasha\t1975.22\n3-14-2026\t20 - Hereford\t2302.28\n3-14-2026\t14 - Webb City\t1599.49\n3-14-2026\t13 - Norman2\t1690.06\n3-14-2026\t11 - OU Med\t0\n3-14-2026\t12 - Moore\t1850.61\n3-14-2026\t15 - Pecos\t2504.8\n3-14-2026\t17 - Las Cruces\t6457.88\n3-14-2026\t19 - Clovis\t5991.26\n3-14-2026\t16 - Carlsbad\t4869.08";
 
 // ── Fetch ──────────────────────────────────────────────────────────────────
 function fetchStore(store){
@@ -667,4 +648,33 @@ function rhi(){
       h+=`<div class="store-card" style="background:${ab(w?w.total:null)}">
         <div class="store-header" onclick="tog('${key}')">
           <div class="store-left">
-            <div cl
+            <div class="store-name">${r.store.num} - ${r.store.name}</div>
+            <div class="store-meta">
+              <span>DOW ${r.dowW!=null?r.dowW.toFixed(2):"—"}%</span>
+              ${w?`<span style="color:${ac(w.total)};font-weight:600">Wthr ${fp(w.total)}</span>`:""}
+              ${r.error?`<span style="color:#fca5a5">⚠ ${r.error}</span>`:""}
+            </div>
+          </div>
+          <div class="store-middle">
+            <div class="store-sales-mid">${f$(r.actual)}</div>
+            <div style="font-size:9px;color:var(--muted);margin-top:2px">actual</div>
+          </div>
+          <div class="store-right">
+            ${r.dowW?`<div style="font-size:12px;color:var(--sky)">${f$(r.actual/(r.dowW/100))}/wk</div>`:""}
+            <div style="font-size:9px;color:var(--muted);margin-top:1px">DOW only</div>
+            <div style="font-size:12px;color:var(--dim);margin-top:4px">${open?"▲":"▼"}</div>
+          </div>
+        </div>${exp}</div>`;
+    });
+    h+=`<div class="totals">
+      <div class="tr"><span style="font-size:12px;color:var(--muted)">Total Actual Sales</span><span style="font-size:14px;font-weight:700">${f$(HIST.totA)}</span></div>
+      <div class="tr"><span style="font-size:12px;color:var(--muted)">Total Implied Weekly</span><span style="font-size:17px;font-weight:800;color:var(--sky)">${f$(HIST.totW)}</span></div>
+    </div>`;
+  }
+  return h+`</div>`;
+}
+
+render();
+</script>
+</body>
+</html>
