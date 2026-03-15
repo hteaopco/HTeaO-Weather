@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HTeaO Weather">
+<meta name="theme-color" content="#080e1a">
+<title>HTeaO Weather Model</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#080e1a;--bg2:#0f1e3a;--border:rgba(56,189,248,0.15);
+  --sky:#38bdf8;--sky-dim:rgba(56,189,248,0.18);--sky-border:rgba(56,189,248,0.4);
+  --text:#e2e8f0;--muted:#64748b;--dim:#334155;
+  --pos:#4ade80;--neg:#f87171;--neu:#94a3b8;
+  --pos-bg:rgba(74,222,128,0.12);--neg-bg:rgba(248,113,113,0.15);
+  --card:rgba(255,255,255,0.03);
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;min-height:100vh;max-width:520px;margin:0 auto;padding-bottom:32px;}
+.header{background:linear-gradient(180deg,var(--bg2),var(--bg));border-bottom:1px solid var(--border);padding:14px 16px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+.logo-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.logo-name{font-size:17px;font-weight:800;color:var(--sky);letter-spacing:.12em;}
+.logo-sub{font-size:9px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-top:-2px;}
+.tabs{display:flex;gap:8px;}
+.tab{padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid rgba(255,255,255,0.08);background:transparent;color:var(--muted);font-family:inherit;letter-spacing:.04em;transition:all .2s;}
+.tab.active{background:var(--sky-dim);color:var(--sky);border-color:var(--sky-border);}
+.btn{background:var(--sky-dim);border:1px solid var(--sky-border);color:var(--sky);padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:.05em;display:inline-block;width:100%;text-align:center;}
+.btn:active{opacity:.7;}
+.btn-sm{padding:6px 12px;font-size:11px;background:transparent;border-color:rgba(255,255,255,0.1);color:var(--muted);}
+.input{background:rgba(56,189,248,0.07);border:1px solid rgba(56,189,248,0.2);color:var(--text);padding:10px 12px;border-radius:10px;font-size:14px;font-family:inherit;outline:none;width:100%;}
+.label{font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;display:block;}
+textarea.input{resize:vertical;font-family:'Menlo','Courier New',monospace;font-size:11px;line-height:1.6;}
+.section{padding:14px 16px;}
+.progress-wrap{text-align:center;padding:50px 20px;}
+.progress-bar{background:rgba(255,255,255,0.05);border-radius:6px;height:7px;max-width:280px;margin:12px auto;overflow:hidden;}
+.progress-fill{background:linear-gradient(90deg,#0ea5e9,#38bdf8);height:100%;border-radius:6px;transition:width .4s;}
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.summary-card{background:var(--card);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 14px;}
+.summary-label{font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;}
+.summary-val{font-size:20px;font-weight:800;}
+.store-card{border-radius:12px;margin-bottom:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);}
+.store-header{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;cursor:pointer;user-select:none;}
+.store-id{font-size:9px;color:var(--muted);}
+.store-name{font-size:15px;font-weight:700;color:var(--text);}
+.store-meta{display:flex;gap:8px;margin-top:3px;flex-wrap:wrap;}
+.store-meta span{font-size:10px;color:var(--muted);}
+.store-right{text-align:right;flex-shrink:0;}
+.expand-body{padding:0 14px 13px;border-top:1px solid rgba(255,255,255,0.06);}
+.components{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px;}
+.comp-card{background:rgba(0,0,0,0.25);border-radius:9px;padding:9px 8px;}
+.comp-label{font-size:9px;color:var(--muted);margin-bottom:2px;}
+.comp-val{font-size:14px;font-weight:800;}
+.comp-sub{font-size:9px;color:var(--dim);margin-top:1px;}
+.weekly-banner{background:rgba(56,189,248,0.09);border:1px solid rgba(56,189,248,0.2);border-radius:9px;padding:11px 13px;margin-top:10px;display:flex;justify-content:space-between;align-items:center;}
+.sys-card{border-radius:12px;padding:14px;margin-bottom:14px;border:1px solid rgba(255,255,255,0.08);}
+.sys-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px;}
+.day-scroll{overflow-x:auto;padding-bottom:8px;margin-bottom:14px;-webkit-overflow-scrolling:touch;}
+.day-scroll::-webkit-scrollbar{display:none;}
+.day-strip{display:flex;gap:6px;min-width:max-content;}
+.day-btn{background:var(--card);border:1px solid rgba(255,255,255,0.07);border-radius:9px;padding:7px 11px;cursor:pointer;text-align:center;min-width:54px;font-family:inherit;}
+.day-btn.sel{background:var(--sky-dim);border-color:var(--sky-border);}
+.day-lbl{font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
+.day-btn.sel .day-lbl{color:var(--sky);}
+.day-dt{font-size:12px;font-weight:700;color:var(--neu);margin-top:2px;}
+.day-btn.sel .day-dt{color:var(--sky);}
+.spark-bars{display:flex;gap:2px;align-items:flex-end;height:32px;margin-top:10px;}
+.spark-bar{flex:1;border-radius:2px;cursor:pointer;}
+.totals{background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);border-radius:12px;padding:14px;margin-top:8px;}
+.tr{display:flex;justify-content:space-between;align-items:center;margin-top:6px;}
+.tr:first-child{margin-top:0;}
+.empty{text-align:center;padding:50px 20px;}
+.empty-icon{font-size:44px;margin-bottom:14px;}
+.empty-text{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:22px;}
+.err-card{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:12px;color:#fca5a5;}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo-row">
+    <span style="font-size:22px">🍵</span>
+    <div>
+      <div class="logo-name">HTeaO</div>
+      <div class="logo-sub">DOW + Weather Model</div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" id="tab-fc" onclick="setMode('forecast')">🌤 14-Day Forecast</button>
+    <button class="tab" id="tab-hi" onclick="setMode('historical')">📊 Daily Analysis</button>
+  </div>
+</div>
+<div id="app"></div>
+<div style="text-align:center;padding:16px;font-size:9px;color:rgba(255,255,255,0.08);line-height:1.9">
+  Temp 40% · 1.00%/°F · 30yr NOAA normals · Cloud 50% · Rain 10%<br>Open-Meteo
+</div>
+
+<script>
+const STORES=[
+  {id:"001",name:"Yukon",        lat:35.5067,lon:-97.7625,tz:"America/Chicago"},
+  {id:"002",name:"The Village",  lat:35.5676,lon:-97.5561,tz:"America/Chicago"},
+  {id:"003",name:"Bartlesville", lat:36.7473,lon:-95.9808,tz:"America/Chicago"},
+  {id:"004",name:"SW OKC",       lat:35.3867,lon:-97.5164,tz:"America/Chicago"},
+  {id:"005",name:"Uptown",       lat:35.4867,lon:-97.5231,tz:"America/Chicago"},
+  {id:"006",name:"Norman 1",     lat:35.2226,lon:-97.4395,tz:"America/Chicago"},
+  {id:"007",name:"Shawnee",      lat:35.3515,lon:-96.9253,tz:"America/Chicago"},
+  {id:"008",name:"Duncan",       lat:34.5023,lon:-97.9578,tz:"America/Chicago"},
+  {id:"009",name:"Lawton",       lat:34.6086,lon:-98.4370,tz:"America/Chicago"},
+  {id:"010",name:"Chickasha",    lat:35.0512,lon:-97.9378,tz:"America/Chicago"},
+  {id:"011",name:"OU Med",       lat:35.4719,lon:-97.5017,tz:"America/Chicago"},
+  {id:"012",name:"Moore",        lat:35.3395,lon:-97.4867,tz:"America/Chicago"},
+  {id:"013",name:"Norman 2",     lat:35.2059,lon:-97.4473,tz:"America/Chicago"},
+  {id:"014",name:"Webb City",    lat:37.1484,lon:-94.4669,tz:"America/Chicago"},
+  {id:"015",name:"Pecos",        lat:31.4229,lon:-103.493,tz:"America/Chicago"},
+  {id:"016",name:"Carlsbad",     lat:32.4207,lon:-104.229,tz:"America/Denver"},
+  {id:"017",name:"Las Cruces",   lat:32.3199,lon:-106.764,tz:"America/Denver"},
+  {id:"018",name:"Hutchinson",   lat:38.0608,lon:-97.9298,tz:"America/Chicago"},
+  {id:"019",name:"Clovis",       lat:34.4048,lon:-103.205,tz:"America/Denver"},
+  {id:"020",name:"Hereford",     lat:34.8151,lon:-102.398,tz:"America/Chicago"},
+];
+const NORMALS={
+  KOKC:[36.8,41.4,50.8,60.2,69.0,78.2,83.4,82.6,73.6,62.0,49.2,38.4],
+  KOUN:[36.5,41.1,50.5,59.9,68.7,78.0,83.2,82.4,73.3,61.7,48.9,38.1],
+  KBVO:[33.2,38.2,47.8,57.8,66.8,76.2,81.6,80.8,71.4,59.2,46.2,35.2],
+  KSNL:[37.1,41.8,51.2,60.5,69.2,78.4,83.6,82.8,73.8,62.2,49.4,38.6],
+  KDUC:[39.2,43.8,52.8,62.0,70.2,79.0,84.2,83.4,74.6,63.4,51.0,40.8],
+  KLTS:[39.8,44.4,53.4,62.6,70.8,79.6,84.8,84.0,75.2,64.0,51.6,41.4],
+  KCHK:[38.4,43.0,52.2,61.4,69.8,78.6,83.8,83.0,74.2,62.8,50.2,39.8],
+  KJLN:[31.8,36.8,46.8,57.2,66.2,75.4,80.2,79.2,70.4,58.6,46.0,34.2],
+  KPEX:[44.2,48.8,56.8,65.2,73.4,81.6,83.8,82.4,75.6,65.4,53.6,45.2],
+  KCNM:[44.8,49.4,57.4,65.8,73.8,82.0,84.2,82.8,76.0,65.8,53.8,45.6],
+  KLRU:[45.4,50.4,58.4,66.8,75.2,83.4,85.6,83.8,77.2,66.4,54.2,46.2],
+  KHUT:[29.8,34.8,45.2,56.2,65.8,75.6,81.2,79.6,70.2,58.0,44.4,32.4],
+  KCVS:[38.6,43.2,51.4,60.4,69.2,77.8,80.8,79.2,72.0,61.2,48.8,40.2],
+  KAMA:[36.4,41.2,49.6,59.0,68.0,77.0,80.6,79.0,71.4,60.4,47.8,38.2],
+};
+const STATION={
+  "001":"KOKC","002":"KOKC","003":"KBVO","004":"KOKC","005":"KOKC",
+  "006":"KOUN","007":"KSNL","008":"KDUC","009":"KLTS","010":"KCHK",
+  "011":"KOKC","012":"KOKC","013":"KOUN","014":"KJLN","015":"KPEX",
+  "016":"KCNM","017":"KLRU","018":"KHUT","019":"KCVS","020":"KAMA",
+};
+const DOW={
+  "001":[15.89,12.57,12.57,12.57,12.57,15.28,18.56],
+  "002":[14.36,12.97,12.97,12.97,12.97,15.27,18.48],
+  "003":[14.35,12.50,12.50,12.50,12.50,16.03,19.60],
+  "004":[15.39,12.90,12.90,12.90,12.90,16.11,16.91],
+  "005":[13.05,13.76,13.76,13.76,13.76,16.44,15.49],
+  "006":[13.64,12.94,12.94,12.94,12.94,15.70,18.88],
+  "007":[14.59,12.93,12.93,12.93,12.93,15.35,18.34],
+  "008":[14.01,13.59,13.59,13.59,13.59,15.44,16.20],
+  "009":[14.44,12.63,12.63,12.63,12.63,16.46,18.59],
+  "010":[14.27,13.55,13.55,13.55,13.55,15.64,15.90],
+  "011":[null,15.83,20.12,20.82,22.80,20.42,null],
+  "012":[16.19,12.70,12.70,12.70,12.70,15.31,17.70],
+  "013":[16.62,12.44,12.44,12.44,12.44,14.90,18.73],
+  "014":[13.86,12.23,12.23,12.23,12.23,15.44,21.80],
+  "015":[13.19,14.23,14.23,14.23,14.23,14.99,14.92],
+  "016":[14.86,13.05,13.05,13.05,13.05,15.62,17.34],
+  "017":[15.44,12.59,12.59,12.59,12.59,15.69,18.52],
+  "018":[15.40,12.78,12.78,12.78,12.78,15.67,17.79],
+  "019":[14.51,13.08,13.08,13.08,13.08,16.05,17.10],
+  "020":[15.59,13.14,13.14,13.14,13.14,17.07,14.81],
+};
+const AVG_DOW=[14.72,12.98,12.98,12.98,12.98,15.71,17.67];
+const DN=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const DNF=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+const C2F=c=>c*9/5+32;
+function cloudTier(p){
+  if(p<=20)return{n:"Clear",   a:0};
+  if(p<=50)return{n:"Partly",  a:-0.04};
+  if(p<=80)return{n:"Mostly",  a:-0.19};
+  return       {n:"Overcast",a:-0.35};
+}
+function rainTier(mm){
+  const i=(mm||0)/25.4;
+  if(i<=0)  return{n:"None",    a:0};
+  if(i<0.25)return{n:"Light",   a:-0.10};
+  if(i<0.75)return{n:"Moderate",a:-0.15};
+  return       {n:"Heavy",   a:-0.20};
+}
+function calc(sid,tF,cl,ra){
+  const mo=new Date().getMonth();
+  const base=NORMALS[STATION[sid]][mo];
+  const te=sid==="011"?0:0.01;
+  const tA=te*(tF-base);
+  const cT=cloudTier(cl||0),rT=rainTier(ra||0);
+  return{
+    total:(0.4*tA+0.5*cT.a+0.1*rT.a)*100,
+    tAdj:tA*100,cAdj:cT.a*100,rAdj:rT.a*100,
+    dev:tF-base,base,cN:cT.n,rN:rT.n
+  };
+}
+function wkly(actual,sid,dow,wadj){
+  const w=DOW[sid][dow];
+  if(!w)return null;
+  return(actual/(1+wadj/100))/(w/100);
+}
+const f$=v=>v==null?"—":"$"+Math.round(v).toLocaleString();
+const fp=(v,p=true)=>v==null?"—":`${p&&v>0?"+":""}${v.toFixed(1)}%`;
+function ac(v){
+  if(v==null)return"#94a3b8";
+  return v>4?"#4ade80":v>1?"#86efac":v>-1?"#94a3b8":v>-4?"#fca5a5":"#f87171";
+}
+function ab(v){
+  if(v==null)return"var(--card)";
+  return v>2?"rgba(74,222,128,0.12)":v>0?"rgba(134,239,172,0.07)":
+         v>-2?"var(--card)":v>-4?"rgba(252,165,165,0.10)":"rgba(248,113,113,0.15)";
+}
+function parseSales(txt){
+  const m={};
+  (txt||"").trim().split("\n").forEach(l=>{
+    const p=l.split("\t");if(p.length<3)return;
+    const mm=p[1]&&p[1].trim().match(/^(\d+)/);if(!mm)return;
+    const id=String(parseInt(mm[1])).padStart(3,"0");
+    const v=parseFloat(p[2]);if(!isNaN(v))m[id]=v;
+  });
+  return m;
+}
+
+// ── State ──────────────────────────────────────────────────────────────────
+let MODE="forecast",FC=null,HIST=null,SEL=0,EX={},LOADING=false,SHOW_IN=true;
+let SAVED_DATE="2026-03-13",SAVED_SALES=`3-13-2026\t02 - The Village\t3248.53
+3-13-2026\t04 - SW OKC\t2345.42
+3-13-2026\t05 - Uptown\t1660.95
+3-13-2026\t06 - Norman1\t2100.31
+3-13-2026\t01 - Yukon\t2094
+3-13-2026\t07 - Shawnee\t2860.76
+3-13-2026\t03 - Bartlesville\t2978.15
+3-13-2026\t08 - Duncan\t1705.6
+3-13-2026\t09 - Lawton\t2094.39
+3-13-2026\t18 - Hutchinson\t3353.52
+3-13-2026\t10 - Chickasha\t1802.12
+3-13-2026\t20 - Hereford\t2659.98
+3-13-2026\t14 - Webb City\t1296.43
+3-13-2026\t13 - Norman2\t1609.49
+3-13-2026\t11 - OU Med\t768.99
+3-13-2026\t12 - Moore\t1726.6
+3-13-2026\t15 - Pecos\t2890.68
+3-13-2026\t17 - Las Cruces\t6249.17
+3-13-2026\t19 - Clovis\t5723.79
+3-13-2026\t16 - Carlsbad\t4613.23`;
+
+// ── Fetch helpers ──────────────────────────────────────────────────────────
+function fetchStore(store){
+  const url=`https://api.open-meteo.com/v1/forecast?latitude=${store.lat}&longitude=${store.lon}`+
+    `&daily=temperature_2m_max,temperature_2m_min,temperature_2m_mean,precipitation_sum,cloudcover_mean`+
+    `&temperature_unit=celsius&timezone=${encodeURIComponent(store.tz)}&forecast_days=14`;
+  const timeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")),15000));
+  return Promise.race([fetch(url).then(r=>r.json()),timeout]);
+}
+function fetchArchive(store,date){
+  const url=`https://archive-api.open-meteo.com/v1/archive?latitude=${store.lat}&longitude=${store.lon}`+
+    `&start_date=${date}&end_date=${date}`+
+    `&daily=temperature_2m_mean,precipitation_sum,cloudcover_mean`+
+    `&timezone=${encodeURIComponent(store.tz)}`;
+  const timeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")),15000));
+  return Promise.race([fetch(url).then(r=>r.json()),timeout]);
+}
+
+// ── Run forecast: fetch ALL stores in parallel ─────────────────────────────
+async function runForecast(){
+  LOADING=true;FC=null;render();
+  try{
+    // Fetch all 20 stores simultaneously
+    const promises=STORES.map(s=>fetchStore(s).catch(e=>({error:e.message,id:s.id})));
+    const raw=await Promise.all(promises);
+    
+    // Find a valid dates array from any successful response
+    let dates=null;
+    for(const d of raw){if(d&&d.daily&&d.daily.time){dates=d.daily.time;break;}}
+    if(!dates){
+      // Generate dates manually as fallback
+      dates=[];
+      const now=new Date();
+      for(let i=0;i<14;i++){
+        const d=new Date(now);d.setDate(d.getDate()+i);
+        dates.push(d.toISOString().split("T")[0]);
+      }
+    }
+    
+    const stores={};
+    STORES.forEach((s,i)=>{
+      const d=raw[i];
+      if(!d||d.error||!d.daily){
+        stores[s.id]={error:d&&d.error?d.error:"No data"};
+        return;
+      }
+      try{
+        stores[s.id]=d.daily.time.map((dt,di)=>{
+          const tF=C2F(d.daily.temperature_2m_mean&&d.daily.temperature_2m_mean[di]!=null?d.daily.temperature_2m_mean[di]:20);
+          const cl=d.daily.cloudcover_mean&&d.daily.cloudcover_mean[di]!=null?d.daily.cloudcover_mean[di]:0;
+          const ra=d.daily.precipitation_sum&&d.daily.precipitation_sum[di]!=null?d.daily.precipitation_sum[di]:0;
+          const tmax=d.daily.temperature_2m_max&&d.daily.temperature_2m_max[di]!=null?C2F(d.daily.temperature_2m_max[di]):tF+5;
+          const tmin=d.daily.temperature_2m_min&&d.daily.temperature_2m_min[di]!=null?C2F(d.daily.temperature_2m_min[di]):tF-5;
+          return{date:dt,tF,tMax:tmax,tMin:tmin,cl,ra,adj:calc(s.id,tF,cl,ra),dow:new Date(dt+"T12:00:00").getDay()};
+        });
+      }catch(e){stores[s.id]={error:"Parse error: "+e.message};}
+    });
+    FC={dates,stores};SEL=0;
+  }catch(e){
+    FC={error:"Failed: "+e.message,dates:[],stores:{}};
+  }
+  LOADING=false;render();
+}
+
+// ── Run historical: fetch all stores in parallel ───────────────────────────
+async function runHistorical(){
+  // Save form values before re-render wipes them
+  const de=document.getElementById("hist-date");
+  const se=document.getElementById("sales-text");
+  if(de)SAVED_DATE=de.value;
+  if(se)SAVED_SALES=se.value;
+  
+  LOADING=true;HIST=null;SHOW_IN=false;render();
+  
+  const date=SAVED_DATE;
+  const salesMap=parseSales(SAVED_SALES);
+  const storesWS=STORES.filter(s=>salesMap[s.id]!=null);
+  const jsDay=new Date(date+"T12:00:00").getDay();
+  
+  try{
+    const promises=storesWS.map(s=>fetchArchive(s,date).catch(e=>({error:e.message})));
+    const raw=await Promise.all(promises);
+    
+    const out=storesWS.map((s,i)=>{
+      const d=raw[i];
+      if(!d||d.error||!d.daily)return{store:s,actual:salesMap[s.id],error:(d&&d.error)||"No data"};
+      try{
+        const tF=C2F(d.daily.temperature_2m_mean&&d.daily.temperature_2m_mean[0]!=null?d.daily.temperature_2m_mean[0]:20);
+        const cl=d.daily.cloudcover_mean&&d.daily.cloudcover_mean[0]!=null?d.daily.cloudcover_mean[0]:0;
+        const ra=d.daily.precipitation_sum&&d.daily.precipitation_sum[0]!=null?d.daily.precipitation_sum[0]:0;
+        const adj=calc(s.id,tF,cl,ra);
+        const actual=salesMap[s.id];
+        return{store:s,actual,adj,dowW:DOW[s.id][jsDay],weekly:wkly(actual,s.id,jsDay,adj.total)};
+      }catch(e){return{store:s,actual:salesMap[s.id],error:"Parse: "+e.message};}
+    });
+    
+    const totA=out.reduce((a,r)=>a+(r.actual||0),0);
+    const totW=out.reduce((a,r)=>a+(r.weekly||0),0);
+    const adjRows=out.filter(r=>r.adj);
+    const avgW=adjRows.length?adjRows.reduce((a,r)=>a+r.adj.total,0)/adjRows.length:0;
+    HIST={rows:out,totA,totW,avgW,dayName:DNF[jsDay],date};
+  }catch(e){HIST={error:"Failed: "+e.message};}
+  
+  LOADING=false;render();
+}
+
+// ── Render ─────────────────────────────────────────────────────────────────
+function render(){
+  try{
+    document.getElementById("app").innerHTML=MODE==="forecast"?rfx():rhi();
+  }catch(e){
+    document.getElementById("app").innerHTML=`<div class="section"><div class="err-card">Render error: ${e.message}</div></div>`;
+  }
+}
+function setMode(m){
+  MODE=m;SHOW_IN=true;EX={};
+  document.getElementById("tab-fc").classList.toggle("active",m==="forecast");
+  document.getElementById("tab-hi").classList.toggle("active",m==="historical");
+  render();
+}
+function setDay(i){SEL=i;render();}
+function tog(id){EX[id]=!EX[id];render();}
+
+// ── Render Forecast ────────────────────────────────────────────────────────
+function rfx(){
+  if(LOADING)return`<div class="section"><div class="progress-wrap">
+    <div style="font-size:13px;color:var(--sky);margin-bottom:8px">Fetching forecast for all 20 stores…</div>
+    <div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div>
+    <div style="font-size:11px;color:var(--muted);margin-top:8px">Parallel fetch · Open-Meteo</div>
+  </div></div>`;
+  
+  if(!FC)return`<div class="section"><div class="empty">
+    <div class="empty-icon">🌤</div>
+    <div class="empty-text">14-day forecast for all 20 stores<br>with weather demand adjustments</div>
+    <button class="btn" onclick="runForecast()">▶ Load 14-Day Forecast</button>
+  </div></div>`;
+  
+  if(FC.error)return`<div class="section"><div class="err-card">Error: ${FC.error}</div>
+    <button class="btn" onclick="runForecast()" style="margin-top:12px">↻ Retry</button></div>`;
+  
+  const dates=FC.dates||[];
+  if(!dates.length)return`<div class="section"><div class="err-card">No dates returned. Try refreshing.</div>
+    <button class="btn" onclick="runForecast()" style="margin-top:12px">↻ Retry</button></div>`;
+  
+  // Day strip
+  let ds=`<div class="day-scroll"><div class="day-strip">`;
+  dates.forEach((dt,i)=>{
+    const d=new Date(dt+"T12:00:00");
+    const sel=i===SEL?"sel":"";
+    const lbl=i===0?"Today":DN[d.getDay()];
+    ds+=`<button class="day-btn ${sel}" onclick="setDay(${i})"><div class="day-lbl">${lbl}</div><div class="day-dt">${MN[d.getMonth()]} ${d.getDate()}</div></button>`;
+  });
+  ds+=`</div></div>`;
+  
+  // System summary
+  const vals=STORES.map(s=>{const d=FC.stores[s.id];return(d&&!d.error&&d[SEL])?d[SEL].adj.total:null;}).filter(v=>v!=null);
+  const sysAvg=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0;
+  const best=vals.length?Math.max(...vals):0,worst=vals.length?Math.min(...vals):0;
+  const bStore=STORES.find(s=>{const d=FC.stores[s.id];return d&&!d.error&&d[SEL]&&d[SEL].adj.total===best;});
+  const wStore=STORES.find(s=>{const d=FC.stores[s.id];return d&&!d.error&&d[SEL]&&d[SEL].adj.total===worst;});
+  const sd=new Date(dates[SEL]+"T12:00:00");
+  
+  let sys=`<div class="sys-card" style="background:${ab(sysAvg)}">
+    <div style="font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase">${DN[sd.getDay()]} ${MN[sd.getMonth()]} ${sd.getDate()} — System Average</div>
+    <div class="sys-grid">
+      <div><div style="font-size:9px;color:var(--muted);margin-bottom:3px">Avg Adj</div><div style="font-size:22px;font-weight:800;color:${ac(sysAvg)}">${fp(sysAvg)}</div></div>
+      <div><div style="font-size:9px;color:var(--muted);margin-bottom:3px">Best</div><div style="font-size:16px;font-weight:800;color:#4ade80">${fp(best)}</div><div style="font-size:10px;color:var(--muted)">${bStore?bStore.name:""}</div></div>
+      <div><div style="font-size:9px;color:var(--muted);margin-bottom:3px">Worst</div><div style="font-size:16px;font-weight:800;color:#f87171">${fp(worst)}</div><div style="font-size:10px;color:var(--muted)">${wStore?wStore.name:""}</div></div>
+    </div>
+  </div>`;
+  
+  // Store cards sorted by adj
+  const sorted=[...STORES].sort((a,b)=>{
+    const da=FC.stores[a.id],db=FC.stores[b.id];
+    const va=(da&&!da.error&&da[SEL])?da[SEL].adj.total:-999;
+    const vb=(db&&!db.error&&db[SEL])?db[SEL].adj.total:-999;
+    return vb-va;
+  });
+  
+  let cards="";
+  sorted.forEach(s=>{
+    const days=FC.stores[s.id];
+    if(!days){cards+=`<div class="err-card">${s.id} · ${s.name}: not loaded</div>`;return;}
+    if(days.error){cards+=`<div class="err-card">${s.id} · ${s.name}: ${days.error}</div>`;return;}
+    const day=days[SEL];
+    if(!day){cards+=`<div class="err-card">${s.id} · ${s.name}: no data for day ${SEL}</div>`;return;}
+    const adj=day.adj;
+    const key=`f${s.id}`;const open=EX[key];
+    // Sparkline
+    let sparks="";
+    days.forEach((d,i)=>{
+      const v=d&&d.adj?d.adj.total:0;
+      const h=Math.max(4,Math.min(32,16+v*1.5));
+      sparks+=`<div class="spark-bar" style="height:${h}px;background:${ac(v)};opacity:${i===SEL?1:0.45}" onclick="setDay(${i})"></div>`;
+    });
+    const exp=open?`<div class="expand-body">
+      <div class="components">
+        <div class="comp-card"><div class="comp-label">🌡 Temp 40%</div><div class="comp-val" style="color:${ac(adj.tAdj)}">${fp(adj.tAdj)}</div><div class="comp-sub">${Math.round(day.tF)}°F vs ${Math.round(adj.base)}°F</div></div>
+        <div class="comp-card"><div class="comp-label">☁️ Cloud 50%</div><div class="comp-val" style="color:${ac(adj.cAdj)}">${fp(adj.cAdj)}</div><div class="comp-sub">${Math.round(day.cl)}% · ${adj.cN}</div></div>
+        <div class="comp-card"><div class="comp-label">🌧 Rain 10%</div><div class="comp-val" style="color:${ac(adj.rAdj)}">${fp(adj.rAdj)}</div><div class="comp-sub">${adj.rN}</div></div>
+      </div>
+      <div style="margin-top:10px"><div style="font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px">14-Day Trend</div>
+        <div class="spark-bars">${sparks}</div>
+        <div style="display:flex;justify-content:space-between;margin-top:3px"><span style="font-size:8px;color:var(--dim)">Today</span><span style="font-size:8px;color:var(--dim)">+14d</span></div>
+      </div>
+    </div>`:"";
+    cards+=`<div class="store-card" style="background:${ab(adj.total)}">
+      <div class="store-header" onclick="tog('${key}')">
+        <div>
+          <div class="store-id">${s.id}</div>
+          <div class="store-name">${s.name}</div>
+          <div class="store-meta">
+            <span>${Math.round(day.tMin||day.tF-5)}–${Math.round(day.tMax||day.tF+5)}°F</span>
+            <span>${adj.cN}</span>
+            ${adj.rN!=="None"?`<span style="color:#93c5fd">${adj.rN}</span>`:""}
+          </div>
+        </div>
+        <div class="store-right">
+          <div style="font-size:22px;font-weight:800;color:${ac(adj.total)}">${fp(adj.total)}</div>
+          <div style="font-size:12px;color:var(--dim);margin-top:4px">${open?"▲":"▼"}</div>
+        </div>
+      </div>${exp}</div>`;
+  });
+  
+  return`<div class="section">${ds}${sys}${cards}
+    <button class="btn" onclick="runForecast()" style="margin-top:8px;font-size:11px;padding:9px">↻ Refresh Forecast</button>
+  </div>`;
+}
+
+// ── Render Historical ──────────────────────────────────────────────────────
+function rhi(){
+  let h=`<div class="section">`;
+  h+=`<div style="margin-bottom:10px"><button class="btn btn-sm" onclick="togInput()">${SHOW_IN?"▲ Hide Input":"▼ Edit Sales Data"}</button></div>`;
+  
+  if(SHOW_IN){
+    h+=`<div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:10px">
+      <div style="flex:1"><label class="label">Date</label>
+        <input type="date" class="input" id="hist-date" value="${SAVED_DATE}">
+      </div>
+      <button class="btn" style="width:auto" onclick="runHistorical()">▶ Run</button>
+    </div>
+    <div><label class="label">Sales Data</label>
+      <textarea class="input" id="sales-text" rows="4">${SAVED_SALES}</textarea>
+    </div>`;
+  } else if(!LOADING){
+    h+=`<button class="btn" onclick="runHistorical()" style="margin-bottom:12px">▶ Run Model for ${SAVED_DATE}</button>`;
+  }
+  
+  if(LOADING){
+    h+=`<div class="progress-wrap">
+      <div style="font-size:13px;color:var(--sky);margin-bottom:8px">Fetching weather data…</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div>
+      <div style="font-size:11px;color:var(--muted);margin-top:8px">Parallel fetch · Open-Meteo</div>
+    </div>`;
+  }
+  
+  if(HIST&&!LOADING){
+    if(HIST.error)return h+`<div class="err-card">${HIST.error}</div></div>`;
+    h+=`<div class="summary-grid">
+      <div class="summary-card" style="grid-column:span 2">
+        <div class="summary-label">Date</div>
+        <div class="summary-val" style="font-size:15px">${HIST.dayName} · ${HIST.date}</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Avg Weather</div>
+        <div class="summary-val" style="color:${ac(HIST.avgW)}">${fp(HIST.avgW)}</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Total Actual</div>
+        <div class="summary-val" style="font-size:16px">${f$(HIST.totA)}</div>
+      </div>
+    </div>`;
+    
+    const sorted=[...HIST.rows].sort((a,b)=>(b.weekly||0)-(a.weekly||0));
+    sorted.forEach(r=>{
+      const key=`h${r.store.id}`;const open=EX[key];const w=r.adj;
+      const exp=open&&!r.error&&w?`<div class="expand-body">
+        <div class="components">
+          <div class="comp-card"><div class="comp-label">🌡 Temp 40%</div><div class="comp-val" style="color:${ac(w.tAdj)}">${fp(w.tAdj)}</div><div class="comp-sub">${w.dev>0?"+":""}${w.dev.toFixed(1)}°F dev</div></div>
+          <div class="comp-card"><div class="comp-label">☁️ Cloud 50%</div><div class="comp-val" style="color:${ac(w.cAdj)}">${fp(w.cAdj)}</div><div class="comp-sub">${w.cN}</div></div>
+          <div class="comp-card"><div class="comp-label">🌧 Rain 10%</div><div class="comp-val" style="color:${ac(w.rAdj)}">${fp(w.rAdj)}</div><div class="comp-sub">${w.rN}</div></div>
+        </div>
+        <div class="weekly-banner">
+          <div><div style="font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">Implied Weekly</div><div style="font-size:9px;color:var(--dim);margin-top:2px">weather-normalized</div></div>
+          <div style="font-size:22px;font-weight:800;color:var(--sky)">${f$(r.weekly)}</div>
+        </div>
+      </div>`:(open&&r.error?`<div class="expand-body" style="color:#fca5a5;font-size:12px">Error: ${r.error}</div>`:"");
+      h+=`<div class="store-card" style="background:${ab(w?w.total:null)}">
+        <div class="store-header" onclick="tog('${key}')">
+          <div>
+            <div class="store-id">${r.store.id}</div>
+            <div class="store-name">${r.store.name}</div>
+            <div class="store-meta">
+              <span>DOW ${r.dowW!=null?r.dowW.toFixed(2):"—"}%</span>
+              ${w?`<span style="color:${ac(w.total)};font-weight:600">Wthr ${fp(w.total)}</span>`:""}
+              ${r.error?`<span style="color:#fca5a5">⚠ ${r.error}</span>`:""}
+            </div>
+          </div>
+          <div class="store-right">
+            <div style="font-size:15px;font-weight:700">${f$(r.actual)}</div>
+            ${r.weekly?`<div style="font-size:12px;color:var(--sky)">${f$(r.weekly)}/wk</div>`:""}
+            <div style="font-size:12px;color:var(--dim);margin-top:4px">${open?"▲":"▼"}</div>
+          </div>
+        </div>${exp}</div>`;
+    });
+    h+=`<div class="totals">
+      <div class="tr"><span style="font-size:12px;color:var(--muted)">Total Actual Sales</span><span style="font-size:14px;font-weight:700">${f$(HIST.totA)}</span></div>
+      <div class="tr"><span style="font-size:12px;color:var(--muted)">Total Implied Weekly</span><span style="font-size:17px;font-weight:800;color:var(--sky)">${f$(HIST.totW)}</span></div>
+    </div>`;
+  }
+  return h+`</div>`;
+}
+function togInput(){
+  const de=document.getElementById("hist-date");
+  const se=document.getElementById("sales-text");
+  if(de)SAVED_DATE=de.value;
+  if(se)SAVED_SALES=se.value;
+  SHOW_IN=!SHOW_IN;render();
+}
+
+render();
+</script>
+</body>
+</html>
