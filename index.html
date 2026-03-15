@@ -31,7 +31,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .input{background:rgba(56,189,248,0.07);border:1px solid rgba(56,189,248,0.2);color:var(--text);padding:10px 12px;border-radius:10px;font-size:14px;font-family:inherit;outline:none;width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none;max-width:100%;}
 .label{font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;display:block;}
 textarea.input{resize:vertical;font-family:'Menlo','Courier New',monospace;font-size:11px;line-height:1.6;}
-.section{padding:14px 16px;overflow-x:hidden;}
+.section{padding:14px 16px;}
 .progress-wrap{text-align:center;padding:50px 20px;}
 .progress-bar{background:rgba(255,255,255,0.05);border-radius:6px;height:7px;max-width:280px;margin:12px auto;overflow:hidden;}
 .progress-fill{background:linear-gradient(90deg,#0ea5e9,#38bdf8);height:100%;border-radius:6px;transition:width .4s;}
@@ -781,13 +781,15 @@ function rbud(){
 
   return`<div class="section">
     <div style="font-size:10px;color:var(--muted);margin-bottom:8px">YTD through ${co}</div>
-    <div style="position:sticky;top:97px;z-index:50;background:#080e1a;padding:6px 0 8px">
+    <div style="position:sticky;top:97px;z-index:49;background:var(--bg);padding:6px 0 8px;border-bottom:1px solid rgba(255,255,255,0.06)">
       ${toggle_html}
       ${BUD_MODE==="storm"?`<div style="background:rgba(165,180,252,0.08);border:1px solid rgba(165,180,252,0.2);border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:11px;color:#a5b4fc">⛈ +$97.5k distributed pro rata (Las Cruces at 35%)</div>`:""}
     </div>
+    <div>
     ${consolBlock}
     ${regionBlock("Midwest",mw,"bud_mw",r=>r.region==="Midwest")}
     ${regionBlock("West TX",wtx,"bud_wtx",r=>r.region==="West TX")}
+    </div>
   </div>`;
 }
 
