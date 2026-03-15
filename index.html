@@ -15,7 +15,6 @@
   --sky:#38bdf8;--sky-dim:rgba(56,189,248,0.18);--sky-border:rgba(56,189,248,0.4);
   --text:#e2e8f0;--muted:#64748b;--dim:#334155;
   --pos:#4ade80;--neg:#f87171;--neu:#94a3b8;
-  --pos-bg:rgba(74,222,128,0.12);--neg-bg:rgba(248,113,113,0.15);
   --card:rgba(255,255,255,0.03);
 }
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;min-height:100vh;max-width:520px;margin:0 auto;padding-bottom:32px;}
@@ -36,26 +35,37 @@ textarea.input{resize:vertical;font-family:'Menlo','Courier New',monospace;font-
 .progress-wrap{text-align:center;padding:50px 20px;}
 .progress-bar{background:rgba(255,255,255,0.05);border-radius:6px;height:7px;max-width:280px;margin:12px auto;overflow:hidden;}
 .progress-fill{background:linear-gradient(90deg,#0ea5e9,#38bdf8);height:100%;border-radius:6px;transition:width .4s;}
-.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
-.summary-card{background:var(--card);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 14px;}
-.summary-label{font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;}
-.summary-val{font-size:20px;font-weight:800;}
-.store-card{border-radius:12px;margin-bottom:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);}
-.store-header{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;cursor:pointer;user-select:none;}
-.store-id{font-size:9px;color:var(--muted);}
-.store-name{font-size:15px;font-weight:700;color:var(--text);}
-.store-meta{display:flex;gap:8px;margin-top:3px;flex-wrap:wrap;}
-.store-meta span{font-size:10px;color:var(--muted);}
-.store-right{text-align:right;flex-shrink:0;}
-.expand-body{padding:0 14px 13px;border-top:1px solid rgba(255,255,255,0.06);}
-.components{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px;}
-.comp-card{background:rgba(0,0,0,0.25);border-radius:9px;padding:9px 8px;}
-.comp-label{font-size:9px;color:var(--muted);margin-bottom:2px;}
-.comp-val{font-size:14px;font-weight:800;}
-.comp-sub{font-size:9px;color:var(--dim);margin-top:1px;}
-.weekly-banner{background:rgba(56,189,248,0.09);border:1px solid rgba(56,189,248,0.2);border-radius:9px;padding:11px 13px;margin-top:10px;display:flex;justify-content:space-between;align-items:center;}
-.sys-card{border-radius:12px;padding:14px;margin-bottom:14px;border:1px solid rgba(255,255,255,0.08);}
+
+/* 7-day summary blocks */
+.week-block{border-radius:12px;margin-bottom:10px;overflow:hidden;border:1px solid rgba(56,189,248,0.25);background:rgba(56,189,248,0.06);}
+.week-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;user-select:none;}
+.week-title{font-size:11px;font-weight:700;color:var(--sky);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+.week-vals{display:flex;gap:16px;align-items:baseline;}
+.week-sales{font-size:22px;font-weight:800;color:var(--text);}
+.week-adj{font-size:14px;font-weight:700;}
+.week-chevron{font-size:12px;color:var(--muted);flex-shrink:0;}
+.week-body{border-top:1px solid rgba(56,189,248,0.15);}
+.week-store-row{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.04);}
+.week-store-row:last-child{border-bottom:none;}
+.week-store-name{font-size:12px;color:var(--text);font-weight:600;}
+.week-store-right{text-align:right;}
+.week-store-sales{font-size:13px;font-weight:700;color:var(--text);}
+.week-store-adj{font-size:11px;font-weight:600;}
+
+/* Divider */
+.divider{height:1px;background:rgba(255,255,255,0.08);margin:14px 0;}
+
+/* System average */
+.sys-card{border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.08);}
 .sys-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px;}
+
+/* Consolidated bar */
+.consol-bar{background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3);border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;}
+.consol-label{font-size:9px;color:var(--sky);letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px;font-weight:700;}
+.consol-sales{font-size:24px;font-weight:800;color:var(--text);}
+.consol-adj{font-size:16px;font-weight:700;}
+
+/* Day selector */
 .day-scroll{overflow-x:auto;padding-bottom:8px;margin-bottom:14px;-webkit-overflow-scrolling:touch;}
 .day-scroll::-webkit-scrollbar{display:none;}
 .day-strip{display:flex;gap:6px;min-width:max-content;}
@@ -65,8 +75,33 @@ textarea.input{resize:vertical;font-family:'Menlo','Courier New',monospace;font-
 .day-btn.sel .day-lbl{color:var(--sky);}
 .day-dt{font-size:12px;font-weight:700;color:var(--neu);margin-top:2px;}
 .day-btn.sel .day-dt{color:var(--sky);}
+
+/* Store cards */
+.store-card{border-radius:12px;margin-bottom:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);}
+.store-header{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;cursor:pointer;user-select:none;}
+.store-left{flex:1;}
+.store-id{font-size:9px;color:var(--muted);}
+.store-name{font-size:14px;font-weight:700;color:var(--text);}
+.store-meta{display:flex;gap:8px;margin-top:3px;flex-wrap:wrap;}
+.store-meta span{font-size:10px;color:var(--muted);}
+.store-middle{flex:1;text-align:center;}
+.store-sales-mid{font-size:14px;font-weight:700;color:var(--text);}
+.store-right{text-align:right;flex-shrink:0;}
+.expand-body{padding:0 14px 13px;border-top:1px solid rgba(255,255,255,0.06);}
+.components{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px;}
+.comp-card{background:rgba(0,0,0,0.25);border-radius:9px;padding:9px 8px;}
+.comp-label{font-size:9px;color:var(--muted);margin-bottom:2px;}
+.comp-val{font-size:14px;font-weight:800;}
+.comp-sub{font-size:9px;color:var(--dim);margin-top:1px;}
 .spark-bars{display:flex;gap:2px;align-items:flex-end;height:32px;margin-top:10px;}
 .spark-bar{flex:1;border-radius:2px;cursor:pointer;}
+
+/* Historical */
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.summary-card{background:var(--card);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 14px;}
+.summary-label{font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;}
+.summary-val{font-size:20px;font-weight:800;}
+.weekly-banner{background:rgba(56,189,248,0.09);border:1px solid rgba(56,189,248,0.2);border-radius:9px;padding:11px 13px;margin-top:10px;display:flex;justify-content:space-between;align-items:center;}
 .totals{background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);border-radius:12px;padding:14px;margin-top:8px;}
 .tr{display:flex;justify-content:space-between;align-items:center;margin-top:6px;}
 .tr:first-child{margin-top:0;}
@@ -97,27 +132,29 @@ textarea.input{resize:vertical;font-family:'Menlo','Courier New',monospace;font-
 
 <script>
 const STORES=[
-  {id:"001",name:"Yukon",        lat:35.5067,lon:-97.7625,tz:"America/Chicago"},
-  {id:"002",name:"The Village",  lat:35.5676,lon:-97.5561,tz:"America/Chicago"},
-  {id:"003",name:"Bartlesville", lat:36.7473,lon:-95.9808,tz:"America/Chicago"},
-  {id:"004",name:"SW OKC",       lat:35.3867,lon:-97.5164,tz:"America/Chicago"},
-  {id:"005",name:"Uptown",       lat:35.4867,lon:-97.5231,tz:"America/Chicago"},
-  {id:"006",name:"Norman 1",     lat:35.2226,lon:-97.4395,tz:"America/Chicago"},
-  {id:"007",name:"Shawnee",      lat:35.3515,lon:-96.9253,tz:"America/Chicago"},
-  {id:"008",name:"Duncan",       lat:34.5023,lon:-97.9578,tz:"America/Chicago"},
-  {id:"009",name:"Lawton",       lat:34.6086,lon:-98.4370,tz:"America/Chicago"},
-  {id:"010",name:"Chickasha",    lat:35.0512,lon:-97.9378,tz:"America/Chicago"},
-  {id:"011",name:"OU Med",       lat:35.4719,lon:-97.5017,tz:"America/Chicago"},
-  {id:"012",name:"Moore",        lat:35.3395,lon:-97.4867,tz:"America/Chicago"},
-  {id:"013",name:"Norman 2",     lat:35.2059,lon:-97.4473,tz:"America/Chicago"},
-  {id:"014",name:"Webb City",    lat:37.1484,lon:-94.4669,tz:"America/Chicago"},
-  {id:"015",name:"Pecos",        lat:31.4229,lon:-103.493,tz:"America/Chicago"},
-  {id:"016",name:"Carlsbad",     lat:32.4207,lon:-104.229,tz:"America/Denver"},
-  {id:"017",name:"Las Cruces",   lat:32.3199,lon:-106.764,tz:"America/Denver"},
-  {id:"018",name:"Hutchinson",   lat:38.0608,lon:-97.9298,tz:"America/Chicago"},
-  {id:"019",name:"Clovis",       lat:34.4048,lon:-103.205,tz:"America/Denver"},
-  {id:"020",name:"Hereford",     lat:34.8151,lon:-102.398,tz:"America/Chicago"},
+  {id:"001",num:"01",name:"Yukon",        weeklyBase:12988, lat:35.5067,lon:-97.7625,tz:"America/Chicago"},
+  {id:"002",num:"02",name:"The Village",  weeklyBase:19827, lat:35.5676,lon:-97.5561,tz:"America/Chicago"},
+  {id:"003",num:"03",name:"Bartlesville", weeklyBase:20453, lat:36.7473,lon:-95.9808,tz:"America/Chicago"},
+  {id:"004",num:"04",name:"SW OKC",       weeklyBase:16147, lat:35.3867,lon:-97.5164,tz:"America/Chicago"},
+  {id:"005",num:"05",name:"Uptown",       weeklyBase:9935,  lat:35.4867,lon:-97.5231,tz:"America/Chicago"},
+  {id:"006",num:"06",name:"Norman 1",     weeklyBase:13139, lat:35.2226,lon:-97.4395,tz:"America/Chicago"},
+  {id:"007",num:"07",name:"Shawnee",      weeklyBase:15356, lat:35.3515,lon:-96.9253,tz:"America/Chicago"},
+  {id:"008",num:"08",name:"Duncan",       weeklyBase:11826, lat:34.5023,lon:-97.9578,tz:"America/Chicago"},
+  {id:"009",num:"09",name:"Lawton",       weeklyBase:13502, lat:34.6086,lon:-98.4370,tz:"America/Chicago"},
+  {id:"010",num:"10",name:"Chickasha",    weeklyBase:12012, lat:35.0512,lon:-97.9378,tz:"America/Chicago"},
+  {id:"011",num:"11",name:"OU Med",       weeklyBase:4508,  lat:35.4719,lon:-97.5017,tz:"America/Chicago"},
+  {id:"012",num:"12",name:"Moore",        weeklyBase:11477, lat:35.3395,lon:-97.4867,tz:"America/Chicago"},
+  {id:"013",num:"13",name:"Norman 2",     weeklyBase:11118, lat:35.2059,lon:-97.4473,tz:"America/Chicago"},
+  {id:"014",num:"14",name:"Webb City",    weeklyBase:7897,  lat:37.1484,lon:-94.4669,tz:"America/Chicago"},
+  {id:"015",num:"15",name:"Pecos",        weeklyBase:17944, lat:31.4229,lon:-103.493,tz:"America/Chicago"},
+  {id:"016",num:"16",name:"Carlsbad",     weeklyBase:23500, lat:32.4207,lon:-104.229,tz:"America/Denver"},
+  {id:"017",num:"17",name:"Las Cruces",   weeklyBase:35353, lat:32.3199,lon:-106.764,tz:"America/Denver"},
+  {id:"018",num:"18",name:"Hutchinson",   weeklyBase:22458, lat:38.0608,lon:-97.9298,tz:"America/Chicago"},
+  {id:"019",num:"19",name:"Clovis",       weeklyBase:32614, lat:34.4048,lon:-103.205,tz:"America/Denver"},
+  {id:"020",num:"20",name:"Hereford",     weeklyBase:15266, lat:34.8151,lon:-102.398,tz:"America/Chicago"},
 ];
+const CONSOLIDATED_BASE=327320;
+
 const NORMALS={
   KOKC:[36.8,41.4,50.8,60.2,69.0,78.2,83.4,82.6,73.6,62.0,49.2,38.4],
   KOUN:[36.5,41.1,50.5,59.9,68.7,78.0,83.2,82.4,73.3,61.7,48.9,38.1],
@@ -162,12 +199,12 @@ const DOW={
   "019":[14.51,13.08,13.08,13.08,13.08,16.05,17.10],
   "020":[15.59,13.14,13.14,13.14,13.14,17.07,14.81],
 };
-const AVG_DOW=[14.72,12.98,12.98,12.98,12.98,15.71,17.67];
+
 const DN=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 const DNF=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-
 const C2F=c=>c*9/5+32;
+
 function cloudTier(p){
   if(p<=20)return{n:"Clear",   a:0};
   if(p<=50)return{n:"Partly",  a:-0.04};
@@ -181,8 +218,8 @@ function rainTier(mm){
   if(i<0.75)return{n:"Moderate",a:-0.15};
   return       {n:"Heavy",   a:-0.20};
 }
-function calc(sid,tF,cl,ra){
-  const mo=new Date().getMonth();
+function calc(sid,tF,cl,ra,dateStr){
+  const mo=new Date(dateStr+"T12:00:00").getMonth();
   const base=NORMALS[STATION[sid]][mo];
   const te=sid==="011"?0:0.01;
   const tA=te*(tF-base);
@@ -193,12 +230,18 @@ function calc(sid,tF,cl,ra){
     dev:tF-base,base,cN:cT.n,rN:rT.n
   };
 }
-function wkly(actual,sid,dow,wadj){
-  const w=DOW[sid][dow];
-  if(!w)return null;
-  return(actual/(1+wadj/100))/(w/100);
+
+// Get projected daily sales for a store on a given day
+function projectedDailySales(store, dateStr, weatherAdj){
+  const jsDay=new Date(dateStr+"T12:00:00").getDay();
+  const dowW=DOW[store.id][jsDay];
+  if(!dowW)return null;
+  const dailyBase=store.weeklyBase*(dowW/100);
+  return dailyBase*(1+weatherAdj/100);
 }
+
 const f$=v=>v==null?"—":"$"+Math.round(v).toLocaleString();
+const fk=v=>v==null?"—":"$"+(v>=1000?(v/1000).toFixed(0)+"k":Math.round(v).toLocaleString());
 const fp=(v,p=true)=>v==null?"—":`${p&&v>0?"+":""}${v.toFixed(1)}%`;
 function ac(v){
   if(v==null)return"#94a3b8";
@@ -218,6 +261,11 @@ function parseSales(txt){
     const v=parseFloat(p[2]);if(!isNaN(v))m[id]=v;
   });
   return m;
+}
+function wkly(actual,sid,dow,wadj){
+  const w=DOW[sid][dow];
+  if(!w)return null;
+  return(actual/(1+wadj/100))/(w/100);
 }
 
 // ── State ──────────────────────────────────────────────────────────────────
@@ -243,7 +291,7 @@ let SAVED_DATE="2026-03-13",SAVED_SALES=`3-13-2026\t02 - The Village\t3248.53
 3-13-2026\t19 - Clovis\t5723.79
 3-13-2026\t16 - Carlsbad\t4613.23`;
 
-// ── Fetch helpers ──────────────────────────────────────────────────────────
+// ── Fetch ──────────────────────────────────────────────────────────────────
 function fetchStore(store){
   const url=`https://api.open-meteo.com/v1/forecast?latitude=${store.lat}&longitude=${store.lon}`+
     `&daily=temperature_2m_max,temperature_2m_min,temperature_2m_mean,precipitation_sum,cloudcover_mean`+
@@ -260,34 +308,21 @@ function fetchArchive(store,date){
   return Promise.race([fetch(url).then(r=>r.json()),timeout]);
 }
 
-// ── Run forecast: fetch ALL stores in parallel ─────────────────────────────
 async function runForecast(){
   LOADING=true;FC=null;render();
   try{
-    // Fetch all 20 stores simultaneously
     const promises=STORES.map(s=>fetchStore(s).catch(e=>({error:e.message,id:s.id})));
     const raw=await Promise.all(promises);
-    
-    // Find a valid dates array from any successful response
     let dates=null;
     for(const d of raw){if(d&&d.daily&&d.daily.time){dates=d.daily.time;break;}}
     if(!dates){
-      // Generate dates manually as fallback
-      dates=[];
-      const now=new Date();
-      for(let i=0;i<14;i++){
-        const d=new Date(now);d.setDate(d.getDate()+i);
-        dates.push(d.toISOString().split("T")[0]);
-      }
+      dates=[];const now=new Date();
+      for(let i=0;i<14;i++){const d=new Date(now);d.setDate(d.getDate()+i);dates.push(d.toISOString().split("T")[0]);}
     }
-    
     const stores={};
     STORES.forEach((s,i)=>{
       const d=raw[i];
-      if(!d||d.error||!d.daily){
-        stores[s.id]={error:d&&d.error?d.error:"No data"};
-        return;
-      }
+      if(!d||d.error||!d.daily){stores[s.id]={error:(d&&d.error)||"No data"};return;}
       try{
         stores[s.id]=d.daily.time.map((dt,di)=>{
           const tF=C2F(d.daily.temperature_2m_mean&&d.daily.temperature_2m_mean[di]!=null?d.daily.temperature_2m_mean[di]:20);
@@ -295,36 +330,30 @@ async function runForecast(){
           const ra=d.daily.precipitation_sum&&d.daily.precipitation_sum[di]!=null?d.daily.precipitation_sum[di]:0;
           const tmax=d.daily.temperature_2m_max&&d.daily.temperature_2m_max[di]!=null?C2F(d.daily.temperature_2m_max[di]):tF+5;
           const tmin=d.daily.temperature_2m_min&&d.daily.temperature_2m_min[di]!=null?C2F(d.daily.temperature_2m_min[di]):tF-5;
-          return{date:dt,tF,tMax:tmax,tMin:tmin,cl,ra,adj:calc(s.id,tF,cl,ra),dow:new Date(dt+"T12:00:00").getDay()};
+          const adj=calc(s.id,tF,cl,ra,dt);
+          const sales=projectedDailySales(s,dt,adj.total);
+          return{date:dt,tF,tMax:tmax,tMin:tmin,cl,ra,adj,sales,dow:new Date(dt+"T12:00:00").getDay()};
         });
       }catch(e){stores[s.id]={error:"Parse error: "+e.message};}
     });
     FC={dates,stores};SEL=0;
-  }catch(e){
-    FC={error:"Failed: "+e.message,dates:[],stores:{}};
-  }
+  }catch(e){FC={error:"Failed: "+e.message,dates:[],stores:{}};}
   LOADING=false;render();
 }
 
-// ── Run historical: fetch all stores in parallel ───────────────────────────
 async function runHistorical(){
-  // Save form values before re-render wipes them
   const de=document.getElementById("hist-date");
   const se=document.getElementById("sales-text");
   if(de)SAVED_DATE=de.value;
   if(se)SAVED_SALES=se.value;
-  
   LOADING=true;HIST=null;SHOW_IN=false;render();
-  
   const date=SAVED_DATE;
   const salesMap=parseSales(SAVED_SALES);
   const storesWS=STORES.filter(s=>salesMap[s.id]!=null);
   const jsDay=new Date(date+"T12:00:00").getDay();
-  
   try{
     const promises=storesWS.map(s=>fetchArchive(s,date).catch(e=>({error:e.message})));
     const raw=await Promise.all(promises);
-    
     const out=storesWS.map((s,i)=>{
       const d=raw[i];
       if(!d||d.error||!d.daily)return{store:s,actual:salesMap[s.id],error:(d&&d.error)||"No data"};
@@ -332,29 +361,24 @@ async function runHistorical(){
         const tF=C2F(d.daily.temperature_2m_mean&&d.daily.temperature_2m_mean[0]!=null?d.daily.temperature_2m_mean[0]:20);
         const cl=d.daily.cloudcover_mean&&d.daily.cloudcover_mean[0]!=null?d.daily.cloudcover_mean[0]:0;
         const ra=d.daily.precipitation_sum&&d.daily.precipitation_sum[0]!=null?d.daily.precipitation_sum[0]:0;
-        const adj=calc(s.id,tF,cl,ra);
+        const adj=calc(s.id,tF,cl,ra,date);
         const actual=salesMap[s.id];
         return{store:s,actual,adj,dowW:DOW[s.id][jsDay],weekly:wkly(actual,s.id,jsDay,adj.total)};
       }catch(e){return{store:s,actual:salesMap[s.id],error:"Parse: "+e.message};}
     });
-    
     const totA=out.reduce((a,r)=>a+(r.actual||0),0);
     const totW=out.reduce((a,r)=>a+(r.weekly||0),0);
     const adjRows=out.filter(r=>r.adj);
     const avgW=adjRows.length?adjRows.reduce((a,r)=>a+r.adj.total,0)/adjRows.length:0;
     HIST={rows:out,totA,totW,avgW,dayName:DNF[jsDay],date};
   }catch(e){HIST={error:"Failed: "+e.message};}
-  
   LOADING=false;render();
 }
 
 // ── Render ─────────────────────────────────────────────────────────────────
 function render(){
-  try{
-    document.getElementById("app").innerHTML=MODE==="forecast"?rfx():rhi();
-  }catch(e){
-    document.getElementById("app").innerHTML=`<div class="section"><div class="err-card">Render error: ${e.message}</div></div>`;
-  }
+  try{document.getElementById("app").innerHTML=MODE==="forecast"?rfx():rhi();}
+  catch(e){document.getElementById("app").innerHTML=`<div class="section"><div class="err-card">Render error: ${e.message}</div></div>`;}
 }
 function setMode(m){
   MODE=m;SHOW_IN=true;EX={};
@@ -364,6 +388,39 @@ function setMode(m){
 }
 function setDay(i){SEL=i;render();}
 function tog(id){EX[id]=!EX[id];render();}
+function togInput(){
+  const de=document.getElementById("hist-date");
+  const se=document.getElementById("sales-text");
+  if(de)SAVED_DATE=de.value;
+  if(se)SAVED_SALES=se.value;
+  SHOW_IN=!SHOW_IN;render();
+}
+
+// ── Compute 7-day summaries ────────────────────────────────────────────────
+function compute7DaySummary(startIdx, endIdx){
+  if(!FC||!FC.dates)return null;
+  const dates=FC.dates.slice(startIdx,endIdx);
+  if(!dates.length)return null;
+
+  // Per store: sum projected sales, avg weather adj
+  const storeRows=STORES.map(store=>{
+    const days=FC.stores[store.id];
+    if(!days||days.error)return{store,sales:null,avgAdj:null,error:true};
+    let totalSales=0,totalAdj=0,count=0;
+    for(let i=startIdx;i<endIdx&&i<FC.dates.length;i++){
+      const day=days[i];
+      if(!day)continue;
+      totalSales+=(day.sales||0);
+      totalAdj+=day.adj.total;
+      count++;
+    }
+    return{store,sales:totalSales,avgAdj:count?totalAdj/count:0,count};
+  }).filter(r=>!r.error);
+
+  const totalSales=storeRows.reduce((a,r)=>a+(r.sales||0),0);
+  const avgAdj=storeRows.length?storeRows.reduce((a,r)=>a+(r.avgAdj||0),0)/storeRows.length:0;
+  return{storeRows,totalSales,avgAdj,dates};
+}
 
 // ── Render Forecast ────────────────────────────────────────────────────────
 function rfx(){
@@ -372,21 +429,69 @@ function rfx(){
     <div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div>
     <div style="font-size:11px;color:var(--muted);margin-top:8px">Parallel fetch · Open-Meteo</div>
   </div></div>`;
-  
+
   if(!FC)return`<div class="section"><div class="empty">
     <div class="empty-icon">🌤</div>
     <div class="empty-text">14-day forecast for all 20 stores<br>with weather demand adjustments</div>
     <button class="btn" onclick="runForecast()">▶ Load 14-Day Forecast</button>
   </div></div>`;
-  
+
   if(FC.error)return`<div class="section"><div class="err-card">Error: ${FC.error}</div>
     <button class="btn" onclick="runForecast()" style="margin-top:12px">↻ Retry</button></div>`;
-  
+
   const dates=FC.dates||[];
-  if(!dates.length)return`<div class="section"><div class="err-card">No dates returned. Try refreshing.</div>
+  if(!dates.length)return`<div class="section"><div class="err-card">No dates returned.</div>
     <button class="btn" onclick="runForecast()" style="margin-top:12px">↻ Retry</button></div>`;
-  
-  // Day strip
+
+  // ── 7-day summaries ──
+  const next7=compute7DaySummary(0,7);
+  const following7=compute7DaySummary(7,14);
+
+  function render7Block(summary, title, key){
+    if(!summary)return"";
+    const open=EX[key];
+    const storeList=open?`<div class="week-body">
+      ${summary.storeRows.sort((a,b)=>(b.sales||0)-(a.sales||0)).map(r=>`
+        <div class="week-store-row">
+          <div class="week-store-name">${r.store.num} - ${r.store.name}</div>
+          <div class="week-store-right">
+            <div class="week-store-sales">${f$(r.sales)}</div>
+            <div class="week-store-adj" style="color:${ac(r.avgAdj)}">${fp(r.avgAdj)}</div>
+          </div>
+        </div>`).join("")}
+    </div>`:"";
+    return`<div class="week-block">
+      <div class="week-header" onclick="tog('${key}')">
+        <div>
+          <div class="week-title">${title}</div>
+          <div class="week-vals">
+            <div class="week-sales">${f$(summary.totalSales)}</div>
+            <div class="week-adj" style="color:${ac(summary.avgAdj)}">${fp(summary.avgAdj)}</div>
+          </div>
+          <div style="font-size:9px;color:var(--muted);margin-top:3px">${summary.dates[0]} → ${summary.dates[summary.dates.length-1]}</div>
+        </div>
+        <div class="week-chevron">${open?"▲":"▼"}</div>
+      </div>${storeList}
+    </div>`;
+  }
+
+  // ── Selected day: consolidated bar ──
+  const dayAdjs=STORES.map(s=>{
+    const days=FC.stores[s.id];
+    return(days&&!days.error&&days[SEL])?days[SEL].adj.total:null;
+  }).filter(v=>v!=null);
+  const sysAvg=dayAdjs.length?dayAdjs.reduce((a,b)=>a+b,0)/dayAdjs.length:0;
+  const totalDaySales=STORES.reduce((sum,s)=>{
+    const days=FC.stores[s.id];
+    return sum+((days&&!days.error&&days[SEL]&&days[SEL].sales)?days[SEL].sales:0);
+  },0);
+  const best=dayAdjs.length?Math.max(...dayAdjs):0;
+  const worst=dayAdjs.length?Math.min(...dayAdjs):0;
+  const bStore=STORES.find(s=>{const d=FC.stores[s.id];return d&&!d.error&&d[SEL]&&d[SEL].adj.total===best;});
+  const wStore=STORES.find(s=>{const d=FC.stores[s.id];return d&&!d.error&&d[SEL]&&d[SEL].adj.total===worst;});
+  const sd=new Date(dates[SEL]+"T12:00:00");
+
+  // ── Day strip ──
   let ds=`<div class="day-scroll"><div class="day-strip">`;
   dates.forEach((dt,i)=>{
     const d=new Date(dt+"T12:00:00");
@@ -395,42 +500,45 @@ function rfx(){
     ds+=`<button class="day-btn ${sel}" onclick="setDay(${i})"><div class="day-lbl">${lbl}</div><div class="day-dt">${MN[d.getMonth()]} ${d.getDate()}</div></button>`;
   });
   ds+=`</div></div>`;
-  
-  // System summary
-  const vals=STORES.map(s=>{const d=FC.stores[s.id];return(d&&!d.error&&d[SEL])?d[SEL].adj.total:null;}).filter(v=>v!=null);
-  const sysAvg=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0;
-  const best=vals.length?Math.max(...vals):0,worst=vals.length?Math.min(...vals):0;
-  const bStore=STORES.find(s=>{const d=FC.stores[s.id];return d&&!d.error&&d[SEL]&&d[SEL].adj.total===best;});
-  const wStore=STORES.find(s=>{const d=FC.stores[s.id];return d&&!d.error&&d[SEL]&&d[SEL].adj.total===worst;});
-  const sd=new Date(dates[SEL]+"T12:00:00");
-  
-  let sys=`<div class="sys-card" style="background:${ab(sysAvg)}">
-    <div style="font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase">${DN[sd.getDay()]} ${MN[sd.getMonth()]} ${sd.getDate()} — System Average</div>
-    <div class="sys-grid">
-      <div><div style="font-size:9px;color:var(--muted);margin-bottom:3px">Avg Adj</div><div style="font-size:22px;font-weight:800;color:${ac(sysAvg)}">${fp(sysAvg)}</div></div>
-      <div><div style="font-size:9px;color:var(--muted);margin-bottom:3px">Best</div><div style="font-size:16px;font-weight:800;color:#4ade80">${fp(best)}</div><div style="font-size:10px;color:var(--muted)">${bStore?bStore.name:""}</div></div>
-      <div><div style="font-size:9px;color:var(--muted);margin-bottom:3px">Worst</div><div style="font-size:16px;font-weight:800;color:#f87171">${fp(worst)}</div><div style="font-size:10px;color:var(--muted)">${wStore?wStore.name:""}</div></div>
+
+  // ── Consolidated bar ──
+  const consol=`<div class="consol-bar">
+    <div>
+      <div class="consol-label">📊 Consolidated · ${DN[sd.getDay()]} ${MN[sd.getMonth()]} ${sd.getDate()}</div>
+      <div class="consol-sales">${f$(totalDaySales)}</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:9px;color:var(--muted);margin-bottom:3px">Avg Weather Adj</div>
+      <div class="consol-adj" style="color:${ac(sysAvg)}">${fp(sysAvg)}</div>
     </div>
   </div>`;
-  
-  // Store cards sorted by adj
+
+  // ── System avg ──
+  const sys=`<div class="sys-card" style="background:${ab(sysAvg)}">
+    <div style="font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase">Store Detail · ${DN[sd.getDay()]} ${MN[sd.getMonth()]} ${sd.getDate()}</div>
+    <div class="sys-grid">
+      <div><div style="font-size:9px;color:var(--muted);margin-bottom:3px">Sys Avg Adj</div><div style="font-size:18px;font-weight:800;color:${ac(sysAvg)}">${fp(sysAvg)}</div></div>
+      <div><div style="font-size:9px;color:var(--muted);margin-bottom:3px">Best</div><div style="font-size:14px;font-weight:800;color:#4ade80">${fp(best)}</div><div style="font-size:10px;color:var(--muted)">${bStore?bStore.num+" - "+bStore.name:""}</div></div>
+      <div><div style="font-size:9px;color:var(--muted);margin-bottom:3px">Worst</div><div style="font-size:14px;font-weight:800;color:#f87171">${fp(worst)}</div><div style="font-size:10px;color:var(--muted)">${wStore?wStore.num+" - "+wStore.name:""}</div></div>
+    </div>
+  </div>`;
+
+  // ── Store cards ──
   const sorted=[...STORES].sort((a,b)=>{
     const da=FC.stores[a.id],db=FC.stores[b.id];
     const va=(da&&!da.error&&da[SEL])?da[SEL].adj.total:-999;
     const vb=(db&&!db.error&&db[SEL])?db[SEL].adj.total:-999;
     return vb-va;
   });
-  
+
   let cards="";
   sorted.forEach(s=>{
     const days=FC.stores[s.id];
-    if(!days){cards+=`<div class="err-card">${s.id} · ${s.name}: not loaded</div>`;return;}
-    if(days.error){cards+=`<div class="err-card">${s.id} · ${s.name}: ${days.error}</div>`;return;}
-    const day=days[SEL];
-    if(!day){cards+=`<div class="err-card">${s.id} · ${s.name}: no data for day ${SEL}</div>`;return;}
+    if(!days){cards+=`<div class="err-card">${s.num} - ${s.name}: not loaded</div>`;return;}
+    if(days.error){cards+=`<div class="err-card">${s.num} - ${s.name}: ${days.error}</div>`;return;}
+    const day=days[SEL];if(!day)return;
     const adj=day.adj;
     const key=`f${s.id}`;const open=EX[key];
-    // Sparkline
     let sparks="";
     days.forEach((d,i)=>{
       const v=d&&d.adj?d.adj.total:0;
@@ -448,25 +556,36 @@ function rfx(){
         <div style="display:flex;justify-content:space-between;margin-top:3px"><span style="font-size:8px;color:var(--dim)">Today</span><span style="font-size:8px;color:var(--dim)">+14d</span></div>
       </div>
     </div>`:"";
+
     cards+=`<div class="store-card" style="background:${ab(adj.total)}">
       <div class="store-header" onclick="tog('${key}')">
-        <div>
-          <div class="store-id">${s.id}</div>
-          <div class="store-name">${s.name}</div>
+        <div class="store-left">
+          <div class="store-name">${s.num} - ${s.name}</div>
           <div class="store-meta">
             <span>${Math.round(day.tMin||day.tF-5)}–${Math.round(day.tMax||day.tF+5)}°F</span>
             <span>${adj.cN}</span>
             ${adj.rN!=="None"?`<span style="color:#93c5fd">${adj.rN}</span>`:""}
           </div>
         </div>
+        <div class="store-middle">
+          <div class="store-sales-mid">${f$(day.sales)}</div>
+          <div style="font-size:9px;color:var(--muted);margin-top:2px">proj sales</div>
+        </div>
         <div class="store-right">
-          <div style="font-size:22px;font-weight:800;color:${ac(adj.total)}">${fp(adj.total)}</div>
+          <div style="font-size:20px;font-weight:800;color:${ac(adj.total)}">${fp(adj.total)}</div>
           <div style="font-size:12px;color:var(--dim);margin-top:4px">${open?"▲":"▼"}</div>
         </div>
       </div>${exp}</div>`;
   });
-  
-  return`<div class="section">${ds}${sys}${cards}
+
+  return`<div class="section">
+    ${render7Block(next7,"📅 Next 7 Days (Days 1–7)","w1")}
+    ${render7Block(following7,"📅 Following 7 Days (Days 8–14)","w2")}
+    <div class="divider"></div>
+    ${ds}
+    ${consol}
+    ${sys}
+    ${cards}
     <button class="btn" onclick="runForecast()" style="margin-top:8px;font-size:11px;padding:9px">↻ Refresh Forecast</button>
   </div>`;
 }
@@ -475,7 +594,6 @@ function rfx(){
 function rhi(){
   let h=`<div class="section">`;
   h+=`<div style="margin-bottom:10px"><button class="btn btn-sm" onclick="togInput()">${SHOW_IN?"▲ Hide Input":"▼ Edit Sales Data"}</button></div>`;
-  
   if(SHOW_IN){
     h+=`<div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:10px">
       <div style="flex:1"><label class="label">Date</label>
@@ -486,10 +604,9 @@ function rhi(){
     <div><label class="label">Sales Data</label>
       <textarea class="input" id="sales-text" rows="4">${SAVED_SALES}</textarea>
     </div>`;
-  } else if(!LOADING){
+  }else if(!LOADING){
     h+=`<button class="btn" onclick="runHistorical()" style="margin-bottom:12px">▶ Run Model for ${SAVED_DATE}</button>`;
   }
-  
   if(LOADING){
     h+=`<div class="progress-wrap">
       <div style="font-size:13px;color:var(--sky);margin-bottom:8px">Fetching weather data…</div>
@@ -497,7 +614,6 @@ function rhi(){
       <div style="font-size:11px;color:var(--muted);margin-top:8px">Parallel fetch · Open-Meteo</div>
     </div>`;
   }
-  
   if(HIST&&!LOADING){
     if(HIST.error)return h+`<div class="err-card">${HIST.error}</div></div>`;
     h+=`<div class="summary-grid">
@@ -514,7 +630,6 @@ function rhi(){
         <div class="summary-val" style="font-size:16px">${f$(HIST.totA)}</div>
       </div>
     </div>`;
-    
     const sorted=[...HIST.rows].sort((a,b)=>(b.weekly||0)-(a.weekly||0));
     sorted.forEach(r=>{
       const key=`h${r.store.id}`;const open=EX[key];const w=r.adj;
@@ -531,17 +646,19 @@ function rhi(){
       </div>`:(open&&r.error?`<div class="expand-body" style="color:#fca5a5;font-size:12px">Error: ${r.error}</div>`:"");
       h+=`<div class="store-card" style="background:${ab(w?w.total:null)}">
         <div class="store-header" onclick="tog('${key}')">
-          <div>
-            <div class="store-id">${r.store.id}</div>
-            <div class="store-name">${r.store.name}</div>
+          <div class="store-left">
+            <div class="store-name">${r.store.num} - ${r.store.name}</div>
             <div class="store-meta">
               <span>DOW ${r.dowW!=null?r.dowW.toFixed(2):"—"}%</span>
               ${w?`<span style="color:${ac(w.total)};font-weight:600">Wthr ${fp(w.total)}</span>`:""}
               ${r.error?`<span style="color:#fca5a5">⚠ ${r.error}</span>`:""}
             </div>
           </div>
+          <div class="store-middle">
+            <div class="store-sales-mid">${f$(r.actual)}</div>
+            <div style="font-size:9px;color:var(--muted);margin-top:2px">actual</div>
+          </div>
           <div class="store-right">
-            <div style="font-size:15px;font-weight:700">${f$(r.actual)}</div>
             ${r.weekly?`<div style="font-size:12px;color:var(--sky)">${f$(r.weekly)}/wk</div>`:""}
             <div style="font-size:12px;color:var(--dim);margin-top:4px">${open?"▲":"▼"}</div>
           </div>
@@ -553,13 +670,6 @@ function rhi(){
     </div>`;
   }
   return h+`</div>`;
-}
-function togInput(){
-  const de=document.getElementById("hist-date");
-  const se=document.getElementById("sales-text");
-  if(de)SAVED_DATE=de.value;
-  if(se)SAVED_SALES=se.value;
-  SHOW_IN=!SHOW_IN;render();
 }
 
 render();
