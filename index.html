@@ -751,9 +751,11 @@ function rbud(){
 
   return`<div class="section">
     <div style="font-size:10px;color:var(--muted);margin-bottom:12px">YTD through ${co}</div>
-    <div style="display:flex;gap:8px;margin-bottom:14px">
-      <button onclick="window.BUD_MODE='as-is';render();" style="flex:1;padding:9px;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid ${BUD_MODE==="as-is"?"rgba(56,189,248,0.5)":"rgba(255,255,255,0.1)"};background:${BUD_MODE==="as-is"?"rgba(56,189,248,0.18)":"transparent"};color:${BUD_MODE==="as-is"?"#38bdf8":"#64748b"}">As-Is</button>
-      <button onclick="window.BUD_MODE='storm';render();" style="flex:1;padding:9px;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid ${BUD_MODE==="storm"?"rgba(165,180,252,0.5)":"rgba(255,255,255,0.1)"};background:${BUD_MODE==="storm"?"rgba(165,180,252,0.15)":"transparent"};color:${BUD_MODE==="storm"?"#a5b4fc":"#64748b"}">⛈ Storm Adjusted</button>
+    <div style="position:sticky;top:97px;z-index:50;background:#080e1a;padding:8px 0;margin-bottom:6px">
+      <div style="display:flex;gap:8px">
+        <button onclick="window.BUD_MODE='as-is';render();" style="flex:1;padding:9px;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid ${BUD_MODE==="as-is"?"rgba(56,189,248,0.5)":"rgba(255,255,255,0.1)"};background:${BUD_MODE==="as-is"?"rgba(56,189,248,0.18)":"transparent"};color:${BUD_MODE==="as-is"?"#38bdf8":"#64748b"}">As-Is</button>
+        <button onclick="window.BUD_MODE='storm';render();" style="flex:1;padding:9px;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid ${BUD_MODE==="storm"?"rgba(165,180,252,0.5)":"rgba(255,255,255,0.1)"};background:${BUD_MODE==="storm"?"rgba(165,180,252,0.15)":"transparent"};color:${BUD_MODE==="storm"?"#a5b4fc":"#64748b"}">⛈ Storm Adjusted</button>
+      </div>
     </div>
     ${BUD_MODE==="storm"?`<div style="background:rgba(165,180,252,0.08);border:1px solid rgba(165,180,252,0.2);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:11px;color:#a5b4fc">⛈ Storm adjustment applied: +$97.5k distributed pro rata (Las Cruces at 35%)</div>`:""}
     ${consolBlock}
