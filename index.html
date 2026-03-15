@@ -17,7 +17,7 @@
   --pos:#4ade80;--neg:#f87171;--neu:#94a3b8;
   --card:rgba(255,255,255,0.03);
 }
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;min-height:100vh;max-width:520px;margin:0 auto;padding-bottom:32px;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;min-height:100vh;max-width:520px;margin:0 auto;padding-bottom:32px;scroll-padding-top:160px;}
 .header{background:linear-gradient(180deg,var(--bg2),var(--bg));border-bottom:1px solid var(--border);padding:14px 16px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
 .logo-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
 .logo-name{font-size:17px;font-weight:800;color:var(--sky);letter-spacing:.12em;}
@@ -754,11 +754,12 @@ function rbud(){
 
   return`<div class="section">
     <div style="font-size:10px;color:var(--muted);margin-bottom:8px">YTD through ${co}</div>
-    <div style="position:sticky;top:97px;z-index:49;background:var(--bg);padding:6px 0 8px;border-bottom:1px solid rgba(255,255,255,0.06)">
+    <div style="height:56px"></div>
+    <div style="position:sticky;top:97px;z-index:49;background:#080e1a;padding:6px 0 8px;border-bottom:1px solid rgba(255,255,255,0.1);margin-top:-56px">
       ${toggle_html}
       ${BUD_MODE==="storm"?`<div style="background:rgba(165,180,252,0.08);border:1px solid rgba(165,180,252,0.2);border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:11px;color:#a5b4fc">⛈ +$97.5k distributed pro rata (Las Cruces at 35%)</div>`:""}
     </div>
-    <div>
+    <div style="padding-top:0px">
     ${consolBlock}
     ${regionBlock("Midwest",mw,"bud_mw",r=>r.region==="Midwest")}
     ${regionBlock("West TX",wtx,"bud_wtx",r=>r.region==="West TX")}
