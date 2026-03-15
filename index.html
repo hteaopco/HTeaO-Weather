@@ -740,12 +740,10 @@ function rbud(){
   const consolStores = EX["bud_all"];
   const consolBlock=`<div style="border-radius:12px;margin-bottom:10px;overflow:hidden;border:1px solid rgba(56,189,248,0.3)">
     <div style="padding:14px 16px;background:rgba(56,189,248,0.06)">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div style="font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.1em;text-transform:uppercase">Consolidated</div>
         <button onclick="tog('bud_all')" style="background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);color:#38bdf8;border-radius:6px;padding:4px 12px;font-size:11px;font-family:inherit;cursor:pointer">${consolStores?"▲ Hide Stores":"▼ All Stores"}</button>
       </div>
-      ${toggle_html}
-      ${BUD_MODE==="storm"?`<div style="background:rgba(165,180,252,0.08);border:1px solid rgba(165,180,252,0.2);border-radius:8px;padding:8px 12px;margin-bottom:8px;font-size:11px;color:#a5b4fc">⛈ +$97.5k distributed pro rata (Las Cruces at 35%)</div>`:""}
       ${metricsGrid(all)}
     </div>
     ${consolStores?`<div style="border-top:1px solid rgba(255,255,255,0.07)">${storeList(()=>true)}</div>`:""}
@@ -782,8 +780,11 @@ function rbud(){
   }
 
   return`<div class="section">
-    <div style="font-size:10px;color:var(--muted);margin-bottom:12px">YTD through ${co}</div>
-
+    <div style="font-size:10px;color:var(--muted);margin-bottom:8px">YTD through ${co}</div>
+    <div style="position:sticky;top:97px;z-index:50;background:#080e1a;padding:6px 0 8px">
+      ${toggle_html}
+      ${BUD_MODE==="storm"?`<div style="background:rgba(165,180,252,0.08);border:1px solid rgba(165,180,252,0.2);border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:11px;color:#a5b4fc">⛈ +$97.5k distributed pro rata (Las Cruces at 35%)</div>`:""}
+    </div>
     ${consolBlock}
     ${regionBlock("Midwest",mw,"bud_mw",r=>r.region==="Midwest")}
     ${regionBlock("West TX",wtx,"bud_wtx",r=>r.region==="West TX")}
