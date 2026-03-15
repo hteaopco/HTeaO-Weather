@@ -451,7 +451,7 @@ function rfx(){
     if(!summary)return"";
     const open=EX[key];
     const storeList=open?`<div class="week-body">
-      ${summary.storeRows.sort((a,b)=>(b.sales||0)-(a.sales||0)).map(r=>`
+      ${summary.storeRows.sort((a,b)=>parseInt(a.store.num)-parseInt(b.store.num)).map(r=>`
         <div class="week-store-row">
           <div class="week-store-name">${r.store.num} - ${r.store.name}</div>
           <div class="week-store-right">
@@ -524,12 +524,7 @@ function rfx(){
   </div>`;
 
   // ── Store cards ──
-  const sorted=[...STORES].sort((a,b)=>{
-    const da=FC.stores[a.id],db=FC.stores[b.id];
-    const va=(da&&!da.error&&da[SEL])?da[SEL].adj.total:-999;
-    const vb=(db&&!db.error&&db[SEL])?db[SEL].adj.total:-999;
-    return vb-va;
-  });
+  const sorted=[...STORES].sort((a,b)=>parseInt(a.num)-parseInt(b.num));
 
   let cards="";
   sorted.forEach(s=>{
@@ -630,7 +625,7 @@ function rhi(){
         <div class="summary-val" style="font-size:16px">${f$(HIST.totA)}</div>
       </div>
     </div>`;
-    const sorted=[...HIST.rows].sort((a,b)=>(b.weekly||0)-(a.weekly||0));
+    const sorted=[...HIST.rows].sort((a,b)=>parseInt(a.store.num)-parseInt(b.store.num));
     sorted.forEach(r=>{
       const key=`h${r.store.id}`;const open=EX[key];const w=r.adj;
       const exp=open&&!r.error&&w?`<div class="expand-body">
