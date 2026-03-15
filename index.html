@@ -165,15 +165,13 @@ const ANNUAL_BUDGET={
 // Monthly seasonality index (Jan=0 .. Dec=11)
 const SEASONALITY=[0.797,0.839,1.014,1.030,1.145,1.156,1.163,1.184,1.039,0.964,0.848,0.821];
 
-// OU Med has its own seasonality (medical campus, less seasonal swing)
-const SEASONALITY_OU_MED=[0.900,0.900,1.000,1.000,1.050,1.100,1.100,1.100,1.000,1.050,0.900,0.900];
-
-// Dynamic weekly base: (Annual Budget × Monthly Seasonality) / 52
-// Call with a date string to get the correct month's base
+// Dynamic weekly base: Monthly Budget / (days in month / 7)
+// Ties directly to monthly budget table — no seasonality index needed
 function getWeeklyBase(storeId, dateStr){
   const mo = new Date(dateStr+"T12:00:00").getMonth(); // 0-indexed
-  const idx = storeId==="011" ? SEASONALITY_OU_MED[mo] : SEASONALITY[mo];
-  return (ANNUAL_BUDGET[storeId] * idx) / 52;
+  const monthlyBud = MONTHLY_BUDGET[storeId][mo];
+  const days = DAYS_IN_MONTH[mo];
+  return monthlyBud / (days / 7);
 }
 function getConsolidatedBase(dateStr){
   return Object.keys(ANNUAL_BUDGET).reduce((sum,id)=>sum+getWeeklyBase(id,dateStr),0);
@@ -935,8 +933,8 @@ function rhi(){
   if(SHOW_IN){
     h+=`<div style="margin-bottom:10px">
       <label class="label">Date</label>
-      <input type="date" class="input" id="hist-date" value="${SAVED_DATE}" style="margin-bottom:10px">
-      <button class="btn" onclick="runHistorical()" style="margin-top:6px">▶ Run Data</button>
+      <input type="date" class="input" id="hist-date" value="${SAVED_DATE}" style="margin-bottom:8px;width:100%">
+      <button class="btn" onclick="runHistorical()" style="width:100%;display:block">▶ Run Data</button>
     </div>`;
   }else if(!LOADING){
     h+=`<button class="btn" onclick="runHistorical()" style="margin-bottom:12px">▶ Run Model for ${SAVED_DATE}</button>`;
@@ -1000,7 +998,7 @@ function rhi(){
             <div style="font-size:18px;font-weight:800;color:${ac((consolDOWWeekly-budgetWeeklyBase)/budgetWeeklyBase*100)}">${consolDOWWeekly>=budgetWeeklyBase?'+':''}${f$(consolDOWWeekly-budgetWeeklyBase)}</div>
           </div>
         </div>
-        <div style="font-size:9px;color:var(--muted);margin-top:4px">Annual budget ÷ 52 × ${MN[new Date(HIST.date+"T12:00:00").getMonth()]} seasonality (${(SEASONALITY[new Date(HIST.date+"T12:00:00").getMonth()]*100).toFixed(1)}%)</div>
+        <div style="font-size:9px;color:var(--muted);margin-top:4px">Monthly budget ÷ (days in month ÷ 7) · ties to monthly budget table</div>
       </div>
       <div class="summary-card" style="grid-column:span 2;background:rgba(56,189,248,0.06);border-color:rgba(56,189,248,0.2)">
         <div class="summary-label" style="color:var(--sky)">📅 Rolling 7-Day Avg Weekly Run Rate</div>
