@@ -983,14 +983,6 @@ function rhi(){
         <div class="summary-val" style="font-size:16px;color:${ac(wthrDiff>0?1:-1)}">${f$(consolWeatherAdjWeekly)}</div>
         <div style="font-size:9px;color:${ac(wthrDiff>0?3:-3)};margin-top:3px">${wthrDiff>=0?'+':''}${f$(wthrDiff)} wthr impact</div>
       </div>
-      <div class="summary-card" style="grid-column:span 2;background:rgba(99,102,241,0.08);border-color:rgba(99,102,241,0.25)">
-        <div class="summary-label" style="color:#a5b4fc">📋 Budget Weekly Base (${MN[new Date(HIST.date+"T12:00:00").getMonth()]})</div>
-        <div style="margin-top:6px">
-          <div style="font-size:9px;color:var(--muted);margin-bottom:3px">Consolidated</div>
-          <div style="font-size:18px;font-weight:800;color:#a5b4fc">${f$(budgetWeeklyBase)}</div>
-        </div>
-        <div style="font-size:9px;color:var(--muted);margin-top:4px">Monthly budget ÷ (days in month ÷ 7) · ties to monthly budget table</div>
-      </div>
       <div class="summary-card" style="grid-column:span 2;background:rgba(56,189,248,0.06);border-color:rgba(56,189,248,0.2)">
         <div class="summary-label" style="color:var(--sky)">📅 Rolling 7-Day Avg Weekly Run Rate</div>
         ${HIST.rolling7?`
@@ -1006,6 +998,14 @@ function rhi(){
         </div>
         <div style="font-size:9px;color:var(--muted);margin-top:5px">Based on ${HIST.rolling7.daysUsed} day${HIST.rolling7.daysUsed===1?'':'s'} · missing days excluded</div>`
         :`<div style="font-size:12px;color:var(--muted);margin-top:6px">Loading prior 6 days…</div>`}
+      </div>
+      <div class="summary-card" style="grid-column:span 2;background:rgba(99,102,241,0.08);border-color:rgba(99,102,241,0.25)">
+        <div class="summary-label" style="color:#a5b4fc">📋 Budget Weekly Base (${MN[new Date(HIST.date+"T12:00:00").getMonth()]})</div>
+        <div style="margin-top:6px">
+          <div style="font-size:9px;color:var(--muted);margin-bottom:3px">Consolidated</div>
+          <div style="font-size:18px;font-weight:800;color:#a5b4fc">${f$(budgetWeeklyBase)}</div>
+        </div>
+        <div style="font-size:9px;color:var(--muted);margin-top:4px">Monthly budget ÷ (days in month ÷ 7) · ties to monthly budget table</div>
       </div>
     </div>
     <div style="height:1px;background:rgba(255,255,255,0.08);margin:6px 0 14px"></div>
@@ -1025,6 +1025,7 @@ function rhi(){
           <div><div style="font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">Implied Weekly</div><div style="font-size:9px;color:var(--dim);margin-top:2px">weather-normalized</div></div>
           <div style="font-size:22px;font-weight:800;color:var(--sky)">${f$(r.weekly)}</div>
         </div>
+        ${budgetBanner}
       </div>`:(open&&r.error?`<div class="expand-body" style="color:#fca5a5;font-size:12px">Error: ${r.error}</div>`:"");
       // ── Budget comparison banner per store ──
       const storeBudgetWeekly = HIST.date ? getWeeklyBase(r.store.id, HIST.date) : null;
@@ -1034,20 +1035,23 @@ function rhi(){
       const implVsBudPct = (storeBudgetWeekly && impliedWeeklyStore) ? (impliedWeeklyStore-storeBudgetWeekly)/storeBudgetWeekly*100 : null;
 
       const budgetBanner = storeBudgetWeekly ? `
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:10px 14px;background:rgba(0,0,0,0.2);border-top:1px solid rgba(255,255,255,0.05)">
-          <div>
-            <div style="font-size:9px;color:var(--muted);margin-bottom:2px">Weekly Budget</div>
-            <div style="font-size:13px;font-weight:700;color:#a5b4fc">${f$(storeBudgetWeekly)}</div>
-          </div>
-          <div>
-            <div style="font-size:9px;color:var(--muted);margin-bottom:2px">DOW Adjusted</div>
-            <div style="font-size:13px;font-weight:700">${f$(dowWeeklyStore)}</div>
-            <div style="font-size:10px;color:${ac(dowVsBudPct)};font-weight:600">${dowVsBudPct!=null?(dowVsBudPct>=0?'+':'')+dowVsBudPct.toFixed(1)+'%':'—'}</div>
-          </div>
-          <div>
-            <div style="font-size:9px;color:var(--muted);margin-bottom:2px">Implied Weekly</div>
-            <div style="font-size:13px;font-weight:700;color:var(--sky)">${f$(impliedWeeklyStore)}</div>
-            <div style="font-size:10px;color:${ac(implVsBudPct)};font-weight:600">${implVsBudPct!=null?(implVsBudPct>=0?'+':'')+implVsBudPct.toFixed(1)+'%':'—'}</div>
+        <div style="background:rgba(56,189,248,0.09);border:1px solid rgba(56,189,248,0.2);border-radius:9px;padding:11px 13px;margin-top:10px">
+          <div style="font-size:9px;color:var(--sky);letter-spacing:.08em;text-transform:uppercase;font-weight:700;margin-bottom:8px">vs Budget</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+            <div>
+              <div style="font-size:9px;color:var(--muted);margin-bottom:2px">Weekly Budget</div>
+              <div style="font-size:14px;font-weight:800;color:#a5b4fc">${f$(storeBudgetWeekly)}</div>
+            </div>
+            <div>
+              <div style="font-size:9px;color:var(--muted);margin-bottom:2px">DOW Adj</div>
+              <div style="font-size:14px;font-weight:800">${f$(dowWeeklyStore)}</div>
+              <div style="font-size:10px;color:${ac(dowVsBudPct)};font-weight:700">${dowVsBudPct!=null?(dowVsBudPct>=0?'+':'')+dowVsBudPct.toFixed(1)+'%':'—'}</div>
+            </div>
+            <div>
+              <div style="font-size:9px;color:var(--muted);margin-bottom:2px">Implied Wkly</div>
+              <div style="font-size:14px;font-weight:800;color:var(--sky)">${f$(impliedWeeklyStore)}</div>
+              <div style="font-size:10px;color:${ac(implVsBudPct)};font-weight:700">${implVsBudPct!=null?(implVsBudPct>=0?'+':'')+implVsBudPct.toFixed(1)+'%':'—'}</div>
+            </div>
           </div>
         </div>` : '';
 
@@ -1070,7 +1074,7 @@ function rhi(){
             <div style="font-size:9px;color:var(--muted);margin-top:1px">DOW only</div>
             <div style="font-size:12px;color:var(--dim);margin-top:4px">${open?"▲":"▼"}</div>
           </div>
-        </div>${exp}${budgetBanner}</div>`;
+        </div>${exp}</div>`;
     });
     // totals appended after storeListHtml
     const totalsHtml=`<div class="totals">
