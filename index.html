@@ -600,121 +600,144 @@ function rbud(){
   const co=YTD_CUTOFF;
   const coDate=new Date(co+"T12:00:00");
   const moName=MN[coDate.getMonth()];
-  const stores=STORES;
+  if(typeof BUD_MODE==="undefined") window.BUD_MODE="as-is";
 
   // Compute all store metrics
-  const rows=stores.map(s=>{
+  const rows=STORES.map(s=>{
     const act=YTD_ACTUAL[s.id]||0;
     const bud=getYTDBudget(s.id,co);
     const storm=STORM_IMPACT[s.id]||0;
-    const adjAct=act+storm;
-    const varD=act-bud;
+    const displayAct=BUD_MODE==="storm"?act+storm:act;
+    const varD=displayAct-bud;
     const varP=bud?varD/bud*100:0;
-    const fyFcst=getFullYearForecast(s.id,co);
+    const fyFcst=getFullYearForecast(s.id,co,BUD_MODE==="storm");
     const fyBud=getFullYearBudget(s.id);
     const fyVarD=fyFcst-fyBud;
     const fyVarP=fyBud?fyVarD/fyBud*100:0;
     const region=WEST_TX.has(s.id)?"West TX":"Midwest";
-    return{s,act,bud,storm,adjAct,varD,varP,fyFcst,fyBud,fyVarD,fyVarP,region};
+    return{s,act,bud,storm,displayAct,varD,varP,fyFcst,fyBud,fyVarD,fyVarP,region};
   });
 
-  // Region totals
-  function regionTotal(filter){
-    const filtered=rows.filter(r=>filter(r));
+  // Region summary
+  function regionSum(filter){
+    const f=rows.filter(filter);
     return{
-      act:filtered.reduce((a,r)=>a+r.act,0),
-      bud:filtered.reduce((a,r)=>a+r.bud,0),
-      storm:filtered.reduce((a,r)=>a+r.storm,0),
-      fyFcst:filtered.reduce((a,r)=>a+r.fyFcst,0),
-      fyBud:filtered.reduce((a,r)=>a+r.fyBud,0),
+      act:f.reduce((a,r)=>a+r.displayAct,0),
+      bud:f.reduce((a,r)=>a+r.bud,0),
+      storm:f.reduce((a,r)=>a+r.storm,0),
+      fyFcst:f.reduce((a,r)=>a+r.fyFcst,0),
+      fyBud:f.reduce((a,r)=>a+r.fyBud,0),
     };
   }
-  const all=regionTotal(()=>true);
-  const mw=regionTotal(r=>r.region==="Midwest");
-  const wtx=regionTotal(r=>r.region==="West TX");
+  const all=regionSum(()=>true);
+  const mw=regionSum(r=>r.region==="Midwest");
+  const wtx=regionSum(r=>r.region==="West TX");
 
-  function varColor(pct){return pct>2?"#4ade80":pct>-2?"#94a3b8":pct>-8?"#fca5a5":"#f87171";}
-  function varBg(pct){return pct>2?"rgba(74,222,128,0.10)":pct>-2?"var(--card)":pct>-8?"rgba(252,165,165,0.08)":"rgba(248,113,113,0.12)";}
+  function vc(p){return p>2?"#4ade80":p>-2?"#94a3b8":p>-8?"#fca5a5":"#f87171";}
+  function vb(p){return p>2?"rgba(74,222,128,0.10)":p>-2?"var(--card)":p>-8?"rgba(252,165,165,0.08)":"rgba(248,113,113,0.12)";}
+  function varStr(v){return(v>=0?"+":"")+f$(v);}
+  function pctStr(p){return(p>=0?"+":"")+p.toFixed(1)+"%";}
 
-  function regionBlock(label, data, key){
+  // ── Summary bar: 2-row layout ──────────────────────────────────────────
+  function summaryBar(label, data, key, borderColor){
     const varD=data.act-data.bud;
     const varP=data.bud?varD/data.bud*100:0;
     const fyVarD=data.fyFcst-data.fyBud;
     const fyVarP=data.fyBud?fyVarD/data.fyBud*100:0;
     const open=EX[key];
-    const storeRows=rows.filter(r=>label==="Consolidated"||r.region===(label==="Midwest"?"Midwest":"West TX"));
-    const detail=open?`<div style="border-top:1px solid rgba(255,255,255,0.07)">
-      ${storeRows.map(r=>`
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.04);background:${varBg(r.varP)}" onclick="tog('${key}_${r.s.id}')">
-          <div style="flex:1">
-            <div style="font-size:12px;font-weight:700;color:var(--text)">${r.s.num} - ${r.s.name}</div>
-            <div style="font-size:9px;color:var(--muted);margin-top:2px">${r.region}</div>
+
+    const storeList=open?`<div style="border-top:1px solid rgba(255,255,255,0.07)">
+      ${rows.filter(r=>label==="Consolidated"||r.region===(label==="Midwest"?"Midwest":"West TX")).map(r=>`
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.04);background:${vb(r.varP)};cursor:pointer" onclick="tog('bds_${r.s.id}')">
+            <div style="flex:1.2">
+              <div style="font-size:12px;font-weight:700;color:var(--text)">${r.s.num} - ${r.s.name}</div>
+              <div style="font-size:9px;color:var(--muted);margin-top:1px">${r.region}</div>
+            </div>
+            <div style="flex:1;text-align:center">
+              <div style="font-size:10px;color:var(--muted)">Actual</div>
+              <div style="font-size:13px;font-weight:700">${f$(r.displayAct)}</div>
+              <div style="font-size:10px;color:${vc(r.varP)};font-weight:600">${pctStr(r.varP)}</div>
+            </div>
+            <div style="flex:1;text-align:center">
+              <div style="font-size:10px;color:var(--muted)">FY Fcst</div>
+              <div style="font-size:13px;font-weight:700;color:var(--sky)">${f$(r.fyFcst)}</div>
+              <div style="font-size:10px;color:${vc(r.fyVarP)};font-weight:600">${pctStr(r.fyVarP)}</div>
+            </div>
+            <div style="font-size:11px;color:var(--dim);margin-left:8px">${EX["bds_"+r.s.id]?"▲":"▼"}</div>
           </div>
-          <div style="text-align:center;flex:1">
-            <div style="font-size:11px;color:var(--muted);margin-bottom:2px">YTD Actual</div>
-            <div style="font-size:13px;font-weight:700">${f$(r.act)}</div>
-            <div style="font-size:10px;color:${varColor(r.varP)};font-weight:600">${r.varP>=0?"+":""}${r.varP.toFixed(1)}% vs bud</div>
-          </div>
-          <div style="text-align:right;flex:1">
-            <div style="font-size:11px;color:var(--muted);margin-bottom:2px">FY Forecast</div>
-            <div style="font-size:13px;font-weight:700;color:var(--sky)">${f$(r.fyFcst)}</div>
-            <div style="font-size:10px;color:${varColor(r.fyVarP)};font-weight:600">${r.fyVarP>=0?"+":""}${r.fyVarP.toFixed(1)}% vs bud</div>
-          </div>
+          ${EX["bds_"+r.s.id]?`<div style="padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(0,0,0,0.15)">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+              <div class="comp-card"><div class="comp-label">YTD Budget</div><div class="comp-val" style="font-size:12px">${f$(r.bud)}</div></div>
+              <div class="comp-card"><div class="comp-label">YTD Δ $</div><div class="comp-val" style="font-size:12px;color:${vc(r.varP)}">${varStr(r.varD)}</div></div>
+              <div class="comp-card"><div class="comp-label">YTD Δ %</div><div class="comp-val" style="font-size:12px;color:${vc(r.varP)}">${pctStr(r.varP)}</div></div>
+              <div class="comp-card"><div class="comp-label">FY Budget</div><div class="comp-val" style="font-size:12px">${f$(r.fyBud)}</div></div>
+              <div class="comp-card"><div class="comp-label">FY Δ $</div><div class="comp-val" style="font-size:12px;color:${vc(r.fyVarP)}">${varStr(r.fyVarD)}</div></div>
+              <div class="comp-card"><div class="comp-label">FY Δ %</div><div class="comp-val" style="font-size:12px;color:${vc(r.fyVarP)}">${pctStr(r.fyVarP)}</div></div>
+              ${BUD_MODE==="as-is"?`<div class="comp-card" style="grid-column:span 3;background:rgba(165,180,252,0.08)"><div class="comp-label" style="color:#a5b4fc">⛈ Storm Impact (excluded)</div><div class="comp-val" style="font-size:12px;color:#a5b4fc">+${f$(r.storm)}</div></div>`:""}
+            </div>
+          </div>`:""}
         </div>
-        ${EX[key+"_"+r.s.id]?`<div style="padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(0,0,0,0.15)">
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-            <div class="comp-card"><div class="comp-label">YTD Budget</div><div class="comp-val" style="font-size:13px">${f$(r.bud)}</div></div>
-            <div class="comp-card"><div class="comp-label">$ Variance</div><div class="comp-val" style="font-size:13px;color:${varColor(r.varP)}">${r.varD>=0?"+":""}${f$(r.varD)}</div></div>
-            <div class="comp-card"><div class="comp-label">Storm Adj</div><div class="comp-val" style="font-size:13px;color:#a5b4fc">+${f$(r.storm)}</div><div class="comp-sub">adj actual: ${f$(r.adjAct)}</div></div>
-            <div class="comp-card"><div class="comp-label">FY Budget</div><div class="comp-val" style="font-size:13px">${f$(r.fyBud)}</div></div>
-            <div class="comp-card"><div class="comp-label">FY $ Var</div><div class="comp-val" style="font-size:13px;color:${varColor(r.fyVarP)}">${r.fyVarD>=0?"+":""}${f$(r.fyVarD)}</div></div>
-            <div class="comp-card"><div class="comp-label">FY % Var</div><div class="comp-val" style="font-size:13px;color:${varColor(r.fyVarP)}">${r.fyVarP>=0?"+":""}${r.fyVarP.toFixed(1)}%</div></div>
-          </div>
-        </div>`:""}
       `).join("")}
     </div>`:"";
 
-    return`<div style="border-radius:12px;margin-bottom:10px;overflow:hidden;border:1px solid ${label==="Consolidated"?"rgba(56,189,248,0.3)":"rgba(255,255,255,0.08)"}">
-      <div style="padding:14px 16px;cursor:pointer;background:${label==="Consolidated"?"rgba(56,189,248,0.08)":"rgba(255,255,255,0.03)"}" onclick="tog('${key}')">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start">
-          <div>
-            <div style="font-size:10px;font-weight:700;color:${label==="Consolidated"?"var(--sky)":"var(--muted)"};letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">${label}</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-              <div>
-                <div style="font-size:9px;color:var(--muted);margin-bottom:2px">YTD Actual vs Budget</div>
-                <div style="font-size:20px;font-weight:800">${f$(data.act)}</div>
-                <div style="font-size:11px;color:${varColor(varP)};font-weight:700;margin-top:2px">${varP>=0?"+":""}${varP.toFixed(1)}% · ${varD>=0?"+":""}${f$(varD)}</div>
-              </div>
-              <div>
-                <div style="font-size:9px;color:var(--muted);margin-bottom:2px">Full Year Forecast vs Budget</div>
-                <div style="font-size:20px;font-weight:800;color:var(--sky)">${f$(data.fyFcst)}</div>
-                <div style="font-size:11px;color:${varColor(fyVarP)};font-weight:700;margin-top:2px">${fyVarP>=0?"+":""}${fyVarP.toFixed(1)}% · ${fyVarD>=0?"+":""}${f$(fyVarD)}</div>
-              </div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
-              <div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:6px 10px">
-                <div style="font-size:9px;color:var(--muted)">YTD Budget</div>
-                <div style="font-size:13px;font-weight:700">${f$(data.bud)}</div>
-              </div>
-              <div style="background:rgba(165,180,252,0.1);border-radius:6px;padding:6px 10px">
-                <div style="font-size:9px;color:#a5b4fc">⛈ Storm Adj</div>
-                <div style="font-size:13px;font-weight:700;color:#a5b4fc">+${f$(data.storm)}</div>
-              </div>
-            </div>
-          </div>
-          <div style="font-size:14px;color:var(--dim);margin-left:10px">${open?"▲":"▼"}</div>
+    return`<div style="border-radius:12px;margin-bottom:10px;overflow:hidden;border:1px solid ${borderColor}">
+      <div style="padding:14px 16px;cursor:pointer;background:${label==="Consolidated"?"rgba(56,189,248,0.06)":"rgba(255,255,255,0.03)"}" onclick="tog('${key}')">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+          <div style="font-size:10px;font-weight:700;color:${label==="Consolidated"?"var(--sky)":"var(--muted)"};letter-spacing:.1em;text-transform:uppercase">${label}</div>
+          <div style="font-size:12px;color:var(--dim)">${open?"▲":"▼"}</div>
         </div>
-      </div>${detail}
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+          <div>
+            <div style="font-size:9px;color:var(--muted);margin-bottom:3px">Actual Sales</div>
+            <div style="font-size:16px;font-weight:800">${f$(data.act)}</div>
+          </div>
+          <div>
+            <div style="font-size:9px;color:var(--muted);margin-bottom:3px">Budget Sales</div>
+            <div style="font-size:16px;font-weight:800">${f$(data.bud)}</div>
+          </div>
+          <div>
+            <div style="font-size:9px;color:var(--muted);margin-bottom:3px">Delta $</div>
+            <div style="font-size:16px;font-weight:800;color:${vc(varP)}">${varStr(varD)}</div>
+          </div>
+          <div>
+            <div style="font-size:9px;color:var(--muted);margin-bottom:3px">Delta %</div>
+            <div style="font-size:16px;font-weight:800;color:${vc(varP)}">${pctStr(varP)}</div>
+          </div>
+        </div>
+        <div style="height:1px;background:rgba(255,255,255,0.06);margin-bottom:10px"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px">
+          <div>
+            <div style="font-size:9px;color:var(--muted);margin-bottom:3px">FY Budget</div>
+            <div style="font-size:14px;font-weight:700">${f$(data.fyBud)}</div>
+          </div>
+          <div>
+            <div style="font-size:9px;color:var(--muted);margin-bottom:3px">FY Forecast</div>
+            <div style="font-size:14px;font-weight:700;color:var(--sky)">${f$(data.fyFcst)}</div>
+          </div>
+          <div>
+            <div style="font-size:9px;color:var(--muted);margin-bottom:3px">Delta $</div>
+            <div style="font-size:14px;font-weight:700;color:${vc(fyVarP)}">${varStr(fyVarD)}</div>
+          </div>
+          <div>
+            <div style="font-size:9px;color:var(--muted);margin-bottom:3px">Delta %</div>
+            <div style="font-size:14px;font-weight:700;color:${vc(fyVarP)}">${pctStr(fyVarP)}</div>
+          </div>
+        </div>
+      </div>${storeList}
     </div>`;
   }
 
   return`<div class="section">
-    <div style="font-size:10px;color:var(--muted);letter-spacing:.08em;margin-bottom:14px">
-      YTD through ${co} · Full year forecast based on current tracking rate × remaining budget
+    <div style="font-size:10px;color:var(--muted);margin-bottom:12px">YTD through ${co}</div>
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <button onclick="window.BUD_MODE='as-is';render();" style="flex:1;padding:9px;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid ${BUD_MODE==="as-is"?"rgba(56,189,248,0.5)":"rgba(255,255,255,0.1)"};background:${BUD_MODE==="as-is"?"rgba(56,189,248,0.18)":"transparent"};color:${BUD_MODE==="as-is"?"#38bdf8":"#64748b"}">As-Is</button>
+      <button onclick="window.BUD_MODE='storm';render();" style="flex:1;padding:9px;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid ${BUD_MODE==="storm"?"rgba(165,180,252,0.5)":"rgba(255,255,255,0.1)"};background:${BUD_MODE==="storm"?"rgba(165,180,252,0.15)":"transparent"};color:${BUD_MODE==="storm"?"#a5b4fc":"#64748b"}">⛈ Storm Adjusted</button>
     </div>
-    ${regionBlock("Consolidated",all,"bud_all")}
-    ${regionBlock("Midwest",mw,"bud_mw")}
-    ${regionBlock("West TX",wtx,"bud_wtx")}
+    ${BUD_MODE==="storm"?`<div style="background:rgba(165,180,252,0.08);border:1px solid rgba(165,180,252,0.2);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:11px;color:#a5b4fc">⛈ Storm adjustment applied: +$97,500 distributed across 20 stores pro rata (Las Cruces at 35%)</div>`:""}
+    ${summaryBar("Consolidated",all,"bud_all","rgba(56,189,248,0.3)")}
+    ${summaryBar("Midwest",mw,"bud_mw","rgba(255,255,255,0.08)")}
+    ${summaryBar("West TX",wtx,"bud_wtx","rgba(255,255,255,0.08)")}
   </div>`;
 }
 
@@ -1078,8 +1101,9 @@ function getFullYearBudget(storeId){
   return MONTHLY_BUDGET[storeId].reduce((a,b)=>a+b,0);
 }
 // Full year forecast: project YTD tracking rate × remaining budget
-function getFullYearForecast(storeId, cutoffStr){
-  const ytdAct=YTD_ACTUAL[storeId]||0;
+// stormAdj=true adds storm impact to YTD actual before projecting
+function getFullYearForecast(storeId, cutoffStr, stormAdj){
+  const ytdAct=(YTD_ACTUAL[storeId]||0)+(stormAdj?(STORM_IMPACT[storeId]||0):0);
   const ytdBud=getYTDBudget(storeId,cutoffStr);
   const remBud=getRemainingBudget(storeId,cutoffStr);
   if(!ytdBud) return ytdAct+remBud;
