@@ -242,10 +242,9 @@ function rainTier(mm){
 }
 
 // ── DOW lookup helper ──────────────────────────────────────────────────────
-// DOW array: index 0 = placeholder, 1=Sun, 2=Mon ... 7=Sat
-// JS getDay() returns 0 for Sunday, so we need to remap: 0→1, 1→2 ... 6→7
-function dowIdx(jsDay){ return jsDay===0?1:jsDay; }
-function getDOW(storeId, jsDay){ return (DOW[storeId]||[])[dowIdx(jsDay)]||0; }
+// DOW array: [Sun, Mon, Tue, Wed, Thu, Fri, Sat] = indices 0-6
+// JS getDay() = 0=Sun, 1=Mon ... 6=Sat — maps directly, no remapping needed
+function getDOW(storeId, jsDay){ const v=(DOW[storeId]||[])[jsDay]; return(v==null||v===undefined)?0:v; }
 
 // ── Store hours ─────────────────────────────────────────────────────────────
 // Mon-Fri: 6am-8pm | Sat: 7am-8pm | Sun: 11am-8pm
@@ -445,68 +444,6 @@ async function runForecast(){
 }
 
 
-// ── Rolling 7-day fetch ────────────────────────────────────────────────────
-async function fetchRolling7(baseDate){
-  // Get prior 6 days dates
-  const dates=[];
-  const base=new Date(baseDate+"T12:00:00");
-  for(let i=6;i>=1;i--){
-    const d=new Date(base);
-    d.setDate(d.getDate()-i);
-    dates.push(d.toISOString().split("T")[0]);
-  }
-
-  // For each prior day, fetch weather for all stores in parallel
-  // Use a sample of stores to get weather (use first store per unique station)
-  // Actually fetch consolidated: use DOW+weather model on weekly baselines
-  const dayResults=[];
-  for(const date of dates){
-    try{
-      // Fetch weather for all stores in parallel for this date
-      const promises=STORES.map(s=>{
-        const url=`https://archive-api.open-meteo.com/v1/archive?latitude=${s.lat}&longitude=${s.lon}`+
-          `&start_date=${date}&end_date=${date}`+
-          `&daily=temperature_2m_mean,precipitation_sum,cloudcover_mean`+
-          `&timezone=${encodeURIComponent(s.tz)}`;
-        const timeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")),12000));
-        return Promise.race([fetch(url).then(r=>r.json()),timeout]).catch(e=>({error:e.message}));
-      });
-      const raw=await Promise.all(promises);
-      const jsDay=new Date(date+"T12:00:00").getDay();
-
-      // Compute consolidated DOW weekly for this day
-      let consolDOW=0, consolWeatherAdj=0, storeCount=0;
-      STORES.forEach((s,i)=>{
-        const d=raw[i];
-        if(!d||d.error||!d.daily)return;
-        const rh=d.hourly;
-        const rtArr=rh&&rh.temperature_2m&&rh.temperature_2m.length?rh.temperature_2m:null;
-        const rclArr=rh&&rh.cloudcover&&rh.cloudcover.length?rh.cloudcover:null;
-        const rprArr=rh&&rh.precipitation&&rh.precipitation.length?rh.precipitation:null;
-        const rtFd=C2F(d.daily.temperature_2m_mean&&d.daily.temperature_2m_mean[0]!=null?d.daily.temperature_2m_mean[0]:20);
-        const rcld=d.daily.cloudcover_mean&&d.daily.cloudcover_mean[0]!=null?d.daily.cloudcover_mean[0]:0;
-        const rrad=d.daily.precipitation_sum&&d.daily.precipitation_sum[0]!=null?d.daily.precipitation_sum[0]:0;
-        const dowW=getDOW(s.id,jsDay);
-        if(!dowW)return;
-        const dowWeekly=getWeeklyBase(s.id,date);
-        const adj=(rtArr&&rtArr.length)?
-          calcHourly(s.id,rtArr,rclArr,rprArr,date):
-          calc(s.id,rtFd,rcld,rrad,date);
-        // Weather-normalized weekly
-        const wthrNormWeekly=dowWeekly/(1+adj.total/100);
-        consolDOW+=dowWeekly;
-        consolWeatherAdj+=wthrNormWeekly;
-        storeCount++;
-      });
-      if(storeCount>0){
-        dayResults.push({date,consolDOW,consolWeatherAdj,storeCount});
-      }
-    }catch(e){
-      // Skip this day if fetch fails
-    }
-  }
-  return dayResults;
-}
 
 async function runHistorical(){
   const de=document.getElementById("hist-date");
@@ -553,27 +490,63 @@ async function runHistorical(){
     // Per-store dynamic weekly base for rolling avg
     const getStoreDynBase=(sid)=>getWeeklyBase(sid,date);
 
-    // Compute rolling avg from actual sales by date (no model estimates)
+    // ── L7: fetch weather for all 7 days, compute actual vs weather-normalized ──
     let rolling7=null;
     try{
       const dateKeys=Object.keys(salesByDate).sort();
-      if(dateKeys.length>1){
-        const dayWeeklies=[];
-        dateKeys.forEach(dk=>{
-          const dayMap=salesByDate[dk];
-          const d=new Date(dk+"T12:00:00");
-          const jsDay=d.getDay();
-          let consolDOW=0,storeCount=0;
-          Object.keys(dayMap).forEach(sid=>{
-            const act=dayMap[sid];
-            const dw=getDOW(sid,jsDay);
-            if(dw>0){consolDOW+=act/(dw/100);storeCount++;}
+      if(dateKeys.length>0){
+        // Build list of all dates to fetch (pasted dates + fill back to 7 days)
+        const allDates=[];
+        for(let i=6;i>=0;i--){
+          const d=new Date(date+"T12:00:00");
+          d.setDate(d.getDate()-i);
+          allDates.push(d.toISOString().split("T")[0]);
+        }
+        // Fetch weather for all stores × all 7 days in parallel
+        const weatherByDate={};
+        await Promise.all(allDates.map(async dt=>{
+          const promises=STORES.map(s=>fetchArchive(s,dt).catch(()=>null));
+          const results=await Promise.all(promises);
+          weatherByDate[dt]={};
+          STORES.forEach((s,i)=>{ weatherByDate[dt][s.id]=results[i]; });
+        }));
+        // Compute L7 actual and weather-normalized for each day
+        let l7Actual=0, l7WthrNorm=0, daysUsed=0;
+        allDates.forEach(dt=>{
+          const dayMap=salesByDate[dt];
+          if(!dayMap) return; // no sales data for this day
+          const jsDay=new Date(dt+"T12:00:00").getDay();
+          let dayActual=0, dayNorm=0, storeCount=0;
+          STORES.forEach(s=>{
+            const act=dayMap[s.id];
+            if(act==null||act<=0) return;
+            const wData=weatherByDate[dt]&&weatherByDate[dt][s.id];
+            let adj=null;
+            if(wData&&!wData.error){
+              const h=wData.hourly;
+              const tArr=h&&h.temperature_2m&&h.temperature_2m.length?h.temperature_2m:null;
+              const clArr=h&&h.cloudcover&&h.cloudcover.length?h.cloudcover:null;
+              const prArr=h&&h.precipitation&&h.precipitation.length?h.precipitation:null;
+              const tFd=wData.daily&&wData.daily.temperature_2m_mean&&wData.daily.temperature_2m_mean[0]!=null?wData.daily.temperature_2m_mean[0]:20;
+              const cld=wData.daily&&wData.daily.cloudcover_mean&&wData.daily.cloudcover_mean[0]!=null?wData.daily.cloudcover_mean[0]:0;
+              const rad=wData.daily&&wData.daily.precipitation_sum&&wData.daily.precipitation_sum[0]!=null?wData.daily.precipitation_sum[0]:0;
+              adj=(tArr&&tArr.length)?calcHourly(s.id,tArr,clArr,prArr,dt):calc(s.id,C2F(tFd),cld,rad,dt);
+            }
+            dayActual+=act;
+            // Weather-normalize: actual / (1 + weatherAdj/100)
+            const norm=adj?act/(1+adj.total/100):act;
+            dayNorm+=norm;
+            storeCount++;
           });
-          if(consolDOW>0) dayWeeklies.push(consolDOW);
+          if(storeCount>0){
+            l7Actual+=dayActual;
+            l7WthrNorm+=dayNorm;
+            daysUsed++;
+          }
         });
-        if(dayWeeklies.length>0){
-          const avgDOW=dayWeeklies.reduce((a,b)=>a+b,0)/dayWeeklies.length;
-          rolling7={avgDOW,avgWthr:avgDOW,daysUsed:dayWeeklies.length};
+        if(daysUsed>0){
+          const wthrImpact=l7Actual-l7WthrNorm;
+          rolling7={l7Actual,l7WthrNorm,wthrImpact,daysUsed};
         }
       }
     }catch(e){rolling7=null;}
@@ -974,7 +947,7 @@ function rhi(){
     h+=`<div class="progress-wrap">
       <div style="font-size:13px;color:var(--sky);margin-bottom:8px">Fetching weather data…</div>
       <div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div>
-      <div style="font-size:11px;color:var(--muted);margin-top:8px">Today + 6 prior days · Open-Meteo</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:8px">Fetching weather for 7 days × 20 stores…</div>
     </div>`;
   }
   if(HIST&&!LOADING){
@@ -1015,14 +988,24 @@ function rhi(){
         <div style="font-size:9px;color:${ac(wthrDiff>0?3:-3)};margin-top:3px">${wthrDiff>=0?'+':''}${f$(wthrDiff)} wthr impact</div>
       </div>
       <div class="summary-card" style="grid-column:span 2;background:rgba(56,189,248,0.06);border-color:rgba(56,189,248,0.2)">
-        <div class="summary-label" style="color:var(--sky)">📅 Rolling 7-Day Avg Weekly Run Rate</div>
+        <div class="summary-label" style="color:var(--sky)">📅 Last 7 Days</div>
         ${HIST.rolling7?`
-        <div style="margin-top:6px">
-          <div style="font-size:9px;color:var(--muted);margin-bottom:3px">Avg DOW-Implied Weekly</div>
-          <div style="font-size:22px;font-weight:800;color:var(--sky)">${f$(HIST.rolling7.avgDOW)}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px">
+          <div>
+            <div style="font-size:9px;color:var(--muted);margin-bottom:3px">L7 Actual</div>
+            <div style="font-size:16px;font-weight:800">${f$(HIST.rolling7.l7Actual)}</div>
+          </div>
+          <div>
+            <div style="font-size:9px;color:var(--muted);margin-bottom:3px">Weather Normalized</div>
+            <div style="font-size:16px;font-weight:800;color:var(--sky)">${f$(HIST.rolling7.l7WthrNorm)}</div>
+          </div>
+          <div>
+            <div style="font-size:9px;color:var(--muted);margin-bottom:3px">Wthr $ Impact</div>
+            <div style="font-size:16px;font-weight:800;color:${ac(HIST.rolling7.wthrImpact)}">${HIST.rolling7.wthrImpact>=0?'+':''}${f$(HIST.rolling7.wthrImpact)}</div>
+          </div>
         </div>
-        <div style="font-size:9px;color:var(--muted);margin-top:5px">From actual sales · ${HIST.rolling7.daysUsed} day${HIST.rolling7.daysUsed===1?'':'s'} pasted · days with no data excluded</div>`
-        :`<div style="font-size:12px;color:var(--muted);margin-top:6px">Paste multiple days of sales data to see rolling avg</div>`}
+        <div style="font-size:9px;color:var(--muted);margin-top:6px">${HIST.rolling7.daysUsed} days with sales data · weather fetched per store</div>`
+        :`<div style="font-size:12px;color:var(--muted);margin-top:6px">Fetching weather for 7 days…</div>`}
       </div>
       <div class="summary-card" style="grid-column:span 2;background:rgba(99,102,241,0.08);border-color:rgba(99,102,241,0.25)">
         <div class="summary-label" style="color:#a5b4fc">📋 Budget Weekly Base (${MN[new Date(HIST.date+"T12:00:00").getMonth()]})</div>
