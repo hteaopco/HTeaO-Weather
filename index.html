@@ -241,6 +241,12 @@ function rainTier(mm){
   return       {n:"Heavy",   a:-0.20};
 }
 
+// ── DOW lookup helper ──────────────────────────────────────────────────────
+// DOW array: index 0 = placeholder, 1=Sun, 2=Mon ... 7=Sat
+// JS getDay() returns 0 for Sunday, so we need to remap: 0→1, 1→2 ... 6→7
+function dowIdx(jsDay){ return jsDay===0?1:jsDay; }
+function getDOW(storeId, jsDay){ return (DOW[storeId]||[])[dowIdx(jsDay)]||0; }
+
 // ── Store hours ─────────────────────────────────────────────────────────────
 // Mon-Fri: 6am-8pm | Sat: 7am-8pm | Sun: 11am-8pm
 function getHours(dateStr){
@@ -311,7 +317,7 @@ function calc(sid,tF,cl,ra,dateStr){
 // Get projected daily sales for a store on a given day
 function projectedDailySales(store, dateStr, weatherAdj){
   const jsDay=new Date(dateStr+"T12:00:00").getDay();
-  const dowW=DOW[store.id][jsDay];
+  const dowW=getDOW(store.id,jsDay);
   if(!dowW)return null;
   const weeklyBase=getWeeklyBase(store.id, dateStr);
   const dailyBase=weeklyBase*(dowW/100);
@@ -348,24 +354,34 @@ function ab(v){
          v>-2?"var(--card)":v>-4?"rgba(252,165,165,0.10)":"rgba(248,113,113,0.15)";
 }
 function parseSales(txt){
-  const m={};
+  // Returns {byStore, byDate} where byDate={dateStr:{storeId:sales}}
+  const byStore={};
+  const byDate={};
   (txt||"").trim().split("\n").forEach(l=>{
     const p=l.split("\t");if(p.length<3)return;
     const mm=p[1]&&p[1].trim().match(/^(\d+)/);if(!mm)return;
     const id=String(parseInt(mm[1])).padStart(3,"0");
-    const v=parseFloat(p[2]);if(!isNaN(v))m[id]=v;
+    const v=parseFloat(p[2]);if(isNaN(v))return;
+    // Parse date from col 0 (format: M-D-YYYY or YYYY-MM-DD)
+    const rawDate=p[0].trim();
+    let dateKey=rawDate;
+    const mdY=rawDate.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+    if(mdY) dateKey=`${mdY[3]}-${mdY[1].padStart(2,'0')}-${mdY[2].padStart(2,'0')}`;
+    if(!byDate[dateKey]) byDate[dateKey]={};
+    byDate[dateKey][id]=v;
+    byStore[id]=v; // keep last date's value for single-day use
   });
-  return m;
+  return {byStore, byDate};
 }
 function wkly(actual,sid,dow,wadj){
-  const w=DOW[sid][dow];
+  const w=getDOW(sid,dow);
   if(!w)return null;
   return(actual/(1+wadj/100))/(w/100);
 }
 
 // ── State ──────────────────────────────────────────────────────────────────
 let MODE="forecast",FC=null,HIST=null,SEL=0,EX={},LOADING=false,SHOW_IN=true;
-let SAVED_DATE="2026-03-14",SAVED_SALES="3-14-2026\t02 - The Village\t3645.95\n3-14-2026\t04 - SW OKC\t2945.77\n3-14-2026\t05 - Uptown\t1697.33\n3-14-2026\t06 - Norman1\t2034.79\n3-14-2026\t01 - Yukon\t2274.58\n3-14-2026\t07 - Shawnee\t2554.11\n3-14-2026\t03 - Bartlesville\t4089.92\n3-14-2026\t08 - Duncan\t2163.96\n3-14-2026\t09 - Lawton\t2401.65\n3-14-2026\t18 - Hutchinson\t4143.25\n3-14-2026\t10 - Chickasha\t1975.22\n3-14-2026\t20 - Hereford\t2302.28\n3-14-2026\t14 - Webb City\t1599.49\n3-14-2026\t13 - Norman2\t1690.06\n3-14-2026\t11 - OU Med\t0\n3-14-2026\t12 - Moore\t1850.61\n3-14-2026\t15 - Pecos\t2504.8\n3-14-2026\t17 - Las Cruces\t6457.88\n3-14-2026\t19 - Clovis\t5991.26\n3-14-2026\t16 - Carlsbad\t4869.08";
+let SAVED_DATE="2026-03-14",SAVED_SALES="3-8-2026\t01 - Yukon\t2010.16\n3-8-2026\t02 - The Village\t2845.23\n3-8-2026\t03 - Bartlesville\t3282.56\n3-8-2026\t04 - SW OKC\t2550.63\n3-8-2026\t05 - Uptown\t1224.00\n3-8-2026\t06 - Norman1\t1927.51\n3-8-2026\t07 - Shawnee\t2365.23\n3-8-2026\t08 - Duncan\t1493.10\n3-8-2026\t09 - Lawton\t2213.47\n3-8-2026\t10 - Chickasha\t1595.31\n3-8-2026\t11 - OU Med\t0.00\n3-8-2026\t12 - Moore\t1601.99\n3-8-2026\t13 - Norman2\t1819.77\n3-8-2026\t14 - Webb City\t1385.30\n3-8-2026\t15 - Pecos\t2348.38\n3-8-2026\t16 - Carlsbad\t3513.37\n3-8-2026\t17 - Las Cruces\t4928.98\n3-8-2026\t18 - Hutchinson\t4039.49\n3-8-2026\t19 - Clovis\t4628.40\n3-8-2026\t20 - Hereford\t2171.79\n3-9-2026\t01 - Yukon\t1669.13\n3-9-2026\t02 - The Village\t2661.10\n3-9-2026\t03 - Bartlesville\t2579.52\n3-9-2026\t04 - SW OKC\t1782.48\n3-9-2026\t05 - Uptown\t1398.55\n3-9-2026\t06 - Norman1\t1938.33\n3-9-2026\t07 - Shawnee\t1844.32\n3-9-2026\t08 - Duncan\t1655.76\n3-9-2026\t09 - Lawton\t1511.18\n3-9-2026\t10 - Chickasha\t1867.03\n3-9-2026\t11 - OU Med\t882.32\n3-9-2026\t12 - Moore\t1636.57\n3-9-2026\t13 - Norman2\t1507.28\n3-9-2026\t14 - Webb City\t1112.87\n3-9-2026\t15 - Pecos\t2436.88\n3-9-2026\t16 - Carlsbad\t2896.09\n3-9-2026\t17 - Las Cruces\t4151.48\n3-9-2026\t18 - Hutchinson\t3160.57\n3-9-2026\t19 - Clovis\t4736.52\n3-9-2026\t20 - Hereford\t1945.17\n3-10-2026\t01 - Yukon\t1574.68\n3-10-2026\t02 - The Village\t2256.88\n3-10-2026\t03 - Bartlesville\t2429.58\n3-10-2026\t04 - SW OKC\t2074.30\n3-10-2026\t05 - Uptown\t1295.44\n3-10-2026\t06 - Norman1\t1826.20\n3-10-2026\t07 - Shawnee\t1870.59\n3-10-2026\t08 - Duncan\t1440.26\n3-10-2026\t09 - Lawton\t1855.11\n3-10-2026\t10 - Chickasha\t1657.44\n3-10-2026\t11 - OU Med\t1139.33\n3-10-2026\t12 - Moore\t1515.44\n3-10-2026\t13 - Norman2\t1305.90\n3-10-2026\t14 - Webb City\t922.10\n3-10-2026\t15 - Pecos\t2595.74\n3-10-2026\t16 - Carlsbad\t3246.10\n3-10-2026\t17 - Las Cruces\t3559.94\n3-10-2026\t18 - Hutchinson\t2786.10\n3-10-2026\t19 - Clovis\t3778.91\n3-10-2026\t20 - Hereford\t2243.68\n3-11-2026\t01 - Yukon\t1678.27\n3-11-2026\t02 - The Village\t2466.59\n3-11-2026\t03 - Bartlesville\t2414.71\n3-11-2026\t04 - SW OKC\t2205.73\n3-11-2026\t05 - Uptown\t1299.60\n3-11-2026\t06 - Norman1\t1556.40\n3-11-2026\t07 - Shawnee\t2006.84\n3-11-2026\t08 - Duncan\t1641.29\n3-11-2026\t09 - Lawton\t1852.01\n3-11-2026\t10 - Chickasha\t1449.82\n3-11-2026\t11 - OU Med\t899.08\n3-11-2026\t12 - Moore\t1497.60\n3-11-2026\t13 - Norman2\t1697.58\n3-11-2026\t14 - Webb City\t643.46\n3-11-2026\t15 - Pecos\t2720.51\n3-11-2026\t16 - Carlsbad\t2641.10\n3-11-2026\t17 - Las Cruces\t5236.01\n3-11-2026\t18 - Hutchinson\t2208.25\n3-11-2026\t19 - Clovis\t3628.04\n3-11-2026\t20 - Hereford\t1937.44\n3-12-2026\t01 - Yukon\t1687.50\n3-12-2026\t02 - The Village\t2702.53\n3-12-2026\t03 - Bartlesville\t2678.65\n3-12-2026\t04 - SW OKC\t2242.62\n3-12-2026\t05 - Uptown\t1358.64\n3-12-2026\t06 - Norman1\t1755.71\n3-12-2026\t07 - Shawnee\t1853.89\n3-12-2026\t08 - Duncan\t1726.48\n3-12-2026\t09 - Lawton\t1574.35\n3-12-2026\t10 - Chickasha\t1665.25\n3-12-2026\t11 - OU Med\t818.25\n3-12-2026\t12 - Moore\t1647.79\n3-12-2026\t13 - Norman2\t1487.80\n3-12-2026\t14 - Webb City\t937.20\n3-12-2026\t15 - Pecos\t2446.80\n3-12-2026\t16 - Carlsbad\t3233.08\n3-12-2026\t17 - Las Cruces\t4769.66\n3-12-2026\t18 - Hutchinson\t2766.54\n3-12-2026\t19 - Clovis\t4127.23\n3-12-2026\t20 - Hereford\t2005.97\n3-13-2026\t01 - Yukon\t2094.00\n3-13-2026\t02 - The Village\t3248.53\n3-13-2026\t03 - Bartlesville\t2978.15\n3-13-2026\t04 - SW OKC\t2345.42\n3-13-2026\t05 - Uptown\t1660.95\n3-13-2026\t06 - Norman1\t2100.31\n3-13-2026\t07 - Shawnee\t2860.76\n3-13-2026\t08 - Duncan\t1705.60\n3-13-2026\t09 - Lawton\t2094.39\n3-13-2026\t10 - Chickasha\t1802.12\n3-13-2026\t11 - OU Med\t768.99\n3-13-2026\t12 - Moore\t1726.60\n3-13-2026\t13 - Norman2\t1609.49\n3-13-2026\t14 - Webb City\t1296.43\n3-13-2026\t15 - Pecos\t2890.68\n3-13-2026\t16 - Carlsbad\t4613.23\n3-13-2026\t17 - Las Cruces\t6249.17\n3-13-2026\t18 - Hutchinson\t3353.52\n3-13-2026\t19 - Clovis\t5723.79\n3-13-2026\t20 - Hereford\t2659.98\n3-14-2026\t01 - Yukon\t2274.58\n3-14-2026\t02 - The Village\t3645.95\n3-14-2026\t03 - Bartlesville\t4089.92\n3-14-2026\t04 - SW OKC\t2945.77\n3-14-2026\t05 - Uptown\t1697.33\n3-14-2026\t06 - Norman1\t2034.79\n3-14-2026\t07 - Shawnee\t2554.11\n3-14-2026\t08 - Duncan\t2163.96\n3-14-2026\t09 - Lawton\t2401.65\n3-14-2026\t10 - Chickasha\t1975.22\n3-14-2026\t11 - OU Med\t0.00\n3-14-2026\t12 - Moore\t1850.61\n3-14-2026\t13 - Norman2\t1690.06\n3-14-2026\t14 - Webb City\t1599.49\n3-14-2026\t15 - Pecos\t2504.80\n3-14-2026\t16 - Carlsbad\t4869.08\n3-14-2026\t17 - Las Cruces\t6457.88\n3-14-2026\t18 - Hutchinson\t4143.25\n3-14-2026\t19 - Clovis\t5991.26\n3-14-2026\t20 - Hereford\t2302.28";
 
 // ── Fetch ──────────────────────────────────────────────────────────────────
 function fetchStore(store){
@@ -470,7 +486,7 @@ async function fetchRolling7(baseDate){
         const rtFd=C2F(d.daily.temperature_2m_mean&&d.daily.temperature_2m_mean[0]!=null?d.daily.temperature_2m_mean[0]:20);
         const rcld=d.daily.cloudcover_mean&&d.daily.cloudcover_mean[0]!=null?d.daily.cloudcover_mean[0]:0;
         const rrad=d.daily.precipitation_sum&&d.daily.precipitation_sum[0]!=null?d.daily.precipitation_sum[0]:0;
-        const dowW=DOW[s.id][jsDay];
+        const dowW=getDOW(s.id,jsDay);
         if(!dowW)return;
         const dowWeekly=getWeeklyBase(s.id,date);
         const adj=(rtArr&&rtArr.length)?
@@ -499,7 +515,7 @@ async function runHistorical(){
   if(se)SAVED_SALES=se.value;
   LOADING=true;HIST=null;SHOW_IN=false;render();
   const date=SAVED_DATE;
-  const salesMap=parseSales(SAVED_SALES);
+  const parsed=parseSales(SAVED_SALES);const salesMap=parsed.byStore;const salesByDate=parsed.byDate;
   const storesWS=STORES.filter(s=>salesMap[s.id]!=null);
   const jsDay=new Date(date+"T12:00:00").getDay();
   try{
@@ -520,7 +536,7 @@ async function runHistorical(){
           calcHourly(s.id,tArr,clArr,prArr,date):
           calc(s.id,tFd,cld,rad,date);
         const actual=salesMap[s.id];
-        return{store:s,actual,adj,dowW:DOW[s.id][jsDay],weekly:wkly(actual,s.id,jsDay,adj.total)};
+        return{store:s,actual,adj,dowW:getDOW(s.id,jsDay),weekly:wkly(actual,s.id,jsDay,adj.total)};
       }catch(e){return{store:s,actual:salesMap[s.id],error:"Parse: "+e.message};}
     });
     const totA=out.reduce((a,r)=>a+(r.actual||0),0);
@@ -537,16 +553,28 @@ async function runHistorical(){
     // Per-store dynamic weekly base for rolling avg
     const getStoreDynBase=(sid)=>getWeeklyBase(sid,date);
 
-    // Fetch rolling 7-day prior data
+    // Compute rolling avg from actual sales by date (no model estimates)
     let rolling7=null;
     try{
-      const priorDays=await fetchRolling7(date);
-      if(priorDays.length>0){
-        // Include today + prior days
-        const allDays=[{consolDOW:todayDOW,consolWeatherAdj:todayWthrNorm,date},...priorDays];
-        const avgDOW=allDays.reduce((a,d)=>a+d.consolDOW,0)/allDays.length;
-        const avgWthr=allDays.reduce((a,d)=>a+d.consolWeatherAdj,0)/allDays.length;
-        rolling7={avgDOW,avgWthr,daysUsed:allDays.length};
+      const dateKeys=Object.keys(salesByDate).sort();
+      if(dateKeys.length>1){
+        const dayWeeklies=[];
+        dateKeys.forEach(dk=>{
+          const dayMap=salesByDate[dk];
+          const d=new Date(dk+"T12:00:00");
+          const jsDay=d.getDay();
+          let consolDOW=0,storeCount=0;
+          Object.keys(dayMap).forEach(sid=>{
+            const act=dayMap[sid];
+            const dw=getDOW(sid,jsDay);
+            if(dw>0){consolDOW+=act/(dw/100);storeCount++;}
+          });
+          if(consolDOW>0) dayWeeklies.push(consolDOW);
+        });
+        if(dayWeeklies.length>0){
+          const avgDOW=dayWeeklies.reduce((a,b)=>a+b,0)/dayWeeklies.length;
+          rolling7={avgDOW,avgWthr:avgDOW,daysUsed:dayWeeklies.length};
+        }
       }
     }catch(e){rolling7=null;}
 
@@ -986,18 +1014,12 @@ function rhi(){
       <div class="summary-card" style="grid-column:span 2;background:rgba(56,189,248,0.06);border-color:rgba(56,189,248,0.2)">
         <div class="summary-label" style="color:var(--sky)">📅 Rolling 7-Day Avg Weekly Run Rate</div>
         ${HIST.rolling7?`
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
-          <div>
-            <div style="font-size:9px;color:var(--muted);margin-bottom:3px">DOW Avg</div>
-            <div style="font-size:18px;font-weight:800;color:var(--sky)">${f$(HIST.rolling7.avgDOW)}</div>
-          </div>
-          <div>
-            <div style="font-size:9px;color:var(--muted);margin-bottom:3px">Weather-Normalized Avg</div>
-            <div style="font-size:18px;font-weight:800;color:${ac(HIST.rolling7.avgWthr>HIST.rolling7.avgDOW?2:-2)}">${f$(HIST.rolling7.avgWthr)}</div>
-          </div>
+        <div style="margin-top:6px">
+          <div style="font-size:9px;color:var(--muted);margin-bottom:3px">Avg DOW-Implied Weekly</div>
+          <div style="font-size:22px;font-weight:800;color:var(--sky)">${f$(HIST.rolling7.avgDOW)}</div>
         </div>
-        <div style="font-size:9px;color:var(--muted);margin-top:5px">Based on ${HIST.rolling7.daysUsed} day${HIST.rolling7.daysUsed===1?'':'s'} · missing days excluded</div>`
-        :`<div style="font-size:12px;color:var(--muted);margin-top:6px">Loading prior 6 days…</div>`}
+        <div style="font-size:9px;color:var(--muted);margin-top:5px">From actual sales · ${HIST.rolling7.daysUsed} day${HIST.rolling7.daysUsed===1?'':'s'} pasted · days with no data excluded</div>`
+        :`<div style="font-size:12px;color:var(--muted);margin-top:6px">Paste multiple days of sales data to see rolling avg</div>`}
       </div>
       <div class="summary-card" style="grid-column:span 2;background:rgba(99,102,241,0.08);border-color:rgba(99,102,241,0.25)">
         <div class="summary-label" style="color:#a5b4fc">📋 Budget Weekly Base (${MN[new Date(HIST.date+"T12:00:00").getMonth()]})</div>
