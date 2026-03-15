@@ -28,10 +28,10 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .btn{background:var(--sky-dim);border:1px solid var(--sky-border);color:var(--sky);padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:.05em;display:inline-block;width:100%;text-align:center;box-sizing:border-box;}
 .btn:active{opacity:.7;}
 .btn-sm{padding:6px 12px;font-size:11px;background:transparent;border-color:rgba(255,255,255,0.1);color:var(--muted);}
-.input{background:rgba(56,189,248,0.07);border:1px solid rgba(56,189,248,0.2);color:var(--text);padding:10px 12px;border-radius:10px;font-size:14px;font-family:inherit;outline:none;width:100%;box-sizing:border-box;}
+.input{background:rgba(56,189,248,0.07);border:1px solid rgba(56,189,248,0.2);color:var(--text);padding:10px 12px;border-radius:10px;font-size:14px;font-family:inherit;outline:none;width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none;max-width:100%;}
 .label{font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;display:block;}
 textarea.input{resize:vertical;font-family:'Menlo','Courier New',monospace;font-size:11px;line-height:1.6;}
-.section{padding:14px 16px;}
+.section{padding:14px 16px;overflow-x:hidden;}
 .progress-wrap{text-align:center;padding:50px 20px;}
 .progress-bar{background:rgba(255,255,255,0.05);border-radius:6px;height:7px;max-width:280px;margin:12px auto;overflow:hidden;}
 .progress-fill{background:linear-gradient(90deg,#0ea5e9,#38bdf8);height:100%;border-radius:6px;transition:width .4s;}
@@ -931,10 +931,10 @@ function rhi(){
   let h=`<div class="section">`;
   
   if(SHOW_IN){
-    h+=`<div style="margin-bottom:10px;box-sizing:border-box">
+    h+=`<div style="margin-bottom:10px">
       <label class="label">Date</label>
-      <input type="date" class="input" id="hist-date" value="${SAVED_DATE}" style="margin-bottom:8px;width:100%;box-sizing:border-box">
-      <button class="btn" onclick="runHistorical()" style="width:100%;display:block;box-sizing:border-box">▶ Run Data</button>
+      <input type="date" class="input" id="hist-date" value="${SAVED_DATE}" style="margin-bottom:8px;width:calc(100%);max-width:100%;-webkit-appearance:none;appearance:none">
+      <button class="btn" onclick="runHistorical()" style="display:block">▶ Run Data</button>
     </div>`;
   }else if(!LOADING){
     h+=`<button class="btn" onclick="runHistorical()" style="margin-bottom:12px">▶ Run Model for ${SAVED_DATE}</button>`;
@@ -964,10 +964,7 @@ function rhi(){
     const wthrDiff = consolWeatherAdjWeekly - consolDOWWeekly;
 
     h+=`<div class="summary-grid">
-      <div class="summary-card" style="grid-column:span 2">
-        <div class="summary-label">Date</div>
-        <div class="summary-val" style="font-size:15px">${HIST.dayName} · ${HIST.date}</div>
-      </div>
+
       <div class="summary-card">
         <div class="summary-label">Avg Weather Adj</div>
         <div class="summary-val" style="color:${ac(HIST.avgW)}">${fp(HIST.avgW)}</div>
@@ -988,15 +985,9 @@ function rhi(){
       </div>
       <div class="summary-card" style="grid-column:span 2;background:rgba(99,102,241,0.08);border-color:rgba(99,102,241,0.25)">
         <div class="summary-label" style="color:#a5b4fc">📋 Budget Weekly Base (${MN[new Date(HIST.date+"T12:00:00").getMonth()]})</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
-          <div>
-            <div style="font-size:9px;color:var(--muted);margin-bottom:3px">Consolidated</div>
-            <div style="font-size:18px;font-weight:800;color:#a5b4fc">${f$(budgetWeeklyBase)}</div>
-          </div>
-          <div>
-            <div style="font-size:9px;color:var(--muted);margin-bottom:3px">vs DOW Weekly</div>
-            <div style="font-size:18px;font-weight:800;color:${ac((consolDOWWeekly-budgetWeeklyBase)/budgetWeeklyBase*100)}">${consolDOWWeekly>=budgetWeeklyBase?'+':''}${f$(consolDOWWeekly-budgetWeeklyBase)}</div>
-          </div>
+        <div style="margin-top:6px">
+          <div style="font-size:9px;color:var(--muted);margin-bottom:3px">Consolidated</div>
+          <div style="font-size:18px;font-weight:800;color:#a5b4fc">${f$(budgetWeeklyBase)}</div>
         </div>
         <div style="font-size:9px;color:var(--muted);margin-top:4px">Monthly budget ÷ (days in month ÷ 7) · ties to monthly budget table</div>
       </div>
@@ -1017,8 +1008,12 @@ function rhi(){
         :`<div style="font-size:12px;color:var(--muted);margin-top:6px">Loading prior 6 days…</div>`}
       </div>
     </div>
-    <div style="height:1px;background:rgba(255,255,255,0.08);margin:6px 0 14px"></div>`;
+    <div style="height:1px;background:rgba(255,255,255,0.08);margin:6px 0 14px"></div>
+    <button onclick="EX['hist_all']=!EX['hist_all'];render();" style="width:100%;padding:11px;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;box-sizing:border-box;border:1px solid rgba(255,255,255,0.12);background:${EX['hist_all']?'rgba(56,189,248,0.15)':'rgba(255,255,255,0.04)'};color:${EX['hist_all']?'#38bdf8':'#94a3b8'};margin-bottom:10px">${EX['hist_all']?'▲ Collapse All Stores':'▼ Expand All Stores'}</button>
+    \`;
+    // Build store list
     const sorted=[...HIST.rows].sort((a,b)=>parseInt(a.store.num)-parseInt(b.store.num));
+    let storeListHtml='';
     sorted.forEach(r=>{
       const key=`h${r.store.id}`;const open=EX[key];const w=r.adj;
       const exp=open&&!r.error&&w?`<div class="expand-body">
@@ -1032,7 +1027,32 @@ function rhi(){
           <div style="font-size:22px;font-weight:800;color:var(--sky)">${f$(r.weekly)}</div>
         </div>
       </div>`:(open&&r.error?`<div class="expand-body" style="color:#fca5a5;font-size:12px">Error: ${r.error}</div>`:"");
-      h+=`<div class="store-card" style="background:${ab(w?w.total:null)}">
+      // ── Budget comparison banner per store ──
+      const storeBudgetWeekly = HIST.date ? getWeeklyBase(r.store.id, HIST.date) : null;
+      const dowWeeklyStore = r.dowW ? r.actual/(r.dowW/100) : null;
+      const impliedWeeklyStore = r.weekly || null;
+      const dowVsBudPct = (storeBudgetWeekly && dowWeeklyStore) ? (dowWeeklyStore-storeBudgetWeekly)/storeBudgetWeekly*100 : null;
+      const implVsBudPct = (storeBudgetWeekly && impliedWeeklyStore) ? (impliedWeeklyStore-storeBudgetWeekly)/storeBudgetWeekly*100 : null;
+
+      const budgetBanner = storeBudgetWeekly ? `
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:10px 14px;background:rgba(0,0,0,0.2);border-top:1px solid rgba(255,255,255,0.05)">
+          <div>
+            <div style="font-size:9px;color:var(--muted);margin-bottom:2px">Weekly Budget</div>
+            <div style="font-size:13px;font-weight:700;color:#a5b4fc">${f$(storeBudgetWeekly)}</div>
+          </div>
+          <div>
+            <div style="font-size:9px;color:var(--muted);margin-bottom:2px">DOW Adjusted</div>
+            <div style="font-size:13px;font-weight:700">${f$(dowWeeklyStore)}</div>
+            <div style="font-size:10px;color:${ac(dowVsBudPct)};font-weight:600">${dowVsBudPct!=null?(dowVsBudPct>=0?'+':'')+dowVsBudPct.toFixed(1)+'%':'—'}</div>
+          </div>
+          <div>
+            <div style="font-size:9px;color:var(--muted);margin-bottom:2px">Implied Weekly</div>
+            <div style="font-size:13px;font-weight:700;color:var(--sky)">${f$(impliedWeeklyStore)}</div>
+            <div style="font-size:10px;color:${ac(implVsBudPct)};font-weight:600">${implVsBudPct!=null?(implVsBudPct>=0?'+':'')+implVsBudPct.toFixed(1)+'%':'—'}</div>
+          </div>
+        </div>` : '';
+
+      storeListHtml+=`<div class="store-card" style="background:${ab(w?w.total:null)}">
         <div class="store-header" onclick="tog('${key}')">
           <div class="store-left">
             <div class="store-name">${r.store.num} - ${r.store.name}</div>
@@ -1051,12 +1071,17 @@ function rhi(){
             <div style="font-size:9px;color:var(--muted);margin-top:1px">DOW only</div>
             <div style="font-size:12px;color:var(--dim);margin-top:4px">${open?"▲":"▼"}</div>
           </div>
-        </div>${exp}</div>`;
+        </div>${exp}${budgetBanner}</div>`;
     });
-    h+=`<div class="totals">
+    // totals appended after storeListHtml
+    const totalsHtml=`<div class="totals">
       <div class="tr"><span style="font-size:12px;color:var(--muted)">Total Actual Sales</span><span style="font-size:14px;font-weight:700">${f$(HIST.totA)}</span></div>
       <div class="tr"><span style="font-size:12px;color:var(--muted)">Total Implied Weekly</span><span style="font-size:17px;font-weight:800;color:var(--sky)">${f$(HIST.totW)}</span></div>
     </div>`;
+    storeListHtml += totalsHtml;
+    // Now append expand button + store list to h
+    h += `<button onclick="EX['hist_all']=!EX['hist_all'];render();" style="width:100%;padding:11px;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;box-sizing:border-box;border:1px solid rgba(255,255,255,0.12);background:${EX['hist_all']?'rgba(56,189,248,0.15)':'rgba(255,255,255,0.04)'};color:${EX['hist_all']?'#38bdf8':'#94a3b8'};margin-bottom:10px">${EX['hist_all']?'▲ Collapse All Stores':'▼ Expand All Stores'}</button>`;
+    if(EX['hist_all']) h += storeListHtml;
   }
   return h+`</div>`;
 }
