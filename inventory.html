@@ -55,14 +55,10 @@
   /* Divider */
   .divider{height:1px;background:var(--border);margin:16px 0 20px;}
 
-  /* Action cards */
-  .action-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:8px;}
-  .action-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 16px;text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:border-color .2s,background .2s;cursor:pointer;}
-  .action-card:hover{border-color:rgba(56,189,248,0.35);background:rgba(56,189,248,0.04);}
-  .action-card-label{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
-  .action-card-title{font-size:15px;font-weight:800;color:var(--text);line-height:1.2;}
-  .action-card-arrow{font-size:18px;color:var(--sky);margin-top:4px;}
-  @media(max-width:600px){.action-grid{grid-template-columns:1fr;}}
+  /* Action buttons */
+  .action-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;}
+  .action-btn{padding:13px 8px;border-radius:9px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;text-decoration:none;border:1px solid var(--border);background:var(--card);color:var(--text);display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.35;transition:border-color .15s,background .15s;}
+  .action-btn:hover{border-color:rgba(56,189,248,0.4);background:rgba(56,189,248,0.07);color:var(--sky);}
 </style>
 </head>
 <body>
@@ -119,23 +115,11 @@
 
   <div class="divider"></div>
 
-  <!-- 3 Action cards -->
+  <!-- 3 Action buttons -->
   <div class="action-grid">
-    <a class="action-card" href="#TODO_PAR_ORDER_SHEET">
-      <div class="action-card-label">Inventory</div>
-      <div class="action-card-title">Par Order Sheet</div>
-      <div class="action-card-arrow">→</div>
-    </a>
-    <a class="action-card" href="#TODO_ENTER_INVENTORY">
-      <div class="action-card-label">Inventory</div>
-      <div class="action-card-title">Enter Inventory</div>
-      <div class="action-card-arrow">→</div>
-    </a>
-    <a class="action-card" href="#TODO_ORDER_TRACKER">
-      <div class="action-card-label">Inventory</div>
-      <div class="action-card-title">Enter Order Tracker</div>
-      <div class="action-card-arrow">→</div>
-    </a>
+    <a class="action-btn" href="#TODO_PAR_ORDER_SHEET">Par Order<br>Sheet</a>
+    <a class="action-btn" href="#TODO_ENTER_INVENTORY">Enter<br>Inventory</a>
+    <a class="action-btn" href="#TODO_ORDER_TRACKER">Enter Order<br>Tracker</a>
   </div>
 
 </div>
