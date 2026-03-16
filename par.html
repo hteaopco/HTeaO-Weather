@@ -65,8 +65,8 @@
   </div>
   <div class="tabs">
     
-    <div class="tab" onclick="setTab('home')" id="tab-home">Home</div>
-    <div class="tab active" onclick="setTab('waste')" id="tab-waste">Waste</div>
+    <div class="tab active" onclick="setTab('home')" id="tab-home">Home</div>
+    <div class="tab" onclick="setTab('waste')" id="tab-waste">Waste</div>
     <div class="tab" onclick="setTab('gallon')" id="tab-gallon">Gallon<br>Prep</div>
     <div class="tab" onclick="setTab('jugs')" id="tab-jugs">Jugs</div>
   </div>
@@ -155,7 +155,7 @@ const STORES = [
 ];
 
 // ── State ──────────────────────────────────────────────────────────────────
-let MODE = 'waste';
+let MODE = 'home';
 let SEL = '01';
 const DOW = new Date().getDay(); // 0=Sun ... 6=Sat
 const DOW_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
