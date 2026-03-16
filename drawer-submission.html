@@ -25,9 +25,6 @@
   input:focus,select:focus{border-color:rgba(56,189,248,0.5);}
   input.readonly-field{background:rgba(56,189,248,0.06);border-color:rgba(56,189,248,0.2);color:var(--sky);font-weight:700;}
   .name-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-  /* Water sales collapsible */
-  .water-fields{display:none;margin-top:2px;}
-  .water-fields.show{display:block;}
   .currency-table{background:var(--card);border-radius:10px;border:1px solid var(--border);overflow:hidden;margin-bottom:14px;}
   .currency-hdr{display:grid;grid-template-columns:1fr 90px;padding:8px 12px;background:rgba(56,189,248,0.08);border-bottom:1px solid var(--border);}
   .currency-hdr span{font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.08em;text-transform:uppercase;}
@@ -107,31 +104,6 @@
       <input type="number" id="cashTips" placeholder="0.00" step="0.01" min="0">
     </div>
 
-    <div class="field">
-      <label class="label">Did you Deposit Cash Water Sales Today?</label>
-      <select id="waterSales" onchange="toggleWater(this.value)">
-        <option value="No" selected>No</option>
-        <option value="Yes">Yes</option>
-      </select>
-    </div>
-
-    <!-- Water sales fields — hidden unless Yes -->
-    <div class="water-fields" id="waterFields">
-      <div class="field">
-        <label class="label">Value of Bills</label>
-        <input type="number" id="billsIntoDrawers" placeholder="0.00" step="0.01" min="0" oninput="calcWaterTotal()">
-        <div class="field-hint">Add up the total $ amount of bills from water machine</div>
-      </div>
-      <div class="field">
-        <label class="label">Value of Coin</label>
-        <input type="number" id="coinAtBank" placeholder="0.00" step="0.01" min="0" oninput="calcWaterTotal()">
-        <div class="field-hint">Add up the total $ amount of coin from water machine</div>
-      </div>
-      <div class="field">
-        <label class="label">Total Water Sales</label>
-        <input type="number" id="waterTotal" placeholder="0.00" step="0.01" class="readonly-field" readonly>
-      </div>
-    </div>
 
     <button class="btn btn-primary" onclick="go(2)">Next →</button>
   </div>
@@ -157,7 +129,7 @@
       <div class="currency-row"><div class="currency-name">$100 Bills</div><div class="stepper"><button class="stepper-btn" onclick="adj('fl_100',-1)">−</button><div class="stepper-val" id="disp_fl_100">0</div><input type="hidden" id="fl_100" value="0"><button class="stepper-btn" onclick="adj('fl_100',1)">+</button></div></div>
     </div>
     <div class="total-bar"><div class="lbl">Front Left Total</div><div class="val" id="fl_total">$0.00</div></div>
-    <div class="field"><label class="label">Starting Day Amount</label><input type="number" id="fl_start" placeholder="150.00" step="0.01" value="150" oninput="calcDrawerTotal('fl')"></div>
+    <div class="field"><label class="label" style="color:var(--dim)">Starting Day Amount</label><input type="number" id="fl_start" placeholder="150.00" step="0.01" value="150" oninput="calcDrawerTotal('fl')" style="background:rgba(255,255,255,0.02);color:var(--dim);border-color:rgba(255,255,255,0.04);"></div>
     <div class="field"><label class="label">Amount From Revel Receipt</label><input type="number" id="fl_revel" placeholder="0.00" step="0.01" min="0"></div>
     <div class="field"><label class="label">Amount to Remove From Drawer #1</label><input type="number" id="fl_remove" class="readonly-field" readonly placeholder="Auto-calculated"><div class="field-hint">= Front Left Total − Starting Day Amount</div></div>
     <div class="btn-row">
@@ -187,7 +159,7 @@
       <div class="currency-row"><div class="currency-name">$100 Bills</div><div class="stepper"><button class="stepper-btn" onclick="adj('fr_100',-1)">−</button><div class="stepper-val" id="disp_fr_100">0</div><input type="hidden" id="fr_100" value="0"><button class="stepper-btn" onclick="adj('fr_100',1)">+</button></div></div>
     </div>
     <div class="total-bar"><div class="lbl">Front Right Total</div><div class="val" id="fr_total">$0.00</div></div>
-    <div class="field"><label class="label">Starting Day Amount</label><input type="number" id="fr_start" placeholder="150.00" step="0.01" value="150" oninput="calcDrawerTotal('fr')"></div>
+    <div class="field"><label class="label" style="color:var(--dim)">Starting Day Amount</label><input type="number" id="fr_start" placeholder="150.00" step="0.01" value="150" oninput="calcDrawerTotal('fr')" style="background:rgba(255,255,255,0.02);color:var(--dim);border-color:rgba(255,255,255,0.04);"></div>
     <div class="field"><label class="label">Amount From Revel Receipt</label><input type="number" id="fr_revel" placeholder="0.00" step="0.01" min="0"></div>
     <div class="field"><label class="label">Amount to Remove From Drawer #2</label><input type="number" id="fr_remove" class="readonly-field" readonly placeholder="Auto-calculated"><div class="field-hint">= Front Right Total − Starting Day Amount</div></div>
     <div class="btn-row">
@@ -217,7 +189,7 @@
       <div class="currency-row"><div class="currency-name">$100 Bills</div><div class="stepper"><button class="stepper-btn" onclick="adj('dt_100',-1)">−</button><div class="stepper-val" id="disp_dt_100">0</div><input type="hidden" id="dt_100" value="0"><button class="stepper-btn" onclick="adj('dt_100',1)">+</button></div></div>
     </div>
     <div class="total-bar"><div class="lbl">Drive Thru Total</div><div class="val" id="dt_total">$0.00</div></div>
-    <div class="field"><label class="label">Starting Day Amount</label><input type="number" id="dt_start" placeholder="150.00" step="0.01" value="150" oninput="calcDrawerTotal('dt')"></div>
+    <div class="field"><label class="label" style="color:var(--dim)">Starting Day Amount</label><input type="number" id="dt_start" placeholder="150.00" step="0.01" value="150" oninput="calcDrawerTotal('dt')" style="background:rgba(255,255,255,0.02);color:var(--dim);border-color:rgba(255,255,255,0.04);"></div>
     <div class="field"><label class="label">Amount From Revel Receipt</label><input type="number" id="dt_revel" placeholder="0.00" step="0.01" min="0"></div>
     <div class="field"><label class="label">Amount to Remove From Drawer #3</label><input type="number" id="dt_remove" class="readonly-field" readonly placeholder="Auto-calculated"><div class="field-hint">= Drive Thru Total − Starting Day Amount</div></div>
     <div class="btn-row">
@@ -237,8 +209,7 @@
       <div class="calc-row"><span class="calc-lbl">Front Right</span><span class="calc-val" id="sum_fr">—</span></div>
       <div class="calc-row"><span class="calc-lbl">Drive Thru</span><span class="calc-val" id="sum_dt">—</span></div>
       <div class="calc-row total-line"><span class="calc-lbl bold">Total Drawer Count</span><span class="calc-val" id="sum_drawer_total">—</span></div>
-      <div class="calc-row"><span class="calc-lbl">+ Tips</span><span class="calc-val" id="sum_tips">—</span></div>
-      <div class="calc-row" id="sum_water_row"><span class="calc-lbl">+ External Water</span><span class="calc-val" id="sum_water">—</span></div>
+      <div class="calc-row"><span class="calc-lbl">− Tips</span><span class="calc-val" id="sum_tips">—</span></div>
       <div class="calc-row"><span class="calc-lbl">− Less Starting Value</span><span class="calc-val neg" id="sum_starting">—</span></div>
       <div class="calc-row deposit-line"><span class="calc-lbl bold" style="color:var(--sky)">= Deposit Amount</span><span class="calc-val sky" id="sum_deposit">—</span></div>
     </div>
@@ -266,22 +237,6 @@
 
 <script>
 document.getElementById('depositDate').valueAsDate = new Date();
-
-// ── Water sales toggle ──
-function toggleWater(val){
-  document.getElementById('waterFields').className = val==='Yes' ? 'water-fields show' : 'water-fields';
-  if(val!=='Yes'){
-    document.getElementById('billsIntoDrawers').value='';
-    document.getElementById('coinAtBank').value='';
-    document.getElementById('waterTotal').value='';
-  }
-}
-
-function calcWaterTotal(){
-  const bills = parseFloat(document.getElementById('billsIntoDrawers').value)||0;
-  const coin  = parseFloat(document.getElementById('coinAtBank').value)||0;
-  document.getElementById('waterTotal').value = (bills+coin).toFixed(2);
-}
 
 // ── Stepper ──
 function adj(id, delta){
@@ -340,8 +295,7 @@ function buildSummary(){
   const drawerTotal = fl+fr+dt;
 
   const tips  = parseFloat(document.getElementById('cashTips').value)||0;
-  const water = document.getElementById('waterSales').value==='Yes'
-    ? (parseFloat(document.getElementById('waterTotal').value)||0) : 0;
+  const water = 0;
 
   const startFL = parseFloat(document.getElementById('fl_start').value)||0;
   const startFR = parseFloat(document.getElementById('fr_start').value)||0;
@@ -364,9 +318,6 @@ function buildSummary(){
   document.getElementById('sum_drawer_total').textContent = '$'+drawerTotal.toFixed(2);
   document.getElementById('sum_tips').textContent = '$'+tips.toFixed(2);
 
-  const waterRow = document.getElementById('sum_water_row');
-  waterRow.style.display = document.getElementById('waterSales').value==='Yes' ? 'flex' : 'none';
-  document.getElementById('sum_water').textContent = '$'+water.toFixed(2);
 
   document.getElementById('sum_starting').textContent = '($'+startingTotal.toFixed(2)+')';
   document.getElementById('sum_deposit').textContent = '$'+deposit.toFixed(2);
@@ -422,8 +373,6 @@ function resetForm(){
     const rv=document.getElementById(p+'_revel'); if(rv)rv.value='';
   });
   document.getElementById('cashTips').value='';
-  document.getElementById('waterSales').value='No';
-  toggleWater('No');
   document.getElementById('depositDate').valueAsDate=new Date();
   go(1);
 }
