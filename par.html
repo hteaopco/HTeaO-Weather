@@ -284,7 +284,7 @@ function renderWaste(){
         <!-- Middle: units -->
         <div style="flex:1;text-align:center;border-left:1px solid var(--border);padding-left:12px">
           <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">Units</div>
-          <div style="font-size:22px;font-weight:800;line-height:1;color:${showUnits?'var(--text)':'var(--dim)'}">${showUnits?(typeof units==='number'?units.toFixed(1):units):'—'}</div>
+          <div style="font-size:22px;font-weight:800;line-height:1;color:${showUnits?'var(--text)':'var(--dim)'}">${showUnits?(typeof units==='number'?Math.round(units).toLocaleString():units):'—'}</div>
         </div>
         <!-- Right: wasted $ -->
         <div style="flex:1;text-align:center;border-left:1px solid var(--border);padding-left:12px">
@@ -330,11 +330,11 @@ function renderWaste(){
         <div style="display:flex;gap:6px;align-items:center">
           <div style="text-align:right">
             <div style="font-size:9px;color:var(--muted)">Gal</div>
-            <div style="font-size:11px;font-weight:700">${w.gal>0?w.gal.toFixed(1):'—'}</div>
+            <div style="font-size:11px;font-weight:700">${w.gal>0?Math.round(w.gal).toLocaleString():'—'}</div>
           </div>
           <div style="text-align:right">
             <div style="font-size:9px;color:var(--muted)">Jugs</div>
-            <div style="font-size:11px;font-weight:700">${w.jug>0?w.jug.toFixed(1):'—'}</div>
+            <div style="font-size:11px;font-weight:700">${w.jug>0?Math.round(w.jug).toLocaleString():'—'}</div>
           </div>
           <div style="text-align:right;min-width:56px">
             <div style="font-size:9px;color:var(--muted)">$Waste</div>
