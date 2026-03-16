@@ -40,14 +40,14 @@
   /* Flavor table */
   .flavor-table{background:var(--card);border-radius:10px;border:1px solid var(--border);overflow:hidden;margin-bottom:14px;}
   .flavor-hdr{display:grid;padding:8px 12px;background:rgba(56,189,248,0.08);border-bottom:1px solid var(--border);}
-  .flavor-hdr.two-col{grid-template-columns:1fr 72px 72px;}
-  .flavor-hdr.one-col{grid-template-columns:1fr 90px;}
+  .flavor-hdr.two-col{grid-template-columns:1fr 88px 88px;}
+  .flavor-hdr.one-col{grid-template-columns:1fr 88px;}
   .flavor-hdr span{font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.08em;text-transform:uppercase;}
   .flavor-hdr span:not(:first-child){text-align:center;}
-  .flavor-row{display:grid;padding:0 12px;border-bottom:1px solid var(--border);align-items:center;min-height:42px;}
+  .flavor-row{display:grid;padding:0 12px;border-bottom:1px solid var(--border);align-items:center;min-height:48px;}
   .flavor-row:last-child{border-bottom:none;}
-  .flavor-row.two-col{grid-template-columns:1fr 72px 72px;}
-  .flavor-row.one-col{grid-template-columns:1fr 90px;}
+  .flavor-row.two-col{grid-template-columns:1fr 88px 88px;}
+  .flavor-row.one-col{grid-template-columns:1fr 88px;}
   .flavor-name{font-size:13px;color:var(--text);padding:8px 0;}
   .flavor-name.dim{color:var(--muted);}
   .qty-input{width:60px;padding:6px 8px;text-align:center;font-size:15px;font-weight:700;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;-webkit-appearance:none;}
@@ -67,10 +67,12 @@
   .btn:active{opacity:.75;}
 
   /* Stepper */
-  .stepper{display:flex;align-items:center;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:rgba(255,255,255,0.04);}
-  .stepper-btn{width:38px;height:38px;background:rgba(255,255,255,0.06);border:none;color:var(--text);font-size:20px;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;user-select:none;}
+  .stepper{display:flex;align-items:center;width:84px;}
+  .stepper-btn{width:28px;height:36px;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;user-select:none;flex-shrink:0;}
+  .stepper-btn:first-child{border-radius:6px 0 0 6px;}
+  .stepper-btn:last-child{border-radius:0 6px 6px 0;}
   .stepper-btn:active{background:rgba(56,189,248,0.2);}
-  .stepper-val{width:44px;text-align:center;font-size:16px;font-weight:700;color:var(--text);background:none;border:none;pointer-events:none;}
+  .stepper-val{flex:1;text-align:center;font-size:15px;font-weight:700;color:var(--text);background:rgba(255,255,255,0.03);border-top:1px solid var(--border);border-bottom:1px solid var(--border);height:36px;line-height:36px;pointer-events:none;}
   .stepper-val.nonzero{color:var(--sky);}
 
   /* Success */
@@ -152,166 +154,37 @@
 <!-- Step 2: Flavors -->
 <div id="step2" style="display:none">
   <div class="section">
-    <div class="section-title">Sweet / Un-Sweet</div>
+
+    <!-- SWEETS table -->
     <div class="flavor-table">
       <div class="flavor-hdr two-col">
         <span>Flavor</span><span>Sweet</span><span>Un-Sweet</span>
       </div>
-      <div class="flavor-row two-col"><div class="flavor-name">Regular</div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('REG',-1)">−</button>
-          <div class="stepper-val" id="disp_REG">0</div>
-          <input type="hidden" id="REG" value="0">
-          <button class="stepper-btn" onclick="adj('REG',1)">+</button>
-        </div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('UNREG',-1)">−</button>
-          <div class="stepper-val" id="disp_UNREG">0</div>
-          <input type="hidden" id="UNREG" value="0">
-          <button class="stepper-btn" onclick="adj('UNREG',1)">+</button>
-        </div></div>
-      <div class="flavor-row two-col"><div class="flavor-name">Georgia Peach</div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('SW_PEACH',-1)">−</button>
-          <div class="stepper-val" id="disp_SW_PEACH">0</div>
-          <input type="hidden" id="SW_PEACH" value="0">
-          <button class="stepper-btn" onclick="adj('SW_PEACH',1)">+</button>
-        </div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('UN_PEACH',-1)">−</button>
-          <div class="stepper-val" id="disp_UN_PEACH">0</div>
-          <input type="hidden" id="UN_PEACH" value="0">
-          <button class="stepper-btn" onclick="adj('UN_PEACH',1)">+</button>
-        </div></div>
-      <div class="flavor-row two-col"><div class="flavor-name">Blueberry</div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('SW_BB',-1)">−</button>
-          <div class="stepper-val" id="disp_SW_BB">0</div>
-          <input type="hidden" id="SW_BB" value="0">
-          <button class="stepper-btn" onclick="adj('SW_BB',1)">+</button>
-        </div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('UN_BB',-1)">−</button>
-          <div class="stepper-val" id="disp_UN_BB">0</div>
-          <input type="hidden" id="UN_BB" value="0">
-          <button class="stepper-btn" onclick="adj('UN_BB',1)">+</button>
-        </div></div>
-      <div class="flavor-row two-col"><div class="flavor-name">Coconut</div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('SW_COCO',-1)">−</button>
-          <div class="stepper-val" id="disp_SW_COCO">0</div>
-          <input type="hidden" id="SW_COCO" value="0">
-          <button class="stepper-btn" onclick="adj('SW_COCO',1)">+</button>
-        </div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('UN_COCO',-1)">−</button>
-          <div class="stepper-val" id="disp_UN_COCO">0</div>
-          <input type="hidden" id="UN_COCO" value="0">
-          <button class="stepper-btn" onclick="adj('UN_COCO',1)">+</button>
-        </div></div>
-      <div class="flavor-row two-col"><div class="flavor-name">Watermelon</div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('SW_MELON',-1)">−</button>
-          <div class="stepper-val" id="disp_SW_MELON">0</div>
-          <input type="hidden" id="SW_MELON" value="0">
-          <button class="stepper-btn" onclick="adj('SW_MELON',1)">+</button>
-        </div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('UN_MELON',-1)">−</button>
-          <div class="stepper-val" id="disp_UN_MELON">0</div>
-          <input type="hidden" id="UN_MELON" value="0">
-          <button class="stepper-btn" onclick="adj('UN_MELON',1)">+</button>
-        </div></div>
-      <div class="flavor-row two-col"><div class="flavor-name">Raspberry</div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('SW_RAS',-1)">−</button>
-          <div class="stepper-val" id="disp_SW_RAS">0</div>
-          <input type="hidden" id="SW_RAS" value="0">
-          <button class="stepper-btn" onclick="adj('SW_RAS',1)">+</button>
-        </div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('UN_RAS',-1)">−</button>
-          <div class="stepper-val" id="disp_UN_RAS">0</div>
-          <input type="hidden" id="UN_RAS" value="0">
-          <button class="stepper-btn" onclick="adj('UN_RAS',1)">+</button>
-        </div></div>
-      <div class="flavor-row two-col"><div class="flavor-name">Mint</div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('SW_MINT',-1)">−</button>
-          <div class="stepper-val" id="disp_SW_MINT">0</div>
-          <input type="hidden" id="SW_MINT" value="0">
-          <button class="stepper-btn" onclick="adj('SW_MINT',1)">+</button>
-        </div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('UN_MINT',-1)">−</button>
-          <div class="stepper-val" id="disp_UN_MINT">0</div>
-          <input type="hidden" id="UN_MINT" value="0">
-          <button class="stepper-btn" onclick="adj('UN_MINT',1)">+</button>
-        </div></div>
-      <div class="flavor-row two-col"><div class="flavor-name">Peach Ginger</div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('SW_PG',-1)">−</button>
-          <div class="stepper-val" id="disp_SW_PG">0</div>
-          <input type="hidden" id="SW_PG" value="0">
-          <button class="stepper-btn" onclick="adj('SW_PG',1)">+</button>
-        </div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('UN_PG',-1)">−</button>
-          <div class="stepper-val" id="disp_UN_PG">0</div>
-          <input type="hidden" id="UN_PG" value="0">
-          <button class="stepper-btn" onclick="adj('UN_PG',1)">+</button>
-        </div></div>
+      <div class="flavor-row two-col"><div class="flavor-name">Regular</div><div class="stepper"><button class="stepper-btn" onclick="adj('REG',-1)">−</button><div class="stepper-val" id="disp_REG">0</div><input type="hidden" id="REG" value="0"><button class="stepper-btn" onclick="adj('REG',1)">+</button></div><div class="stepper"><button class="stepper-btn" onclick="adj('UNREG',-1)">−</button><div class="stepper-val" id="disp_UNREG">0</div><input type="hidden" id="UNREG" value="0"><button class="stepper-btn" onclick="adj('UNREG',1)">+</button></div></div>
+      <div class="flavor-row two-col"><div class="flavor-name">Georgia Peach</div><div class="stepper"><button class="stepper-btn" onclick="adj('SW_PEACH',-1)">−</button><div class="stepper-val" id="disp_SW_PEACH">0</div><input type="hidden" id="SW_PEACH" value="0"><button class="stepper-btn" onclick="adj('SW_PEACH',1)">+</button></div><div class="stepper"><button class="stepper-btn" onclick="adj('UN_PEACH',-1)">−</button><div class="stepper-val" id="disp_UN_PEACH">0</div><input type="hidden" id="UN_PEACH" value="0"><button class="stepper-btn" onclick="adj('UN_PEACH',1)">+</button></div></div>
+      <div class="flavor-row two-col"><div class="flavor-name">Blueberry</div><div class="stepper"><button class="stepper-btn" onclick="adj('SW_BB',-1)">−</button><div class="stepper-val" id="disp_SW_BB">0</div><input type="hidden" id="SW_BB" value="0"><button class="stepper-btn" onclick="adj('SW_BB',1)">+</button></div><div class="stepper"><button class="stepper-btn" onclick="adj('UN_BB',-1)">−</button><div class="stepper-val" id="disp_UN_BB">0</div><input type="hidden" id="UN_BB" value="0"><button class="stepper-btn" onclick="adj('UN_BB',1)">+</button></div></div>
+      <div class="flavor-row two-col"><div class="flavor-name">Coconut</div><div class="stepper"><button class="stepper-btn" onclick="adj('SW_COCO',-1)">−</button><div class="stepper-val" id="disp_SW_COCO">0</div><input type="hidden" id="SW_COCO" value="0"><button class="stepper-btn" onclick="adj('SW_COCO',1)">+</button></div><div class="stepper"><button class="stepper-btn" onclick="adj('UN_COCO',-1)">−</button><div class="stepper-val" id="disp_UN_COCO">0</div><input type="hidden" id="UN_COCO" value="0"><button class="stepper-btn" onclick="adj('UN_COCO',1)">+</button></div></div>
+      <div class="flavor-row two-col"><div class="flavor-name">Watermelon</div><div class="stepper"><button class="stepper-btn" onclick="adj('SW_MELON',-1)">−</button><div class="stepper-val" id="disp_SW_MELON">0</div><input type="hidden" id="SW_MELON" value="0"><button class="stepper-btn" onclick="adj('SW_MELON',1)">+</button></div><div class="stepper"><button class="stepper-btn" onclick="adj('UN_MELON',-1)">−</button><div class="stepper-val" id="disp_UN_MELON">0</div><input type="hidden" id="UN_MELON" value="0"><button class="stepper-btn" onclick="adj('UN_MELON',1)">+</button></div></div>
+      <div class="flavor-row two-col"><div class="flavor-name">Raspberry</div><div class="stepper"><button class="stepper-btn" onclick="adj('SW_RAS',-1)">−</button><div class="stepper-val" id="disp_SW_RAS">0</div><input type="hidden" id="SW_RAS" value="0"><button class="stepper-btn" onclick="adj('SW_RAS',1)">+</button></div><div class="stepper"><button class="stepper-btn" onclick="adj('UN_RAS',-1)">−</button><div class="stepper-val" id="disp_UN_RAS">0</div><input type="hidden" id="UN_RAS" value="0"><button class="stepper-btn" onclick="adj('UN_RAS',1)">+</button></div></div>
+      <div class="flavor-row two-col"><div class="flavor-name">Mint</div><div class="stepper"><button class="stepper-btn" onclick="adj('SW_MINT',-1)">−</button><div class="stepper-val" id="disp_SW_MINT">0</div><input type="hidden" id="SW_MINT" value="0"><button class="stepper-btn" onclick="adj('SW_MINT',1)">+</button></div><div class="stepper"><button class="stepper-btn" onclick="adj('UN_MINT',-1)">−</button><div class="stepper-val" id="disp_UN_MINT">0</div><input type="hidden" id="UN_MINT" value="0"><button class="stepper-btn" onclick="adj('UN_MINT',1)">+</button></div></div>
+      <div class="flavor-row two-col"><div class="flavor-name">Peach Ginger</div><div class="stepper"><button class="stepper-btn" onclick="adj('SW_PG',-1)">−</button><div class="stepper-val" id="disp_SW_PG">0</div><input type="hidden" id="SW_PG" value="0"><button class="stepper-btn" onclick="adj('SW_PG',1)">+</button></div><div class="stepper"><button class="stepper-btn" onclick="adj('UN_PG',-1)">−</button><div class="stepper-val" id="disp_UN_PG">0</div><input type="hidden" id="UN_PG" value="0"><button class="stepper-btn" onclick="adj('UN_PG',1)">+</button></div></div>
     </div>
 
-    <div class="section-title">Specialty Flavors</div>
+    <!-- SPECIALTY table -->
     <div class="flavor-table">
       <div class="flavor-hdr one-col">
-        <span>Flavor</span><span>Qty</span>
+        <span>Specialty</span><span>Qty</span>
       </div>
-      <div class="flavor-row one-col"><div class="flavor-name">Strawberry Passion</div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('SPASSION',-1)">−</button>
-          <div class="stepper-val" id="disp_SPASSION">0</div>
-          <input type="hidden" id="SPASSION" value="0">
-          <button class="stepper-btn" onclick="adj('SPASSION',1)">+</button>
-        </div></div>
-      <div class="flavor-row one-col"><div class="flavor-name">Texas Chai</div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('CHAI',-1)">−</button>
-          <div class="stepper-val" id="disp_CHAI">0</div>
-          <input type="hidden" id="CHAI" value="0">
-          <button class="stepper-btn" onclick="adj('CHAI',1)">+</button>
-        </div></div>
-      <div class="flavor-row one-col"><div class="flavor-name">Lemonade</div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('LEMONADE',-1)">−</button>
-          <div class="stepper-val" id="disp_LEMONADE">0</div>
-          <input type="hidden" id="LEMONADE" value="0">
-          <button class="stepper-btn" onclick="adj('LEMONADE',1)">+</button>
-        </div></div>
-      <div class="flavor-row one-col"><div class="flavor-name">Green — Sweet Almond</div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('SW_ALM_GRN',-1)">−</button>
-          <div class="stepper-val" id="disp_SW_ALM_GRN">0</div>
-          <input type="hidden" id="SW_ALM_GRN" value="0">
-          <button class="stepper-btn" onclick="adj('SW_ALM_GRN',1)">+</button>
-        </div></div>
-      <div class="flavor-row one-col"><div class="flavor-name dim">Green — Unsweet</div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('UN_GRN',-1)">−</button>
-          <div class="stepper-val" id="disp_UN_GRN">0</div>
-          <input type="hidden" id="UN_GRN" value="0">
-          <button class="stepper-btn" onclick="adj('UN_GRN',1)">+</button>
-        </div></div>
-      <div class="flavor-row one-col"><div class="flavor-name">Mango Fresco</div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('MANGO',-1)">−</button>
-          <div class="stepper-val" id="disp_MANGO">0</div>
-          <input type="hidden" id="MANGO" value="0">
-          <button class="stepper-btn" onclick="adj('MANGO',1)">+</button>
-        </div></div>
-      <div class="flavor-row one-col"><div class="flavor-name">Sweet Zero</div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('SW_ZERO',-1)">−</button>
-          <div class="stepper-val" id="disp_SW_ZERO">0</div>
-          <input type="hidden" id="SW_ZERO" value="0">
-          <button class="stepper-btn" onclick="adj('SW_ZERO',1)">+</button>
-        </div></div>
-      <div class="flavor-row one-col"><div class="flavor-name">Ryan Palmer</div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('PALMER',-1)">−</button>
-          <div class="stepper-val" id="disp_PALMER">0</div>
-          <input type="hidden" id="PALMER" value="0">
-          <button class="stepper-btn" onclick="adj('PALMER',1)">+</button>
-        </div></div>
-      <div class="flavor-row one-col"><div class="flavor-name dim">Decaf — Unsweet</div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('DECAF',-1)">−</button>
-          <div class="stepper-val" id="disp_DECAF">0</div>
-          <input type="hidden" id="DECAF" value="0">
-          <button class="stepper-btn" onclick="adj('DECAF',1)">+</button>
-        </div></div>
-      <div class="flavor-row one-col"><div class="flavor-name">Cherry ✦ New</div><div class="stepper">
-          <button class="stepper-btn" onclick="adj('CHERRY',-1)">−</button>
-          <div class="stepper-val" id="disp_CHERRY">0</div>
-          <input type="hidden" id="CHERRY" value="0">
-          <button class="stepper-btn" onclick="adj('CHERRY',1)">+</button>
-        </div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Strawberry Passion</div><div class="stepper"><button class="stepper-btn" onclick="adj('SPASSION',-1)">−</button><div class="stepper-val" id="disp_SPASSION">0</div><input type="hidden" id="SPASSION" value="0"><button class="stepper-btn" onclick="adj('SPASSION',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Texas Chai</div><div class="stepper"><button class="stepper-btn" onclick="adj('CHAI',-1)">−</button><div class="stepper-val" id="disp_CHAI">0</div><input type="hidden" id="CHAI" value="0"><button class="stepper-btn" onclick="adj('CHAI',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Lemonade</div><div class="stepper"><button class="stepper-btn" onclick="adj('LEMONADE',-1)">−</button><div class="stepper-val" id="disp_LEMONADE">0</div><input type="hidden" id="LEMONADE" value="0"><button class="stepper-btn" onclick="adj('LEMONADE',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Green — Sweet Almond</div><div class="stepper"><button class="stepper-btn" onclick="adj('SW_ALM_GRN',-1)">−</button><div class="stepper-val" id="disp_SW_ALM_GRN">0</div><input type="hidden" id="SW_ALM_GRN" value="0"><button class="stepper-btn" onclick="adj('SW_ALM_GRN',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Green — Unsweet</div><div class="stepper"><button class="stepper-btn" onclick="adj('UN_GRN',-1)">−</button><div class="stepper-val" id="disp_UN_GRN">0</div><input type="hidden" id="UN_GRN" value="0"><button class="stepper-btn" onclick="adj('UN_GRN',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Mango Fresco</div><div class="stepper"><button class="stepper-btn" onclick="adj('MANGO',-1)">−</button><div class="stepper-val" id="disp_MANGO">0</div><input type="hidden" id="MANGO" value="0"><button class="stepper-btn" onclick="adj('MANGO',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Sweet Zero</div><div class="stepper"><button class="stepper-btn" onclick="adj('SW_ZERO',-1)">−</button><div class="stepper-val" id="disp_SW_ZERO">0</div><input type="hidden" id="SW_ZERO" value="0"><button class="stepper-btn" onclick="adj('SW_ZERO',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Ryan Palmer</div><div class="stepper"><button class="stepper-btn" onclick="adj('PALMER',-1)">−</button><div class="stepper-val" id="disp_PALMER">0</div><input type="hidden" id="PALMER" value="0"><button class="stepper-btn" onclick="adj('PALMER',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Decaf — Unsweet</div><div class="stepper"><button class="stepper-btn" onclick="adj('DECAF',-1)">−</button><div class="stepper-val" id="disp_DECAF">0</div><input type="hidden" id="DECAF" value="0"><button class="stepper-btn" onclick="adj('DECAF',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Cherry</div><div class="stepper"><button class="stepper-btn" onclick="adj('CHERRY',-1)">−</button><div class="stepper-val" id="disp_CHERRY">0</div><input type="hidden" id="CHERRY" value="0"><button class="stepper-btn" onclick="adj('CHERRY',1)">+</button></div></div>
     </div>
 
     <div class="total-bar">
