@@ -302,7 +302,7 @@ function buildSummary(){
   const startDT = parseFloat(document.getElementById('dt_start').value)||0;
   const startingTotal = startFL+startFR+startDT;
 
-  const deposit = drawerTotal + tips + water - startingTotal;
+  const deposit = drawerTotal - tips - startingTotal;
 
   const revelFL = parseFloat(document.getElementById('fl_revel').value)||0;
   const revelFR = parseFloat(document.getElementById('fr_revel').value)||0;
@@ -316,7 +316,8 @@ function buildSummary(){
   document.getElementById('sum_fr').textContent = '$'+fr.toFixed(2);
   document.getElementById('sum_dt').textContent = '$'+dt.toFixed(2);
   document.getElementById('sum_drawer_total').textContent = '$'+drawerTotal.toFixed(2);
-  document.getElementById('sum_tips').textContent = '$'+tips.toFixed(2);
+  document.getElementById('sum_tips').textContent = tips>0?'($'+tips.toFixed(2)+')':'$0.00';
+  document.getElementById('sum_tips').className = tips>0?'calc-val neg':'calc-val';
 
 
   document.getElementById('sum_starting').textContent = '($'+startingTotal.toFixed(2)+')';
@@ -337,7 +338,7 @@ function submitForm(){
   const startingTotal=(parseFloat(document.getElementById('fl_start').value)||0)
     +(parseFloat(document.getElementById('fr_start').value)||0)
     +(parseFloat(document.getElementById('dt_start').value)||0);
-  const deposit=fl+fr+dt+tips+water-startingTotal;
+  const deposit=fl+fr+dt-tips-startingTotal;
   const revel=(parseFloat(document.getElementById('fl_revel').value)||0)
     +(parseFloat(document.getElementById('fr_revel').value)||0)
     +(parseFloat(document.getElementById('dt_revel').value)||0);
@@ -347,7 +348,7 @@ function submitForm(){
     lastName:document.getElementById('lastName').value,
     depositDate:document.getElementById('depositDate').value,
     cashTips:tips, waterSales:document.getElementById('waterSales').value,
-    waterAmount:water, flTotal:fl.toFixed(2), frTotal:fr.toFixed(2), dtTotal:dt.toFixed(2),
+    flTotal:fl.toFixed(2), frTotal:fr.toFixed(2), dtTotal:dt.toFixed(2),
     depositAmount:deposit.toFixed(2), revelTotal:revel.toFixed(2),
     cashOverUnder:(deposit-revel).toFixed(2),
   };
