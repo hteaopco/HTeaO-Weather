@@ -878,7 +878,7 @@ function rfx(){
     if(days.error){cards+=`<div class="err-card">${s.num} - ${s.name}: ${days.error}</div>`;return;}
     const day=days[SEL];if(!day)return;
     const adj=day.adj;
-    const key=`f${s.id}`;const open=EX[key];
+    const key=`f${s.id}`;const open=EX[key]||EX['fc_all'];
     let sparks="";
     days.forEach((d,i)=>{
       const v=d&&d.adj?d.adj.total:0;
@@ -926,6 +926,7 @@ function rfx(){
     ${consol}
     ${sys}
     <div style="height:1px;background:rgba(255,255,255,0.08);margin:4px 0 12px"></div>
+  <button onclick="EX['fc_all']=!EX['fc_all'];render();" style="width:100%;padding:11px;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;box-sizing:border-box;border:1px solid rgba(255,255,255,0.12);background:${EX['fc_all']?'rgba(56,189,248,0.15)':'rgba(255,255,255,0.04)'};color:${EX['fc_all']?'#38bdf8':'#94a3b8'};margin-bottom:10px">${EX['fc_all']?'▲ Collapse All Stores':'▼ Expand All Stores'}</button>
   ${cards}
     <button class="btn" onclick="runForecast()" style="margin-top:8px;font-size:11px;padding:9px">↻ Refresh Forecast</button>
   </div>`;
