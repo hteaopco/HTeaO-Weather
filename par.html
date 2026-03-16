@@ -18,7 +18,7 @@
   .logo{font-size:20px;font-weight:900;color:var(--sky);letter-spacing:-.5px;}
   .sub{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;}
   .as-of{margin-left:auto;font-size:9px;color:var(--dim);}
-  .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
+  .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;}
   .tab{padding:8px 4px;border-radius:8px;font-size:11px;font-weight:700;text-align:center;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,0.03);color:var(--muted);line-height:1.3;}
   .tab.active{background:rgba(56,189,248,0.15);border-color:rgba(56,189,248,0.4);color:var(--sky);}
   .store-strip-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -16px;padding:6px 16px;}
@@ -64,8 +64,8 @@
     <div class="as-of" id="as-of"></div>
   </div>
   <div class="tabs">
-    <div class="tab active" onclick="setTab('overview')" id="tab-overview">📊 System<br>Overview</div>
-    <div class="tab" onclick="setTab('waste')" id="tab-waste">🗑️ Waste</div>
+    
+    <div class="tab active" onclick="setTab('waste')" id="tab-waste">🗑️ Waste</div>
     <div class="tab" onclick="setTab('gallon')" id="tab-gallon">🧊 Gallon<br>Prep</div>
     <div class="tab" onclick="setTab('jugs')" id="tab-jugs">🫙 Jugs</div>
   </div>
@@ -153,7 +153,7 @@ const STORES = [
 ];
 
 // ── State ──────────────────────────────────────────────────────────────────
-let MODE = 'overview';
+let MODE = 'waste';
 let SEL = '01';
 const DOW = new Date().getDay(); // 0=Sun ... 6=Sat
 const DOW_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -223,43 +223,157 @@ function renderOverview(){
   </div>`;
 }
 
-// ── WASTE ──────────────────────────────────────────────────────────────────
+// ── WASTE ────────────────────────────────────────────────────────────────
+let WASTE_PERIOD = 'L7';   // Yesterday | L7 | L14 | L30
+let WASTE_STORES_OPEN = false;
+
+const GAL_COST = 1.75;
+const JUG_COST = 2.25;
+const BASE_SALES = 16143686; // from summary tab
+
+function getWasteForPeriod(store, period) {
+  // Returns {gal, jug} for the selected period
+  switch(period) {
+    case 'Yesterday': return { gal: store.wastYestGal||0, jug: store.wastYestJug||0 };
+    case 'L7':        return { gal: store.wastL7Gal||0,   jug: store.wastL7Jug||0   };
+    case 'L14':       return { gal: (store.wastL30Gal||0)/2, jug: (store.wastL30Jug||0)/2 };
+    case 'L30':       return { gal: store.wastL30Gal||0,  jug: store.wastL30Jug||0  };
+    default:          return { gal: 0, jug: 0 };
+  }
+}
+
 function renderWaste(){
-  const stores = STORES.map(s=>({...WASTE_DATA[s.id],id:s.id})).filter(Boolean);
-  const hdr = `<div class="tbl-hdr">
-    <div class="tbl-hdr-lbl" style="flex:1.5">Store</div>
-    <div class="tbl-cells">
-      <div class="tbl-hdr-lbl" style="width:54px;text-align:right">Yest</div>
-      <div class="tbl-hdr-lbl" style="width:54px;text-align:right">L7</div>
-      <div class="tbl-hdr-lbl" style="width:54px;text-align:right">L30</div>
-      <div class="tbl-hdr-lbl" style="width:54px;text-align:right">COGS%</div>
+  const stores = STORES.map(s => ({...WASTE_DATA[s.id], id:s.id})).filter(Boolean);
+  const period = WASTE_PERIOD;
+
+  // Consolidated totals
+  let totGal=0, totJug=0;
+  stores.forEach(s => {
+    const w = getWasteForPeriod(s, period);
+    totGal += w.gal;
+    totJug += w.jug;
+  });
+  const totSnacks   = 0; // developer to add
+  const galDollars  = totGal * GAL_COST;
+  const jugDollars  = totJug * JUG_COST;
+  const totalDollars= galDollars + jugDollars + totSnacks;
+
+  // COGS: use base sales adjusted for period
+  const periodDays = {Yesterday:1, L7:7, L14:14, L30:30};
+  const days = periodDays[period];
+  const periodSales = BASE_SALES / 365 * days;
+  const cogsAffect  = periodSales > 0 ? totalDollars / periodSales : 0;
+
+  // Period buttons
+  const periods = ['Yesterday','L7','L14','L30'];
+  const btns = periods.map(p => `<button onclick="WASTE_PERIOD='${p}';render();"
+    style="flex:1;padding:9px 4px;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;box-sizing:border-box;
+    border:1px solid ${p===period?'rgba(56,189,248,0.5)':'rgba(255,255,255,0.1)'};
+    background:${p===period?'rgba(56,189,248,0.18)':'rgba(255,255,255,0.03)'};
+    color:${p===period?'#38bdf8':'#64748b'}">${p}</button>`).join('');
+
+  // 4 summary cards
+  function card(icon, label, units, dollars, extra='') {
+    return `<div style="background:var(--card);border-radius:12px;border:1px solid var(--border);padding:12px 14px">
+      <div style="font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">${icon} ${label}</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end">
+        <div>
+          ${units!==null?`<div style="font-size:22px;font-weight:800;line-height:1">${typeof units==='number'?units.toFixed(1):units}</div>
+          <div style="font-size:9px;color:var(--muted);margin-top:2px">units</div>`:''}
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:18px;font-weight:800;color:var(--yellow)">$${Math.round(dollars).toLocaleString()}</div>
+          <div style="font-size:9px;color:var(--muted);margin-top:2px">wasted</div>
+        </div>
+      </div>
+      ${extra}
+    </div>`;
+  }
+
+  const cogsColor = cogsAffect<=0.0025?'var(--green)':cogsAffect<=0.004?'var(--yellow)':'var(--red)';
+  const totalCard = `<div style="background:var(--card);border-radius:12px;border:1px solid rgba(56,189,248,0.2);padding:12px 14px">
+    <div style="font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">💰 Total Waste</div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end">
+      <div>
+        <div style="font-size:22px;font-weight:800;line-height:1;color:var(--yellow)">$${Math.round(totalDollars).toLocaleString()}</div>
+        <div style="font-size:9px;color:var(--muted);margin-top:2px">total dollars wasted</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:18px;font-weight:800;color:${cogsColor}">${(cogsAffect*100).toFixed(2)}%</div>
+        <div style="font-size:9px;color:var(--muted);margin-top:2px">COGS impact</div>
+      </div>
     </div>
   </div>`;
-  const galRows = stores.map(s=>`<div class="tbl-row">
-    <div class="tbl-store">${s.id} - ${s.name}</div>
-    <div class="tbl-cells">
-      <div class="tbl-cell">${fN(s.wastYestGal)}</div>
-      <div class="tbl-cell">${fN(s.wastL7Gal)}</div>
-      <div class="tbl-cell">${fN(s.wastL30Gal)}</div>
-      <div class="tbl-cell" style="color:${vc(s.cogsAffect)}">${fP(s.cogsAffect)}</div>
+
+  // Store drill-down
+  const storeRows = stores.map(s => {
+    const w = getWasteForPeriod(s, period);
+    const gDol = w.gal * GAL_COST;
+    const jDol = w.jug * JUG_COST;
+    const tot  = gDol + jDol;
+    const cogsA= periodSales > 0 ? (tot / (periodSales/stores.length)) : 0;
+    const cc   = cogsA<=0.0025?'var(--green)':cogsA<=0.004?'var(--yellow)':'var(--red)';
+    const hasWaste = tot > 0;
+    return `<div style="border-bottom:1px solid rgba(255,255,255,0.04)">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 14px">
+        <div style="font-size:12px;font-weight:600;flex:1.5;color:${hasWaste?'var(--text)':'var(--muted)'}">${s.id} - ${s.name}</div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <div style="text-align:right">
+            <div style="font-size:9px;color:var(--muted)">Gal</div>
+            <div style="font-size:11px;font-weight:700">${w.gal>0?w.gal.toFixed(1):'—'}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:9px;color:var(--muted)">Jugs</div>
+            <div style="font-size:11px;font-weight:700">${w.jug>0?w.jug.toFixed(1):'—'}</div>
+          </div>
+          <div style="text-align:right;min-width:56px">
+            <div style="font-size:9px;color:var(--muted)">$Waste</div>
+            <div style="font-size:12px;font-weight:800;color:${hasWaste?'var(--yellow)':'var(--dim)'}">${tot>0?'$'+Math.round(tot).toLocaleString():'—'}</div>
+          </div>
+          <div style="text-align:right;min-width:48px">
+            <div style="font-size:9px;color:var(--muted)">COGS</div>
+            <div style="font-size:12px;font-weight:800;color:${cc}">${(cogsA*100).toFixed(2)}%</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const drillDown = `<div style="background:var(--card);border-radius:12px;border:1px solid var(--border);overflow:hidden">
+    <div onclick="WASTE_STORES_OPEN=!WASTE_STORES_OPEN;render();"
+      style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;cursor:pointer">
+      <div style="font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.08em;text-transform:uppercase">▾ Store Breakdown</div>
+      <div style="font-size:11px;color:var(--dim)">${WASTE_STORES_OPEN?'▲':'▼'}</div>
     </div>
-  </div>`).join('');
-  const jugRows = stores.map(s=>`<div class="tbl-row">
-    <div class="tbl-store">${s.id} - ${s.name}</div>
-    <div class="tbl-cells">
-      <div class="tbl-cell">${fN(s.wastYestJug,2)}</div>
-      <div class="tbl-cell">${fN(s.wastL7Jug,2)}</div>
-      <div class="tbl-cell">${fN(s.wastL30Jug,2)}</div>
-      <div class="tbl-cell" style="color:var(--dim)">—</div>
-    </div>
-  </div>`).join('');
+    ${WASTE_STORES_OPEN?`
+    <div style="border-top:1px solid var(--border)">
+      <div style="display:flex;justify-content:flex-end;padding:5px 14px;border-bottom:1px solid var(--border);gap:6px">
+        <div style="font-size:9px;color:var(--muted);font-weight:700;min-width:36px;text-align:right">Gal</div>
+        <div style="font-size:9px;color:var(--muted);font-weight:700;min-width:36px;text-align:right">Jugs</div>
+        <div style="font-size:9px;color:var(--muted);font-weight:700;min-width:56px;text-align:right">$Waste</div>
+        <div style="font-size:9px;color:var(--muted);font-weight:700;min-width:48px;text-align:right">COGS</div>
+      </div>
+      ${storeRows}
+    </div>`:''}
+  </div>`;
+
   return `<div class="section">
-    <div class="card">
-      ${hdr}
-      <div class="section-lbl">Gallons Wasted</div>
-      ${galRows}
-      <div class="section-lbl" style="color:var(--teal);background:rgba(45,212,191,0.04);border-top:1px solid var(--border)">2.5 Gal Jugs Wasted</div>
-      ${jugRows}
+    <!-- Period selector -->
+    <div style="display:flex;gap:6px;margin-bottom:12px">${btns}</div>
+
+    <!-- 4 cards stacked -->
+    ${card('🧊','Gallons', totGal, galDollars)}
+    ${card('🫙','2.5g Jugs', totJug, jugDollars)}
+    ${card('🍿','Snacks', null, totSnacks)}
+    <div style="height:1px;background:rgba(255,255,255,0.08);margin:4px 0"></div>
+    ${totalCard}
+    <div style="height:1px;background:rgba(255,255,255,0.08);margin:4px 0"></div>
+
+    <!-- Store drill-down -->
+    ${drillDown}
+
+    <div style="font-size:9px;color:var(--dim);text-align:center;margin-top:10px">
+      Gal = $1.75/unit · Jug = $2.25/unit · L14 estimated (L30÷2) · Data as of 03/15/26
     </div>
   </div>`;
 }
@@ -316,9 +430,8 @@ function renderGallon(){
 
     content = `<div class="card">
       <div style="position:sticky;top:0;z-index:10;background:var(--card)">
-        <div style="padding:8px 14px 5px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)">
+        <div style="padding:8px 14px 5px;border-bottom:1px solid var(--border)">
           <div style="font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.08em;text-transform:uppercase">Today — ${dayName}</div>
-          <div style="font-size:9px;color:var(--muted)">Par | 1PM Check | 4PM Check</div>
         </div>
         ${colHdr}
         ${totalRow}
@@ -341,50 +454,144 @@ function renderGallon(){
 }
 
 // ── JUGS IN ROTATION ───────────────────────────────────────────────────────
+// Jug par data: Sun-Wed qty, Thu-Sat qty per flavor per store
+// Using Yukon as template from screenshot; other stores use same structure
+const JUG_PAR = {
+  '01': { // Yukon — from screenshot
+    sweets: {
+      'Regular':       {sw:5, ts:6},
+      'Georgia Peach': {sw:3, ts:4},
+      'Blueberry':     {sw:3, ts:4},
+      'Coconut':       {sw:3, ts:3},
+      'Watermelon':    {sw:1, ts:2},
+      'Raspberry':     {sw:2, ts:2},
+      'Mint':          {sw:1, ts:2},
+      'Peach Ginger':  {sw:1, ts:2},
+    },
+    unsweets: {
+      'Regular':       {sw:3, ts:3},
+      'Georgia Peach': {sw:2, ts:2},
+      'Blueberry':     {sw:1, ts:2},
+      'Coconut':       {sw:1, ts:2},
+      'Watermelon':    {sw:1, ts:2},
+      'Raspberry':     {sw:1, ts:2},
+      'Mint':          {sw:1, ts:2},
+      'Peach Ginger':  {sw:1, ts:2},
+    },
+    specialty: {
+      'Strawberry Passion': {sw:1, ts:2},
+      'Texas Chai':         {sw:3, ts:3},
+      'Pink Lemonade':      {sw:1, ts:2},
+      'Green - Sweet Almond':{sw:1, ts:2},
+      'Green - Unsweet':    {sw:1, ts:2},
+      'Mango Fresco':       {sw:1, ts:2},
+      'Sweet Zero':         {sw:1, ts:2},
+      'Ryan Palmer':        {sw:1, ts:2},
+      'Decaf - Unsweet':    {sw:1, ts:1},
+      'Cherry':             {sw:1, ts:2},
+    },
+  },
+};
+
+const MATRIX_PCTS = [1.50,1.75,2.00,2.25,2.50,2.75,3.00,3.25,3.50,3.75,4.00];
+const TARGET_LOW  = 2.25;
+const TARGET_HIGH = 2.75;
+
 function renderJugs(){
-  const stores = STORES.map(s=>({...WASTE_DATA[s.id],id:s.id})).filter(Boolean);
-  const totY = stores.reduce((a,s)=>a+(s.wastYestJug||0),0);
-  const totL7= stores.reduce((a,s)=>a+(s.wastL7Jug||0),0);
-  const totL30=stores.reduce((a,s)=>a+(s.wastL30Jug||0),0);
-  return `<div class="section">
-    <div class="card">
-      <div class="card-hdr"><div class="card-title">2.5 Gal Jugs — System</div></div>
-      <div class="stat-grid">
-        <div class="stat"><div class="stat-val">${fN(totY,1)}</div><div class="stat-lbl">Yesterday</div></div>
-        <div class="stat"><div class="stat-val">${fN(totL7,1)}</div><div class="stat-lbl">Last 7 Days</div></div>
-        <div class="stat"><div class="stat-val">${fN(totL30,1)}</div><div class="stat-lbl">Last 30 Days</div></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="tbl-hdr">
-        <div class="tbl-hdr-lbl" style="flex:1.5">Store</div>
-        <div class="tbl-cells">
-          <div class="tbl-hdr-lbl" style="width:60px;text-align:right">Yest</div>
-          <div class="tbl-hdr-lbl" style="width:60px;text-align:right">L7</div>
-          <div class="tbl-hdr-lbl" style="width:60px;text-align:right">L30</div>
-        </div>
-      </div>
-      ${stores.map(s=>{
-        const hi = s.wastL30Jug>50;
-        const md = s.wastL30Jug>20&&s.wastL30Jug<=50;
-        return `<div class="tbl-row">
-          <div class="tbl-store" style="color:${hi?'var(--red)':md?'var(--yellow)':'var(--text)'}">${s.id} - ${s.name}</div>
-          <div class="tbl-cells">
-            <div class="tbl-cell" style="width:60px">${fN(s.wastYestJug,2)}</div>
-            <div class="tbl-cell" style="width:60px">${fN(s.wastL7Jug,2)}</div>
-            <div class="tbl-cell" style="width:60px">${fN(s.wastL30Jug,2)}</div>
-          </div>
+  const jugData = JUG_PAR[SEL];
+  const store   = STORES.find(s=>s.id===SEL);
+
+  // ── Jug par table ───────────────────────────────────────────────────────
+  let jugTable = '';
+  let totalSW = 0, totalTS = 0;
+
+  if (!jugData) {
+    jugTable = `<div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--yellow)">
+      ⚠ Jug par data for this store has not been entered yet.</div>`;
+  } else {
+    // Count totals
+    ['sweets','unsweets','specialty'].forEach(sec => {
+      Object.values(jugData[sec]).forEach(v => { totalSW+=v.sw; totalTS+=v.ts; });
+    });
+
+    function jugRows(flavors) {
+      return Object.entries(flavors).map(([name,v]) => {
+        const isEmpty = v.sw===0 && v.ts===0;
+        return `<div style="display:grid;grid-template-columns:1fr 70px 70px;padding:5px 14px;border-bottom:1px solid rgba(255,255,255,0.03)">
+          <div style="font-size:11px;${isEmpty?'color:var(--dim)':''}">${name}</div>
+          <div style="text-align:center;font-size:12px;font-weight:700;${isEmpty?'color:var(--dim)':''}">${v.sw||'—'}</div>
+          <div style="text-align:center;font-size:12px;font-weight:700;${isEmpty?'color:var(--dim)':''}">${v.ts||'—'}</div>
         </div>`;
-      }).join('')}
+      }).join('');
+    }
+
+    function sectionLabel(label) {
+      return `<div style="font-size:9px;font-weight:800;color:var(--yellow);letter-spacing:.1em;text-transform:uppercase;padding:7px 14px 3px;background:rgba(251,191,36,0.04);border-top:1px solid var(--border)">${label}</div>`;
+    }
+
+    // Matrix calculation
+    // Weekly jug value = (totalSW × 4) + (totalTS × 3)
+    const weeklyVal = (totalSW * 4) + (totalTS * 3);
+    // Each jug = 2.5 gallons → cost per jug = COGS × avg price
+    // Matrix: weeklyVal ÷ pct% = implied weekly sales
+    const matrixRows = MATRIX_PCTS.map(pct => {
+      const impliedSales = weeklyVal / (pct/100);
+      const isTarget = pct >= TARGET_LOW && pct <= TARGET_HIGH;
+      const isLow    = pct < 2.00;
+      const isHigh   = pct > 3.00;
+      const color    = isTarget ? 'var(--green)' : isLow ? 'var(--red)' : isHigh ? 'var(--muted)' : 'var(--text)';
+      const bg       = isTarget ? 'rgba(74,222,128,0.08)' : 'transparent';
+      const border   = isTarget ? '1px solid rgba(74,222,128,0.2)' : '1px solid transparent';
+      return `<div style="display:grid;grid-template-columns:52px 1fr;gap:4px;padding:4px 8px;background:${bg};border-radius:6px;border:${border};margin-bottom:2px">
+        <div style="font-size:11px;font-weight:700;color:${color}">${pct.toFixed(2)}%</div>
+        <div style="font-size:11px;font-weight:700;color:${color};text-align:right">$${Math.round(impliedSales).toLocaleString()}</div>
+      </div>`;
+    }).join('');
+
+    jugTable = `
+    <div style="display:flex;gap:10px;align-items:flex-start">
+
+      <!-- Left: Jug par table -->
+      <div class="card" style="flex:1;margin-bottom:0;min-width:0">
+        <div style="display:grid;grid-template-columns:1fr 70px 70px;padding:7px 14px 5px;border-bottom:1px solid var(--border)">
+          <div style="font-size:9px;color:var(--muted);font-weight:700">Flavor</div>
+          <div style="font-size:9px;color:var(--muted);font-weight:700;text-align:center">Sun–Wed</div>
+          <div style="font-size:9px;color:var(--muted);font-weight:700;text-align:center">Thu–Sat</div>
+        </div>
+        <!-- Total row -->
+        <div style="display:grid;grid-template-columns:1fr 70px 70px;padding:6px 14px;background:rgba(56,189,248,0.07);border-bottom:1px solid rgba(56,189,248,0.2)">
+          <div style="font-size:11px;font-weight:800;color:var(--sky)">Total Pars</div>
+          <div style="text-align:center;font-size:13px;font-weight:800;color:var(--sky)">${totalSW}</div>
+          <div style="text-align:center;font-size:13px;font-weight:800;color:var(--sky)">${totalTS}</div>
+        </div>
+        ${sectionLabel('Sweets')}${jugRows(jugData.sweets)}
+        ${sectionLabel('Un-Sweets')}${jugRows(jugData.unsweets)}
+        ${sectionLabel('Specialty')}${jugRows(jugData.specialty)}
+      </div>
+
+      <!-- Right: Matrix -->
+      <div style="width:130px;flex-shrink:0">
+        <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;text-align:center">Sales Range</div>
+        <div style="font-size:8px;color:var(--dim);text-align:center;margin-bottom:8px">(${totalSW}×4)+(${totalTS}×3)<br>= ${weeklyVal} ÷ %</div>
+        <div>${matrixRows}</div>
+        <div style="font-size:8px;color:var(--dim);text-align:center;margin-top:8px">🟢 Target 2.25–2.75%</div>
+      </div>
+
+    </div>`;
+  }
+
+  return `<div>
+    <div style="position:sticky;top:97px;z-index:40;background:var(--bg);padding:0 0 6px;border-bottom:1px solid var(--border)">
+      ${storeStrip()}
     </div>
-    <div style="font-size:9px;color:var(--dim);text-align:center;margin-top:8px">1 jug = 2.5 gallons · Data as of 03/15/26</div>
+    <div class="section" style="padding-top:8px">${jugTable}</div>
   </div>`;
 }
 
 // ── Render ──────────────────────────────────────────────────────────────────
 function render(){
   const app = document.getElementById('app');
-  if(MODE==='overview') app.innerHTML=renderOverview();
+  if(MODE==='overview') app.innerHTML=renderWaste(); // overview removed
   else if(MODE==='waste')  app.innerHTML=renderWaste();
   else if(MODE==='gallon') app.innerHTML=renderGallon();
   else if(MODE==='jugs')   app.innerHTML=renderJugs();
