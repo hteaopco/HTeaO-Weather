@@ -270,16 +270,16 @@ const C2F=c=>c*9/5+32;
 
 function cloudTier(p){
   if(p<=20)return{n:"Clear",   a:0};
-  if(p<=50)return{n:"Partly",  a:-0.10};
-  if(p<=80)return{n:"Mostly",  a:-0.25};
+  if(p<=50)return{n:"Partly",  a:-0.20};
+  if(p<=80)return{n:"Mostly",  a:-0.40};
   return       {n:"Overcast",a:-0.75};
 }
 function rainTier(mm){
   const i=(mm||0)/25.4;
   if(i<=0)  return{n:"None",    a:0};
-  if(i<0.25)return{n:"Light",   a:-0.05};
-  if(i<0.75)return{n:"Moderate",a:-0.10};
-  return       {n:"Heavy",   a:-0.15};
+  if(i<0.25)return{n:"Light",   a:-0.15};
+  if(i<0.75)return{n:"Moderate",a:-0.20};
+  return       {n:"Heavy",   a:-0.25};
 }
 
 // ── DOW lookup helper ──────────────────────────────────────────────────────
