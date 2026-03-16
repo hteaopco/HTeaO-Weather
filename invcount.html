@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HTeaO — Enter Inventory</title>
+<style>
+  :root{--bg:#080e1a;--card:#0d1526;--border:rgba(255,255,255,0.08);--text:#e2e8f0;--muted:#64748b;--dim:#334155;--sky:#38bdf8;--green:#4ade80;--yellow:#fbbf24;--red:#f87171;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,sans-serif;min-height:100vh;padding-bottom:60px;}
+
+  /* Header */
+  .header{background:var(--bg);border-bottom:1px solid var(--border);padding:12px 16px;position:sticky;top:0;z-index:50;}
+  .header-top{display:flex;align-items:center;gap:10px;}
+  .logo{font-size:18px;font-weight:900;color:var(--sky);}
+  .sub{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;}
+
+  /* Step bar */
+  .steps{display:flex;gap:3px;padding:10px 16px 0;}
+  .step{flex:1;height:3px;border-radius:2px;background:var(--dim);transition:background .3s;}
+  .step.done{background:var(--green);}
+  .step.active{background:var(--sky);}
+
+  /* Section */
+  .section{padding:16px;}
+  .field{margin-bottom:14px;}
+  .label{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px;display:block;}
+  input,select{width:100%;padding:11px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:15px;font-family:inherit;-webkit-appearance:none;appearance:none;outline:none;}
+  input:focus,select:focus{border-color:rgba(56,189,248,0.5);}
+  .name-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+
+  /* Category section */
+  .cat-label{font-size:10px;font-weight:800;color:var(--yellow);letter-spacing:.1em;text-transform:uppercase;padding:10px 0 6px;border-bottom:1px solid var(--border);margin-bottom:2px;}
+
+  /* Product table */
+  .prod-table{background:var(--card);border-radius:10px;border:1px solid var(--border);overflow:hidden;margin-bottom:14px;}
+  .prod-hdr{display:grid;grid-template-columns:1fr 84px 70px;padding:8px 12px;background:rgba(56,189,248,0.08);border-bottom:1px solid var(--border);gap:8px;}
+  .prod-hdr span{font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.08em;text-transform:uppercase;}
+  .prod-hdr span:not(:first-child){text-align:center;}
+  .prod-row{display:grid;grid-template-columns:1fr 84px 70px;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.04);align-items:center;gap:8px;min-height:46px;}
+  .prod-row:last-child{border-bottom:none;}
+  .prod-name{font-size:13px;color:var(--text);line-height:1.3;}
+  .cs-val{text-align:center;font-size:13px;font-weight:700;color:var(--muted);}
+  .cs-val.nz{color:var(--green);}
+
+  /* Stepper */
+  .stepper{display:flex;align-items:center;width:84px;}
+  .stepper-btn{width:24px;height:32px;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:16px;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;user-select:none;flex-shrink:0;}
+  .stepper-btn:first-child{border-radius:5px 0 0 5px;}
+  .stepper-btn:last-child{border-radius:0 5px 5px 0;}
+  .stepper-btn:active{background:rgba(56,189,248,0.2);}
+  .stepper-val{flex:1;text-align:center;font-size:14px;font-weight:700;color:var(--text);background:rgba(255,255,255,0.03);border-top:1px solid var(--border);border-bottom:1px solid var(--border);height:32px;line-height:32px;pointer-events:none;}
+  .stepper-val.nz{color:var(--sky);}
+
+  /* Buttons */
+  .btn-row{display:flex;gap:8px;}
+  .btn{flex:1;padding:14px;border-radius:10px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;border:none;transition:opacity .15s;}
+  .btn-primary{background:var(--sky);color:#080e1a;}
+  .btn-secondary{background:var(--card);color:var(--muted);border:1px solid var(--border);}
+  .btn:active{opacity:.75;}
+
+  /* Loading / error */
+  .loading{text-align:center;padding:40px 16px;color:var(--muted);font-size:13px;}
+  .error-box{background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.25);border-radius:10px;padding:14px;font-size:13px;color:var(--red);margin:16px;}
+
+  /* Success */
+  .success{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:32px;}
+  .success.show{display:flex;}
+  .success-icon{font-size:56px;margin-bottom:16px;}
+  .success h2{font-size:22px;font-weight:900;color:var(--green);margin-bottom:8px;}
+  .success p{font-size:14px;color:var(--muted);margin-bottom:24px;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div><div class="logo">HTeaO</div><div class="sub">Enter Inventory</div></div>
+    <a href="inventory.html" style="margin-left:auto;font-size:11px;color:var(--muted);text-decoration:none;">← Back</a>
+  </div>
+  <div class="steps">
+    <div class="step active" id="s1"></div>
+    <div class="step" id="s2"></div>
+  </div>
+</div>
+
+<!-- Step 1: Info -->
+<div id="step1">
+  <div class="section">
+    <div style="font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;">Submission Info</div>
+    <div class="field">
+      <label class="label">Location</label>
+      <select id="location">
+        <option value="">Select Location</option>
+        <option>01 - Yukon</option><option>02 - The Village</option><option>03 - Bartlesville</option>
+        <option>04 - SW OKC</option><option>05 - Uptown</option><option>06 - Norman1</option>
+        <option>07 - Shawnee</option><option>08 - Duncan</option><option>09 - Lawton</option>
+        <option>10 - Chickisha</option><option>11 - OU Med</option><option>12 - Moore</option>
+        <option>13 - Norman2</option><option>14 - Webb City</option><option>15 - Pecos</option>
+        <option>16 - Carlsbad</option><option>17 - Las Cruces</option><option>18 - Hutchinson</option>
+        <option>19 - Clovis</option><option>20 - Hereford</option>
+      </select>
+    </div>
+    <div class="field">
+      <label class="label">Counted By</label>
+      <div class="name-row">
+        <input type="text" id="firstName" placeholder="First" autocomplete="given-name">
+        <input type="text" id="lastName" placeholder="Last" autocomplete="family-name">
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">Date</label>
+      <input type="date" id="countDate">
+    </div>
+    <button class="btn btn-primary" onclick="loadProducts()">Next →</button>
+  </div>
+</div>
+
+<!-- Step 2: Count (built dynamically) -->
+<div id="step2" style="display:none">
+  <div id="productArea">
+    <div class="loading" id="loadingMsg">Loading product catalog...</div>
+  </div>
+  <div class="section" id="submitArea" style="display:none">
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goBack()">← Back</button>
+      <button class="btn btn-primary" onclick="submitForm()">Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Success -->
+<div class="success" id="success">
+  <div class="success-icon">✅</div>
+  <h2>Submitted!</h2>
+  <p id="successMsg"></p>
+  <div style="display:flex;gap:10px;margin-top:8px;width:100%;max-width:300px;">
+    <a href="inventory.html" style="flex:1;padding:12px;border-radius:10px;background:var(--card);color:var(--muted);text-decoration:none;text-align:center;font-weight:700;font-size:14px;border:1px solid var(--border);">← Back</a>
+    <button class="btn btn-primary" style="flex:1" onclick="resetForm()">New Count</button>
+  </div>
+</div>
+
+<script>
+// ── Config ──
+const SHEET_ID  = '1Cmi64K50QpRYKVrV1jj9C4C2pCavL3aA7TXyg3IIN2k';
+const SHEET_TAB = 'Raw';
+
+let PRODUCTS = []; // loaded from sheet
+let COUNTS   = {}; // keyed by row index
+
+document.getElementById('countDate').valueAsDate = new Date();
+
+// ── Step navigation ──
+function goBack(){
+  document.getElementById('step2').style.display='none';
+  document.getElementById('step1').style.display='block';
+  document.getElementById('s1').className='step active';
+  document.getElementById('s2').className='step';
+  window.scrollTo(0,0);
+}
+
+// ── Load products from Google Sheet ──
+async function loadProducts(){
+  // Advance to step 2 immediately, show loader
+  document.getElementById('step1').style.display='none';
+  document.getElementById('step2').style.display='block';
+  document.getElementById('s1').className='step done';
+  document.getElementById('s2').className='step active';
+  window.scrollTo(0,0);
+
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_TAB)}`;
+
+  try {
+    const res  = await fetch(url);
+    const text = await res.text();
+    // Google wraps response in /*O_o*/ ... callback
+    const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+    const rows = json.table.rows;
+    const cols = json.table.cols.map(c => c.label);
+
+    // Map col indices
+    const iProduct  = cols.findIndex(c => c.toLowerCase().includes('product'));
+    const iCOGS     = cols.findIndex(c => c.toLowerCase().includes('cogs'));
+    const iActive   = cols.findIndex(c => c.toLowerCase().includes('active'));
+    const iPrice    = cols.findIndex(c => c.toLowerCase().includes('price'));
+    const iPackSize = cols.findIndex(c => c.toLowerCase().includes('pack'));
+
+    PRODUCTS = rows
+      .map((r, idx) => ({
+        idx,
+        name:     r.c[iProduct]?.v  || '',
+        category: r.c[iCOGS]?.v    || 'Other',
+        active:   String(r.c[iActive]?.v  || '').toLowerCase(),
+        price:    parseFloat(r.c[iPrice]?.v)    || 0,
+        packSize: parseFloat(r.c[iPackSize]?.v) || 0,
+      }))
+      .filter(p => p.name && p.active === 'yes');
+
+    if(PRODUCTS.length === 0){
+      showError('No active products found in the catalog. Make sure Active = "Yes" for items in the sheet.');
+      return;
+    }
+
+    renderProducts();
+  } catch(e) {
+    showError('Could not load product catalog. Check that the Google Sheet is set to "Anyone with the link can view."<br><br>Error: '+e.message);
+  }
+}
+
+function showError(msg){
+  document.getElementById('productArea').innerHTML =
+    `<div class="error-box">${msg}</div>
+     <div class="section"><button class="btn btn-secondary" style="max-width:200px" onclick="goBack()">← Back</button></div>`;
+}
+
+// ── Render product count form ──
+function renderProducts(){
+  // Group by category
+  const cats = {};
+  PRODUCTS.forEach(p => {
+    if(!cats[p.category]) cats[p.category]=[];
+    cats[p.category].push(p);
+  });
+
+  let html = '<div class="section" style="padding-bottom:0">';
+
+  Object.keys(cats).sort().forEach(cat => {
+    html += `<div class="cat-label">${cat}</div>
+    <div class="prod-table">
+      <div class="prod-hdr"><span>Product</span><span>Count</span><span>CS Adj</span></div>`;
+
+    cats[cat].forEach(p => {
+      const csLabel = p.packSize > 0 ? `÷${p.packSize}` : '—';
+      html += `
+      <div class="prod-row">
+        <div class="prod-name">${p.name}${p.packSize>0?'<div style="font-size:10px;color:var(--dim);margin-top:1px;">CS '+csLabel+'</div>':''}</div>
+        <div class="stepper">
+          <button class="stepper-btn" onclick="adj(${p.idx},-1)">−</button>
+          <div class="stepper-val" id="disp_${p.idx}">0</div>
+          <input type="hidden" id="cnt_${p.idx}" value="0">
+          <button class="stepper-btn" onclick="adj(${p.idx},1)">+</button>
+        </div>
+        <div class="cs-val" id="cs_${p.idx}">—</div>
+      </div>`;
+    });
+
+    html += '</div>';
+  });
+
+  html += '</div>';
+  document.getElementById('productArea').innerHTML = html;
+  document.getElementById('submitArea').style.display = 'block';
+}
+
+// ── Stepper ──
+function adj(idx, delta){
+  const inp  = document.getElementById('cnt_'+idx);
+  const disp = document.getElementById('disp_'+idx);
+  const csEl = document.getElementById('cs_'+idx);
+  let val = parseInt(inp.value)||0;
+  val = Math.max(0, val+delta);
+  inp.value = val;
+  disp.textContent = val;
+  disp.className = val>0 ? 'stepper-val nz' : 'stepper-val';
+  COUNTS[idx] = val;
+
+  // CS adjustment
+  const p = PRODUCTS.find(p=>p.idx===idx);
+  if(p && p.packSize>0 && val>0){
+    const cs = (val/p.packSize).toFixed(2);
+    csEl.textContent = cs;
+    csEl.className = 'cs-val nz';
+  } else {
+    csEl.textContent = '—';
+    csEl.className = 'cs-val';
+  }
+}
+
+// ── Submit ──
+function submitForm(){
+  const results = PRODUCTS
+    .filter(p => (COUNTS[p.idx]||0) > 0)
+    .map(p => ({
+      product:  p.name,
+      category: p.category,
+      count:    COUNTS[p.idx]||0,
+      csAdj:    p.packSize>0 ? ((COUNTS[p.idx]||0)/p.packSize).toFixed(2) : null,
+      packSize: p.packSize,
+      unitPrice:p.price,
+    }));
+
+  const submission = {
+    submittedAt: new Date().toISOString(),
+    location:    document.getElementById('location').value,
+    firstName:   document.getElementById('firstName').value,
+    lastName:    document.getElementById('lastName').value,
+    date:        document.getElementById('countDate').value,
+    itemsCounted: results.length,
+    items:       results,
+  };
+
+  console.log('Inventory Count Submission:', JSON.stringify(submission, null, 2));
+
+  // Log to audit (localStorage)
+  try {
+    const logs = JSON.parse(localStorage.getItem('hteao_audit_log')||'[]');
+    const d = new Date();
+    logs.push({
+      date: d.toLocaleDateString(),
+      time: d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
+      type: 'Inventory Count',
+      data: submission,
+    });
+    localStorage.setItem('hteao_audit_log', JSON.stringify(logs));
+  } catch(e){}
+
+  // Show success
+  document.getElementById('step2').style.display='none';
+  document.getElementById('success').classList.add('show');
+  document.getElementById('successMsg').textContent =
+    `${submission.firstName} ${submission.lastName} · ${submission.location} · ${results.length} items counted`;
+  window.scrollTo(0,0);
+}
+
+// ── Reset ──
+function resetForm(){
+  PRODUCTS=[]; COUNTS={};
+  document.getElementById('success').classList.remove('show');
+  document.getElementById('step1').style.display='block';
+  document.getElementById('s1').className='step active';
+  document.getElementById('s2').className='step';
+  document.getElementById('countDate').valueAsDate=new Date();
+  document.getElementById('productArea').innerHTML='<div class="loading" id="loadingMsg">Loading product catalog...</div>';
+  document.getElementById('submitArea').style.display='none';
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
