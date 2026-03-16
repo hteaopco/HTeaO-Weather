@@ -123,6 +123,7 @@ textarea.input{resize:vertical;font-family:'Menlo','Courier New',monospace;font-
   <div class="tabs">
     <button class="tab active" id="tab-fc" onclick="setMode('forecast')">🌤 14-Day Forecast</button>
     <button class="tab" id="tab-hi" onclick="setMode('historical')">📊 Daily Analysis</button>
+    <button class="tab" id="tab-yoy" onclick="setMode('yoy')">📈 YOY</button>
     <button class="tab" id="tab-bud" onclick="setMode('budget')">💰 Budget</button>
   </div>
 </div>
@@ -557,11 +558,28 @@ async function runHistorical(){
 }
 
 // ── Render ─────────────────────────────────────────────────────────────────
+
+// ── Render YOY ─────────────────────────────────────────────────────────────
+function ryoy(){
+  return`<div class="section">
+    <div style="text-align:center;padding:40px 20px">
+      <div style="font-size:40px;margin-bottom:16px">📈</div>
+      <div style="font-size:18px;font-weight:800;color:var(--sky);margin-bottom:10px">YOY Charts</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.6;max-width:280px;margin:0 auto">
+        Coming soon — consolidated + per-store rolling L7 vs 2025 YOY vs budget.
+        <br><br>
+        <span style="color:var(--dim);font-size:11px">Requires hosting to enable weather-adjusted L7 line.</span>
+      </div>
+    </div>
+  </div>`;
+}
+
 function render(){
   try{
     let html;
     if(MODE==="forecast") html=rfx();
     else if(MODE==="budget") html=rbud();
+    else if(MODE==="yoy") html=ryoy();
     else html=rhi();
     document.getElementById("app").innerHTML=html;
   }
@@ -571,6 +589,7 @@ function setMode(m){
   MODE=m;SHOW_IN=true;EX={};
   document.getElementById("tab-fc").classList.toggle("active",m==="forecast");
   document.getElementById("tab-hi").classList.toggle("active",m==="historical");
+  document.getElementById("tab-yoy").classList.toggle("active",m==="yoy");
   document.getElementById("tab-bud").classList.toggle("active",m==="budget");
   render();
 }
@@ -928,7 +947,7 @@ function rfx(){
     <div style="height:1px;background:rgba(255,255,255,0.08);margin:4px 0 12px"></div>
   <button onclick="EX['fc_all']=!EX['fc_all'];render();" style="width:100%;padding:11px;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;box-sizing:border-box;border:1px solid rgba(255,255,255,0.12);background:${EX['fc_all']?'rgba(56,189,248,0.15)':'rgba(255,255,255,0.04)'};color:${EX['fc_all']?'#38bdf8':'#94a3b8'};margin-bottom:10px">${EX['fc_all']?'▲ Collapse All Stores':'▼ Expand All Stores'}</button>
   ${EX['fc_all']?cards:''}
-    <button class="btn" onclick="runForecast()" style="margin-top:8px;font-size:11px;padding:9px">↻ Refresh Forecast</button>
+
   </div>`;
 }
 
