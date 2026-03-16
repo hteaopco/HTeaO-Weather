@@ -481,9 +481,10 @@ async function runHistorical(){
     });
     const totA=out.reduce((a,r)=>a+(r.actual||0),0);
     const totW=out.reduce((a,r)=>a+(r.weekly||0),0);
-    const adjRows=out.filter(r=>r.adj);
-    const avgW=adjRows.length?adjRows.reduce((a,r)=>a+r.adj.total,0)/adjRows.length:0;
-
+    const adjRows=out.filter(r=>r.adj&&r.actual>0);
+    const adjWtdNum=adjRows.reduce((a,r)=>a+r.adj.total*r.actual,0);
+    const adjWtdDen=adjRows.reduce((a,r)=>a+r.actual,0);
+    const avgW=adjWtdDen>0?adjWtdNum/adjWtdDen:0;
     // Compute today's consolidated DOW weekly and weather-normalized weekly
     const todayDOW=out.filter(r=>r.dowW&&!r.error).reduce((sum,r)=>sum+(r.actual/(r.dowW/100)),0);
     const todayWthrNorm=out.filter(r=>r.adj&&r.dowW&&!r.error).reduce((sum,r)=>{
@@ -1247,7 +1248,7 @@ function rfx(){
       <div class="consol-sales">${f$(totalDaySales)}</div>
     </div>
     <div style="text-align:right">
-      <div style="font-size:9px;color:var(--muted);margin-bottom:3px">Avg Weather Adj</div>
+      <div style="font-size:9px;color:var(--muted);margin-bottom:3px">Wtd Weather Adj</div>
       <div class="consol-adj" style="color:${ac(sysAvg)}">${fp(sysAvg)}</div>
     </div>
   </div>`;
@@ -1366,7 +1367,7 @@ function rhi(){
     h+=`<div class="summary-grid">
 
       <div class="summary-card">
-        <div class="summary-label">Avg Weather Adj</div>
+        <div class="summary-label">Wtd Weather Adj</div>
         <div class="summary-val" style="color:${ac(HIST.avgW)}">${fp(HIST.avgW)}</div>
       </div>
       <div class="summary-card">
