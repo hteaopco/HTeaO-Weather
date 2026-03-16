@@ -128,6 +128,9 @@ textarea.input{resize:vertical;font-family:'Menlo','Courier New',monospace;font-
   </div>
 </div>
 <div id="app"></div>
+<!-- Weather cache seed: paste JSON from "Copy Weather Cache" button here -->
+<!-- This seeds WEATHER_CACHE on page load so L7 uses cached data -->
+<textarea id="wx-cache-seed" style="display:none"></textarea>
 <div style="text-align:center;padding:16px;font-size:9px;color:rgba(255,255,255,0.08);line-height:1.9">
   Temp 40% · 1.00%/°F · 30yr NOAA normals · Cloud 50% · Rain 10%<br>Open-Meteo
 </div>
@@ -385,6 +388,54 @@ window.BUD_MODE="as-is";
 window.ADJ_COMP=false;
 let SAVED_DATE="2026-03-15",SAVED_SALES="3-8-2026\t01 - Yukon\t2010.16\n3-8-2026\t02 - The Village\t2845.23\n3-8-2026\t03 - Bartlesville\t3282.56\n3-8-2026\t04 - SW OKC\t2550.63\n3-8-2026\t05 - Uptown\t1224.00\n3-8-2026\t06 - Norman1\t1927.51\n3-8-2026\t07 - Shawnee\t2365.23\n3-8-2026\t08 - Duncan\t1493.10\n3-8-2026\t09 - Lawton\t2213.47\n3-8-2026\t10 - Chickasha\t1595.31\n3-8-2026\t11 - OU Med\t0.00\n3-8-2026\t12 - Moore\t1601.99\n3-8-2026\t13 - Norman2\t1819.77\n3-8-2026\t14 - Webb City\t1385.30\n3-8-2026\t15 - Pecos\t2348.38\n3-8-2026\t16 - Carlsbad\t3513.37\n3-8-2026\t17 - Las Cruces\t4928.98\n3-8-2026\t18 - Hutchinson\t4039.49\n3-8-2026\t19 - Clovis\t4628.40\n3-8-2026\t20 - Hereford\t2171.79\n3-9-2026\t01 - Yukon\t1669.13\n3-9-2026\t02 - The Village\t2661.10\n3-9-2026\t03 - Bartlesville\t2579.52\n3-9-2026\t04 - SW OKC\t1782.48\n3-9-2026\t05 - Uptown\t1398.55\n3-9-2026\t06 - Norman1\t1938.33\n3-9-2026\t07 - Shawnee\t1844.32\n3-9-2026\t08 - Duncan\t1655.76\n3-9-2026\t09 - Lawton\t1511.18\n3-9-2026\t10 - Chickasha\t1867.03\n3-9-2026\t11 - OU Med\t882.32\n3-9-2026\t12 - Moore\t1636.57\n3-9-2026\t13 - Norman2\t1507.28\n3-9-2026\t14 - Webb City\t1112.87\n3-9-2026\t15 - Pecos\t2436.88\n3-9-2026\t16 - Carlsbad\t2896.09\n3-9-2026\t17 - Las Cruces\t4151.48\n3-9-2026\t18 - Hutchinson\t3160.57\n3-9-2026\t19 - Clovis\t4736.52\n3-9-2026\t20 - Hereford\t1945.17\n3-10-2026\t01 - Yukon\t1574.68\n3-10-2026\t02 - The Village\t2256.88\n3-10-2026\t03 - Bartlesville\t2429.58\n3-10-2026\t04 - SW OKC\t2074.30\n3-10-2026\t05 - Uptown\t1295.44\n3-10-2026\t06 - Norman1\t1826.20\n3-10-2026\t07 - Shawnee\t1870.59\n3-10-2026\t08 - Duncan\t1440.26\n3-10-2026\t09 - Lawton\t1855.11\n3-10-2026\t10 - Chickasha\t1657.44\n3-10-2026\t11 - OU Med\t1139.33\n3-10-2026\t12 - Moore\t1515.44\n3-10-2026\t13 - Norman2\t1305.90\n3-10-2026\t14 - Webb City\t922.10\n3-10-2026\t15 - Pecos\t2595.74\n3-10-2026\t16 - Carlsbad\t3246.10\n3-10-2026\t17 - Las Cruces\t3559.94\n3-10-2026\t18 - Hutchinson\t2786.10\n3-10-2026\t19 - Clovis\t3778.91\n3-10-2026\t20 - Hereford\t2243.68\n3-11-2026\t01 - Yukon\t1678.27\n3-11-2026\t02 - The Village\t2466.59\n3-11-2026\t03 - Bartlesville\t2414.71\n3-11-2026\t04 - SW OKC\t2205.73\n3-11-2026\t05 - Uptown\t1299.60\n3-11-2026\t06 - Norman1\t1556.40\n3-11-2026\t07 - Shawnee\t2006.84\n3-11-2026\t08 - Duncan\t1641.29\n3-11-2026\t09 - Lawton\t1852.01\n3-11-2026\t10 - Chickasha\t1449.82\n3-11-2026\t11 - OU Med\t899.08\n3-11-2026\t12 - Moore\t1497.60\n3-11-2026\t13 - Norman2\t1697.58\n3-11-2026\t14 - Webb City\t643.46\n3-11-2026\t15 - Pecos\t2720.51\n3-11-2026\t16 - Carlsbad\t2641.10\n3-11-2026\t17 - Las Cruces\t5236.01\n3-11-2026\t18 - Hutchinson\t2208.25\n3-11-2026\t19 - Clovis\t3628.04\n3-11-2026\t20 - Hereford\t1937.44\n3-12-2026\t01 - Yukon\t1687.50\n3-12-2026\t02 - The Village\t2702.53\n3-12-2026\t03 - Bartlesville\t2678.65\n3-12-2026\t04 - SW OKC\t2242.62\n3-12-2026\t05 - Uptown\t1358.64\n3-12-2026\t06 - Norman1\t1755.71\n3-12-2026\t07 - Shawnee\t1853.89\n3-12-2026\t08 - Duncan\t1726.48\n3-12-2026\t09 - Lawton\t1574.35\n3-12-2026\t10 - Chickasha\t1665.25\n3-12-2026\t11 - OU Med\t818.25\n3-12-2026\t12 - Moore\t1647.79\n3-12-2026\t13 - Norman2\t1487.80\n3-12-2026\t14 - Webb City\t937.20\n3-12-2026\t15 - Pecos\t2446.80\n3-12-2026\t16 - Carlsbad\t3233.08\n3-12-2026\t17 - Las Cruces\t4769.66\n3-12-2026\t18 - Hutchinson\t2766.54\n3-12-2026\t19 - Clovis\t4127.23\n3-12-2026\t20 - Hereford\t2005.97\n3-13-2026\t01 - Yukon\t2094.00\n3-13-2026\t02 - The Village\t3248.53\n3-13-2026\t03 - Bartlesville\t2978.15\n3-13-2026\t04 - SW OKC\t2345.42\n3-13-2026\t05 - Uptown\t1660.95\n3-13-2026\t06 - Norman1\t2100.31\n3-13-2026\t07 - Shawnee\t2860.76\n3-13-2026\t08 - Duncan\t1705.60\n3-13-2026\t09 - Lawton\t2094.39\n3-13-2026\t10 - Chickasha\t1802.12\n3-13-2026\t11 - OU Med\t768.99\n3-13-2026\t12 - Moore\t1726.60\n3-13-2026\t13 - Norman2\t1609.49\n3-13-2026\t14 - Webb City\t1296.43\n3-13-2026\t15 - Pecos\t2890.68\n3-13-2026\t16 - Carlsbad\t4613.23\n3-13-2026\t17 - Las Cruces\t6249.17\n3-13-2026\t18 - Hutchinson\t3353.52\n3-13-2026\t19 - Clovis\t5723.79\n3-13-2026\t20 - Hereford\t2659.98\n3-14-2026\t01 - Yukon\t2274.58\n3-14-2026\t02 - The Village\t3645.95\n3-14-2026\t03 - Bartlesville\t4089.92\n3-14-2026\t04 - SW OKC\t2945.77\n3-14-2026\t05 - Uptown\t1697.33\n3-14-2026\t06 - Norman1\t2034.79\n3-14-2026\t07 - Shawnee\t2554.11\n3-14-2026\t08 - Duncan\t2163.96\n3-14-2026\t09 - Lawton\t2401.65\n3-14-2026\t10 - Chickasha\t1975.22\n3-14-2026\t11 - OU Med\t0.00\n3-14-2026\t12 - Moore\t1850.61\n3-14-2026\t13 - Norman2\t1690.06\n3-14-2026\t14 - Webb City\t1599.49\n3-14-2026\t15 - Pecos\t2504.80\n3-14-2026\t16 - Carlsbad\t4869.08\n3-14-2026\t17 - Las Cruces\t6457.88\n3-14-2026\t18 - Hutchinson\t4143.25\n3-14-2026\t19 - Clovis\t5991.26\n3-14-2026\t20 - Hereford\t2302.28\n3-15-2026\t01 - Yukon\t1382.75\n3-15-2026\t02 - The Village\t1974.70\n3-15-2026\t03 - Bartlesville\t2655.44\n3-15-2026\t04 - SW OKC\t1679.32\n3-15-2026\t05 - Uptown\t805.48\n3-15-2026\t06 - Norman1\t1485.69\n3-15-2026\t07 - Shawnee\t1829.51\n3-15-2026\t08 - Duncan\t1396.93\n3-15-2026\t09 - Lawton\t1522.11\n3-15-2026\t10 - Chickasha\t1259.17\n3-15-2026\t11 - OU Med\t0.00\n3-15-2026\t12 - Moore\t1281.84\n3-15-2026\t13 - Norman2\t874.79\n3-15-2026\t14 - Webb City\t864.20\n3-15-2026\t15 - Pecos\t2326.71\n3-15-2026\t16 - Carlsbad\t3820.73\n3-15-2026\t17 - Las Cruces\t5333.91\n3-15-2026\t18 - Hutchinson\t1987.89\n3-15-2026\t19 - Clovis\t3355.93\n3-15-2026\t20 - Hereford\t1525.83";
 
+// ── Weather Cache ──────────────────────────────────────────────────────────
+// Stores adj results keyed by "YYYY-MM-DD|storeId" so L7 can use cached data
+// instead of re-fetching archive (which has a 2-5 day lag).
+// Rule: good data (non-null adj) can only be replaced by good data.
+// Format per entry: {total, temp, cloud, rain} matching adj object structure.
+let WEATHER_CACHE={};
+
+function wxCacheKey(date,sid){return date+"|"+sid;}
+
+function wxCacheGet(date,sid){
+  return WEATHER_CACHE[wxCacheKey(date,sid)]||null;
+}
+
+function wxCacheSet(date,sid,adj){
+  // Only write if adj is real (has a total value)
+  if(!adj||adj.total==null) return;
+  const key=wxCacheKey(date,sid);
+  const existing=WEATHER_CACHE[key];
+  // Never overwrite good data with null — good data only replaced by good data
+  if(existing&&existing.total!=null) {
+    // Overwrite allowed (same-day re-run), since weather doesn't change
+    WEATHER_CACHE[key]=adj;
+  } else {
+    WEATHER_CACHE[key]=adj;
+  }
+}
+
+function wxCacheSerialize(){
+  return JSON.stringify(WEATHER_CACHE);
+}
+
+function wxCacheLoad(str){
+  try{
+    const parsed=JSON.parse(str);
+    if(parsed&&typeof parsed==="object"){
+      // Merge: good existing values are never overwritten by incoming nulls
+      Object.keys(parsed).forEach(k=>{
+        const v=parsed[k];
+        if(v&&v.total!=null){
+          if(!WEATHER_CACHE[k]||WEATHER_CACHE[k].total==null){
+            WEATHER_CACHE[k]=v;
+          }
+        }
+      });
+    }
+  }catch(e){}
+}
+
 // ── Fetch ──────────────────────────────────────────────────────────────────
 function fetchStore(store){
   const url=`https://api.open-meteo.com/v1/forecast?latitude=${store.lat}&longitude=${store.lon}`+
@@ -479,6 +530,11 @@ async function runHistorical(){
         return{store:s,actual,adj,dowW:getDOW(s.id,jsDay),weekly:wkly(actual,s.id,jsDay,adj.total)};
       }catch(e){return{store:s,actual:salesMap[s.id],error:"Parse: "+e.message};}
     });
+    // ── Cache today's weather results (good data only, never overwrites with null) ──
+    out.forEach(r=>{if(r.adj&&r.adj.total!=null) wxCacheSet(date,r.store.id,r.adj);});
+    // Persist cache to seed textarea so it survives page reload
+    const wxte=document.getElementById("wx-cache-seed");
+    if(wxte) wxte.value=wxCacheSerialize();
     const totA=out.reduce((a,r)=>a+(r.actual||0),0);
     const totW=out.reduce((a,r)=>a+(r.weekly||0),0);
     const adjRows=out.filter(r=>r.adj&&r.actual>0&&r.dowW);
@@ -502,12 +558,26 @@ async function runHistorical(){
           allDates.push(d.toISOString().split("T")[0]);
         }
         // Fetch weather for all stores × all 7 days in parallel
+        // Uses cache first — only fetches archive for dates/stores not cached
         const weatherByDate={};
         await Promise.all(allDates.map(async dt=>{
-          const promises=STORES.map(s=>fetchArchive(s,dt).catch(()=>null));
-          const results=await Promise.all(promises);
           weatherByDate[dt]={};
-          STORES.forEach((s,i)=>{ weatherByDate[dt][s.id]=results[i]; });
+          // Separate stores into cached vs needs-fetch
+          const toFetch=[];
+          STORES.forEach(s=>{
+            const cached=wxCacheGet(dt,s.id);
+            if(cached&&cached.total!=null){
+              // Use cached adj directly — wrap in pseudo-response for consistency
+              weatherByDate[dt][s.id]={_cached:true,_adj:cached};
+            } else {
+              toFetch.push(s);
+            }
+          });
+          if(toFetch.length>0){
+            const promises=toFetch.map(s=>fetchArchive(s,dt).catch(()=>null));
+            const results=await Promise.all(promises);
+            toFetch.forEach((s,i)=>{ weatherByDate[dt][s.id]=results[i]; });
+          }
         }));
         // Compute L7 actual and weather-normalized for each day
         let l7Actual=0, l7WthrNorm=0, daysUsed=0, wxDays=0, wxStoreDays=0, totalStoreDays=0;
@@ -521,16 +591,29 @@ async function runHistorical(){
             if(act==null||act<=0) return;
             const wData=weatherByDate[dt]&&weatherByDate[dt][s.id];
             let adj=null;
-            if(wData&&!wData.error){
+            if(wData&&wData._cached){
+              // Use pre-cached adj directly
+              adj=wData._adj;
+              if(adj) dayWxCount++;
+            } else if(wData&&!wData.error){
               const h=wData.hourly;
               const tArr=h&&h.temperature_2m&&h.temperature_2m.length?h.temperature_2m:null;
               const clArr=h&&h.cloudcover&&h.cloudcover.length?h.cloudcover:null;
               const prArr=h&&h.precipitation&&h.precipitation.length?h.precipitation:null;
-              const tFd=wData.daily&&wData.daily.temperature_2m_mean&&wData.daily.temperature_2m_mean[0]!=null?wData.daily.temperature_2m_mean[0]:20;
+              const hasDailyMean=wData.daily&&wData.daily.temperature_2m_mean&&wData.daily.temperature_2m_mean[0]!=null;
+              const tFd=hasDailyMean?wData.daily.temperature_2m_mean[0]:20;
               const cld=wData.daily&&wData.daily.cloudcover_mean&&wData.daily.cloudcover_mean[0]!=null?wData.daily.cloudcover_mean[0]:0;
               const rad=wData.daily&&wData.daily.precipitation_sum&&wData.daily.precipitation_sum[0]!=null?wData.daily.precipitation_sum[0]:0;
-              adj=(tArr&&tArr.length)?calcHourly(s.id,tArr,clArr,prArr,dt):calc(s.id,C2F(tFd),cld,rad,dt);
-              if(adj) dayWxCount++;
+              // Only treat as real data if we have hourly arrays OR a real daily mean
+              // (archive returns empty arrays for dates within the lag window)
+              const hasRealData=(tArr&&tArr.length>0)||hasDailyMean;
+              if(hasRealData){
+                adj=(tArr&&tArr.length)?calcHourly(s.id,tArr,clArr,prArr,dt):calc(s.id,C2F(tFd),cld,rad,dt);
+                // Cache this freshly-fetched archive result for future use
+                wxCacheSet(dt,s.id,adj);
+                dayWxCount++;
+              }
+              // If no real data, adj stays null → norm=act → zero weather impact for this store-day
             }
             dayActual+=act;
             // Weather-normalize: actual / (1 + weatherAdj/100)
@@ -1336,6 +1419,17 @@ function rhi(){
       <label class="label">Date</label>
       <input type="date" class="input" id="hist-date" value="${SAVED_DATE}" style="margin-bottom:8px;width:calc(100%);max-width:100%;-webkit-appearance:none;appearance:none">
       <button class="btn" onclick="runHistorical()" style="display:block">▶ Run Data</button>
+      <div style="margin-top:10px;padding:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:6px;font-weight:600;letter-spacing:.05em;text-transform:uppercase">🌤 Weather Cache</div>
+        <div style="font-size:10px;color:var(--dim);margin-bottom:8px">Stores weather adj data by date so L7 doesn't need archive API. Runs automatically — copy after each daily analysis and paste into the source file as the seed value.</div>
+        <button onclick="
+          const j=wxCacheSerialize();
+          const entries=Object.keys(WEATHER_CACHE).length;
+          navigator.clipboard.writeText(j).then(()=>alert('Copied '+entries+' cached entries to clipboard. Paste into WEATHER_CACHE_SEED in the source file.'));
+        " style="width:100%;padding:7px;border-radius:6px;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid rgba(56,189,248,0.3);background:rgba(56,189,248,0.08);color:#38bdf8">
+          📋 Copy Weather Cache (${Object.keys(WEATHER_CACHE).length} entries)
+        </button>
+      </div>
     </div>`;
   }else if(!LOADING){
     h+=`<button class="btn" onclick="runHistorical()" style="margin-bottom:12px">▶ Run Model for ${SAVED_DATE}</button>`;
@@ -1569,6 +1663,12 @@ function getFullYearForecast(storeId, cutoffStr, stormAdj){
 }
 
 render();
+
+// Load any seeded weather cache on startup
+(function(){
+  const wce=document.getElementById("wx-cache-seed");
+  if(wce&&wce.value) wxCacheLoad(wce.value);
+})();
 </script>
 </body>
 </html>
