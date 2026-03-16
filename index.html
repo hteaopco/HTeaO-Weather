@@ -1475,4 +1475,190 @@ function getFullYearForecast(storeId, cutoffStr, stormAdj){
 render();
 </script>
 </body>
-</html>
+</html>// ── Render YOY ─────────────────────────────────────────────────────────────
+let YOY_SEL='consolidated';
+let YOY_RANGE=12;
+let YOY_CHART_OPEN=false;
+let YOY_STATS_OPEN=false;
+if(typeof BUD_MODE==='undefined') window.BUD_MODE='as-is'; // shared with budget tab
+
+function ryoy(){
+  const storeList=[
+    {key:'consolidated',label:'System'},
+    {key:'001',label:'01 - Yukon'},{key:'002',label:'02 - The Village'},
+    {key:'003',label:'03 - Bartlesville'},{key:'004',label:'04 - SW OKC'},
+    {key:'005',label:'05 - Uptown'},{key:'006',label:'06 - Norman 1'},
+    {key:'007',label:'07 - Shawnee'},{key:'008',label:'08 - Duncan'},
+    {key:'009',label:'09 - Lawton'},{key:'010',label:'10 - Chickasha'},
+    {key:'011',label:'11 - OU Med'},{key:'012',label:'12 - Moore'},
+    {key:'013',label:'13 - Norman 2'},{key:'014',label:'14 - Webb City'},
+    {key:'015',label:'15 - Pecos'},{key:'016',label:'16 - Carlsbad'},
+    {key:'017',label:'17 - Las Cruces'},{key:'018',label:'18 - Hutchinson'},
+    {key:'019',label:'19 - Clovis'},{key:'020',label:'20 - Hereford'},
+  ];
+
+  const d=YOY_DATA[YOY_SEL];
+  const name=storeList.find(s=>s.key===YOY_SEL)?.label||YOY_SEL;
+
+  // Storm adjustment for YOY actuals
+  const STORM={
+    "001":4541,"002":6913,"003":6442,"004":5649,"005":2825,
+    "006":4080,"007":5178,"008":4237,"009":4331,"010":3766,
+    "011":1820,"012":3609,"013":3452,"014":2814,"015":5471,
+    "016":7347,"017":3607,"018":7191,"019":9692,"020":4533,
+  };
+  const totalStorm=97500;
+
+  function stormAdj(sid, act){
+    if(BUD_MODE!=='storm') return act;
+    return sid==='consolidated'
+      ? act + totalStorm
+      : act + (STORM[sid]||0);
+  }
+
+  // Per-store data with storm adj applied
+  const storeKeys=['001','002','003','004','005','006','007','008','009','010',
+                   '011','012','013','014','015','016','017','018','019','020'];
+
+  // Stats helpers
+  const vc=p=>p==null?'var(--muted)':p>2?'#4ade80':p>-2?'#94a3b8':p>-8?'#fca5a5':'#f87171';
+  const fp2=p=>p==null?'—':(p>=0?'+':'')+p.toFixed(1)+'%';
+
+  // Consolidated adjusted stats
+  const cAct  = stormAdj('consolidated', d.latestAct||0);
+  const cBud  = d.latestBud||0;
+  const cYoy  = d.latestYoy||0;
+  const cVsB  = cBud  ? (cAct/cBud -1)*100 : null;
+  const cVsY  = cYoy  ? (cAct/cYoy -1)*100 : null;
+
+  // As-Is / Storm toggle (sticky)
+  const toggleHtml=`<div style="position:sticky;top:97px;z-index:49;background:#080e1a;padding:6px 0 8px;border-bottom:1px solid rgba(255,255,255,0.06)">
+    <div style="display:flex;gap:8px">
+      <button onclick="window.BUD_MODE='as-is';render();" style="flex:1;padding:9px;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;box-sizing:border-box;border:1px solid ${BUD_MODE==='as-is'?'rgba(56,189,248,0.5)':'rgba(255,255,255,0.1)'};background:${BUD_MODE==='as-is'?'rgba(56,189,248,0.18)':'transparent'};color:${BUD_MODE==='as-is'?'#38bdf8':'#64748b'}">As-Is</button>
+      <button onclick="window.BUD_MODE='storm';render();" style="flex:1;padding:9px;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;box-sizing:border-box;border:1px solid ${BUD_MODE==='storm'?'rgba(165,180,252,0.5)':'rgba(255,255,255,0.1)'};background:${BUD_MODE==='storm'?'rgba(165,180,252,0.15)':'transparent'};color:${BUD_MODE==='storm'?'#a5b4fc':'#64748b'}">⛈ Storm Adjusted</button>
+    </div>
+  </div>`;
+
+  // ── Stat bar (collapsible) ─────────────────────────────────────────────
+  const storeRows = YOY_STATS_OPEN ? storeKeys.map(sid=>{
+    const sd=YOY_DATA[sid];
+    if(!sd) return '';
+    const act = stormAdj(sid, sd.latestAct||0);
+    const bud = sd.latestBud||0;
+    const yoy = sd.latestYoy||0;
+    const vsB = bud ? (act/bud-1)*100 : null;
+    const vsY = yoy ? (act/yoy-1)*100 : null;
+    const sname=storeList.find(s=>s.key===sid)?.label||sid;
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
+      <div style="font-size:11px;font-weight:600;color:var(--text);flex:1.5">${sname}</div>
+      <div style="text-align:right;flex:1">
+        <div style="font-size:11px;font-weight:700">${fc$(act)}</div>
+      </div>
+      <div style="text-align:right;flex:1">
+        <div style="font-size:11px;font-weight:700;color:${vc(vsB)}">${fp2(vsB)}</div>
+      </div>
+      <div style="text-align:right;flex:1">
+        <div style="font-size:11px;font-weight:700;color:${vc(vsY)}">${fp2(vsY)}</div>
+      </div>
+    </div>`;
+  }).join('') : '';
+
+  const statBar=`<div style="background:rgba(255,255,255,0.03);border-radius:12px;border:1px solid rgba(255,255,255,0.08);overflow:hidden;margin-bottom:8px">
+    <div onclick="YOY_STATS_OPEN=!YOY_STATS_OPEN;render();" style="padding:12px 14px;cursor:pointer">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:${YOY_STATS_OPEN?'10':'0'}px">
+        <div style="font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.08em;text-transform:uppercase">YTD Through 03/14/26</div>
+        <div style="font-size:11px;color:var(--dim)">${YOY_STATS_OPEN?'▲':'▼'}</div>
+      </div>
+      ${YOY_STATS_OPEN?`
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+        <div>
+          <div style="font-size:9px;color:var(--muted);margin-bottom:3px">YTD Actual</div>
+          <div style="font-size:16px;font-weight:800">${fc$(cAct)}</div>
+        </div>
+        <div>
+          <div style="font-size:9px;color:var(--muted);margin-bottom:3px">vs Budget</div>
+          <div style="font-size:16px;font-weight:800;color:${vc(cVsB)}">${fp2(cVsB)}</div>
+        </div>
+        <div>
+          <div style="font-size:9px;color:var(--muted);margin-bottom:3px">vs 2025</div>
+          <div style="font-size:16px;font-weight:800;color:${vc(cVsY)}">${fp2(cVsY)}</div>
+        </div>
+      </div>
+      <div style="height:1px;background:rgba(255,255,255,0.06);margin-bottom:8px"></div>
+      <div style="display:flex;justify-content:space-between;padding-bottom:4px">
+        <div style="font-size:9px;color:var(--muted);font-weight:700;flex:1.5">Store</div>
+        <div style="font-size:9px;color:var(--muted);font-weight:700;text-align:right;flex:1">Actual</div>
+        <div style="font-size:9px;color:var(--muted);font-weight:700;text-align:right;flex:1">vs Bud</div>
+        <div style="font-size:9px;color:var(--muted);font-weight:700;text-align:right;flex:1">vs '25</div>
+      </div>
+      ${storeRows}
+      `:`<div style="display:flex;gap:16px;align-items:baseline">
+        <div style="font-size:18px;font-weight:800">${fc$(cAct)}</div>
+        <div style="font-size:13px;font-weight:700;color:${vc(cVsB)}">${fp2(cVsB)} bud</div>
+        <div style="font-size:13px;font-weight:700;color:${vc(cVsY)}">${fp2(cVsY)} YOY</div>
+      </div>`}
+    </div>
+  </div>`;
+
+  // ── Store strip ────────────────────────────────────────────────────────
+  const strip=storeList.map(s=>`
+    <div onclick="const el=document.getElementById('yoy-strip-scroll');const sx=el?el.scrollLeft:0;YOY_SEL='${s.key}';render();requestAnimationFrame(()=>{const el2=document.getElementById('yoy-strip-scroll');if(el2)el2.scrollLeft=sx;});" style="flex-shrink:0;padding:7px 12px;border-radius:8px;font-size:11px;font-weight:${s.key===YOY_SEL?'800':'500'};white-space:nowrap;cursor:pointer;background:${s.key===YOY_SEL?'rgba(56,189,248,0.18)':'rgba(255,255,255,0.04)'};color:${s.key===YOY_SEL?'#38bdf8':'#94a3b8'};border:1px solid ${s.key===YOY_SEL?'rgba(56,189,248,0.4)':'rgba(255,255,255,0.08)'}">
+      ${s.label}
+    </div>`).join('');
+
+  const chartId='yoy-canvas-'+YOY_SEL;
+
+  // ── Chart section (collapsible) ───────────────────────────────────────
+  const chartSection=YOY_CHART_OPEN?`
+    <!-- Range selector -->
+    <div style="display:flex;gap:6px;margin-bottom:10px">
+      ${[3,6,12].map(r=>`<button onclick="YOY_RANGE=${r};render();" style="flex:1;padding:7px;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;box-sizing:border-box;border:1px solid ${YOY_RANGE===r?'rgba(56,189,248,0.4)':'rgba(255,255,255,0.08)'};background:${YOY_RANGE===r?'rgba(56,189,248,0.15)':'rgba(255,255,255,0.04)'};color:${YOY_RANGE===r?'#38bdf8':'#94a3b8'}">${r===3?'3 Month':r===6?'6 Month':'12 Month'}</button>`).join('')}
+    </div>
+    <!-- Chart canvas -->
+    <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:12px;border:1px solid rgba(255,255,255,0.08)">
+      <canvas id="${chartId}" style="width:100%;height:300px"></canvas>
+    </div>
+    <!-- Legend -->
+    <div style="display:flex;gap:14px;justify-content:center;margin-top:10px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:5px">
+        <div style="width:24px;height:10px;background:rgba(56,189,248,0.3);border-radius:2px"></div>
+        <span style="font-size:10px;color:var(--muted)">2025 L7</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:5px">
+        <div style="width:24px;height:3px;background:#e8503a;border-radius:2px;box-shadow:0 0 6px rgba(232,80,58,0.6)"></div>
+        <span style="font-size:10px;color:var(--muted)">2026 L7</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:5px">
+        <div style="width:24px;height:2px;background:#888;border-top:2px dashed #888"></div>
+        <span style="font-size:10px;color:var(--muted)">Budget</span>
+      </div>
+    </div>
+    <div style="font-size:9px;color:var(--dim);text-align:center;margin-top:8px">
+      Chart: Rolling 7-day total · Stats: YTD through 03/14/26
+    </div>` : '';
+
+  return`<div class="section" style="padding-bottom:20px">
+    ${toggleHtml}
+    ${BUD_MODE==='storm'?`<div style="background:rgba(165,180,252,0.08);border:1px solid rgba(165,180,252,0.2);border-radius:8px;padding:8px 12px;margin-bottom:8px;font-size:11px;color:#a5b4fc">⛈ Storm adjustment applied: +$97.5k pro rata</div>`:''}
+
+    <!-- Stat bar -->
+    ${statBar}
+
+    <div style="height:1px;background:rgba(255,255,255,0.08);margin:8px 0"></div>
+
+    <!-- Store scroll strip -->
+    <div id="yoy-strip-scroll" style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -16px;padding:8px 16px">
+      <div style="display:flex;gap:6px;min-width:max-content">${strip}</div>
+    </div>
+
+    <div style="height:1px;background:rgba(255,255,255,0.08);margin:8px 0"></div>
+
+    <!-- Expand chart button -->
+    <button onclick="YOY_CHART_OPEN=!YOY_CHART_OPEN;render();" style="width:100%;padding:10px;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;box-sizing:border-box;border:1px solid ${YOY_CHART_OPEN?'rgba(56,189,248,0.4)':'rgba(255,255,255,0.1)'};background:${YOY_CHART_OPEN?'rgba(56,189,248,0.12)':'rgba(255,255,255,0.04)'};color:${YOY_CHART_OPEN?'#38bdf8':'#94a3b8'};margin-bottom:${YOY_CHART_OPEN?'10':'0'}px">
+      ${YOY_CHART_OPEN?'▲ Hide Chart':'▼ Expand Chart View'}
+    </button>
+
+    ${chartSection}
+  </div>`;
+}
+
