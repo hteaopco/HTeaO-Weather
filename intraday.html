@@ -308,10 +308,53 @@ function collapseDir(dir){
   render();
 }
 
+// ── 7shifts proxy ──
+const PROXY_BASE = 'https://postgres-production-25f0.up.railway.app/webhook/7shifts-sales';
+
+// Location ID map — matches store IDs to 7shifts location IDs
+const LOC_IDS = {
+  '01':390270,'02':416082,'03':420787,'04':428305,'05':428308,
+  '06':428306,'07':428309,'08':428310,'09':428311,'10':428312,
+  '12':431148,'13':430153,'14':441416,'15':443619,'16':443620,
+  '17':443621,'18':467270,'19':484231,'20':484232
+};
+
+async function fetch7shifts(storeId, date){
+  const locId = LOC_IDS[storeId];
+  if(!locId) return null;
+  try{
+    const res = await fetch(`${PROXY_BASE}?location_id=${locId}&date=${date}`);
+    if(!res.ok) return null;
+    const data = await res.json();
+    console.log('7shifts response:', data);
+    return data;
+  } catch(e){
+    console.warn('7shifts fetch failed:', e.message);
+    return null;
+  }
+}
+
+function todayISO(){
+  return new Date().toISOString().split('T')[0];
+}
+
+async function loadLiveSales(){
+  const badge = document.getElementById('targetVal');
+  if(badge) badge.textContent = 'Loading...';
+  const data = await fetch7shifts(STORE, todayISO());
+  if(data){
+    // Try to extract projected sales from response
+    // Structure TBD based on what 7shifts returns — log to console first
+    console.log('7shifts raw data keys:', Object.keys(data));
+  }
+}
+
 // ── Init ──
 buildStrip();
 buildDayBar();
 render();
+// Attempt live fetch (non-blocking)
+loadLiveSales();
 </script>
 </body>
 </html>
