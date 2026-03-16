@@ -481,16 +481,11 @@ async function runHistorical(){
     });
     const totA=out.reduce((a,r)=>a+(r.actual||0),0);
     const totW=out.reduce((a,r)=>a+(r.weekly||0),0);
-    const adjRows=out.filter(r=>r.adj&&r.actual>0);
-    const adjWtdNum=adjRows.reduce((a,r)=>a+r.adj.total*r.actual,0);
-    const adjWtdDen=adjRows.reduce((a,r)=>a+r.actual,0);
-    const avgW=adjWtdDen>0?adjWtdNum/adjWtdDen:0;
-    // Compute today's consolidated DOW weekly and weather-normalized weekly
+    const adjRows=out.filter(r=>r.adj&&r.actual>0&&r.dowW);
+    // Compute DOW and weather-normalized weeklies first, then derive avgW from dollar impact
     const todayDOW=out.filter(r=>r.dowW&&!r.error).reduce((sum,r)=>sum+(r.actual/(r.dowW/100)),0);
-    const todayWthrNorm=out.filter(r=>r.adj&&r.dowW&&!r.error).reduce((sum,r)=>{
-      const dw=r.actual/(r.dowW/100);
-      return sum+(dw/(1+r.adj.total/100));
-    },0);
+    const todayWthrNorm=out.filter(r=>r.adj&&r.dowW&&!r.error).reduce((sum,r)=>{ const dw=r.actual/(r.dowW/100); return sum+(dw/(1+r.adj.total/100)); },0);
+    const avgW=todayWthrNorm>0?(todayDOW-todayWthrNorm)/todayWthrNorm*100:0;
     // Per-store dynamic weekly base for rolling avg
     const getStoreDynBase=(sid)=>getWeeklyBase(sid,date);
 
