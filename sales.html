@@ -292,8 +292,8 @@ function getDOW(storeId, jsDay){ const v=(DOW[storeId]||[])[jsDay]; return(v==nu
 function getHours(dateStr){
   const dow=new Date(dateStr+"T12:00:00").getDay(); // 0=Sun
   if(dow===0) return {amS:11,amE:12,pmS:12,pmE:20,amWt:0.05,pmWt:0.95};
-  if(dow===6) return {amS:7, amE:12,pmS:12,pmE:20,amWt:0.80,pmWt:0.20};
-  return            {amS:6, amE:12,pmS:12,pmE:20,amWt:0.80,pmWt:0.20};
+  if(dow===6) return {amS:7, amE:12,pmS:12,pmE:20,amWt:0.20,pmWt:0.80};
+  return            {amS:6, amE:12,pmS:12,pmE:20,amWt:0.20,pmWt:0.80};
 }
 function hAvg(arr,s,e){const v=(arr||[]).slice(s,e).filter(x=>x!=null);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;}
 function hSum(arr,s,e){return(arr||[]).slice(s,e).reduce((a,b)=>a+(b||0),0);}
