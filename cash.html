@@ -106,18 +106,19 @@
   .inp-edit-btn{padding:5px 10px;border-radius:6px;border:1px solid rgba(56,189,248,0.3);background:rgba(56,189,248,0.08);color:var(--sky);font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;}
   .inp-edit-btn:hover{background:rgba(56,189,248,0.18);}
   .inp-input{width:80px;padding:5px 8px;background:var(--bg);border:1px solid rgba(56,189,248,0.4);border-radius:6px;color:var(--sky);font-size:14px;font-weight:800;font-family:inherit;outline:none;text-align:right;}
-  /* Audit log */
-  .audit-btn{width:100%;padding:12px 14px;border-radius:10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,0.03);color:var(--muted);display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;transition:border-color .15s,color .15s;}
-  .audit-btn:hover{border-color:rgba(56,189,248,0.3);color:var(--text);}
+  /* Audit log — same scheme as inputs-wrap */
+  .audit-wrap{background:#0a1628;border:1px solid rgba(56,189,248,0.18);border-radius:10px;margin-bottom:8px;overflow:hidden;}
+  .audit-btn{width:100%;padding:12px 14px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:none;background:transparent;color:var(--muted);display:flex;align-items:center;justify-content:space-between;transition:color .15s;}
+  .audit-btn:hover{color:var(--text);}
   .audit-btn .arr{font-size:10px;transition:transform .2s;}
   .audit-btn.open .arr{transform:rotate(180deg);}
-  .audit-btn.open{border-color:rgba(56,189,248,0.25);color:var(--sky);}
-  .audit-panel{display:none;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:8px;}
+  .audit-btn.open{color:var(--sky);}
+  .audit-panel{display:none;border-top:1px solid rgba(56,189,248,0.12);}
   .audit-panel.open{display:block;}
   .audit-empty{padding:16px;font-size:12px;color:var(--muted);text-align:center;}
   .audit-row{display:grid;grid-template-columns:1fr 1fr 1fr auto;align-items:center;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.04);gap:8px;font-size:12px;}
   .audit-row:last-child{border-bottom:none;}
-  .audit-hdr{background:rgba(56,189,248,0.06);border-bottom:1px solid var(--border);font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
+  .audit-hdr{background:rgba(56,189,248,0.06);border-bottom:1px solid rgba(56,189,248,0.1);font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
   .audit-edit{padding:4px 10px;border-radius:5px;border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--muted);font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;}
   .audit-edit:hover{border-color:rgba(56,189,248,0.4);color:var(--sky);}
 
@@ -191,16 +192,20 @@
   </div>
 
   <!-- Audit Log -->
-  <button class="audit-btn" id="auditBtn" onclick="toggleAudit()">
-    <span>📋 Audit Log</span>
-    <span class="arr">▼</span>
-  </button>
-  <div class="audit-panel" id="auditPanel">
-    <div class="audit-row audit-hdr">
-      <span>Date</span><span>Time</span><span>Type</span><span>Action</span>
+  <div class="audit-wrap">
+    <button class="audit-btn" id="auditBtn" onclick="toggleAudit()">
+      <span>📋 Audit Log</span>
+      <span class="arr">▼</span>
+    </button>
+    <div class="audit-panel" id="auditPanel">
+      <div class="audit-row audit-hdr">
+        <span>Date</span><span>Time</span><span>Type</span><span>Action</span>
+      </div>
+      <div class="audit-empty" id="auditEmpty">No submissions yet</div>
     </div>
-    <div class="audit-empty" id="auditEmpty">No submissions yet</div>
   </div>
+
+  <div class="divider"></div>
 
   <!-- Action buttons -->
   <div class="action-grid">
@@ -209,7 +214,7 @@
     <a class="action-btn" href="bank-receipts.html">Bank<br>Receipts</a>
   </div>
 
-  <div class="divider"></div>
+  <div style="margin-bottom:20px;"></div>
 
   <!-- Last Month -->
   <div class="section-hdr">
