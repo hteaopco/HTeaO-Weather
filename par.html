@@ -6,112 +6,62 @@
 <title>HTeaO — Par Prep</title>
 <style>
   :root {
-    --bg:      #080e1a;
-    --card:    #0d1526;
-    --border:  rgba(255,255,255,0.08);
-    --text:    #e2e8f0;
-    --muted:   #64748b;
-    --dim:     #334155;
-    --sky:     #38bdf8;
-    --green:   #4ade80;
-    --yellow:  #fbbf24;
-    --red:     #f87171;
-    --purple:  #a5b4fc;
-    --teal:    #2dd4bf;
+    --bg:#080e1a; --card:#0d1526; --border:rgba(255,255,255,0.08);
+    --text:#e2e8f0; --muted:#64748b; --dim:#334155;
+    --sky:#38bdf8; --green:#4ade80; --yellow:#fbbf24; --red:#f87171;
+    --purple:#a5b4fc; --teal:#2dd4bf;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, sans-serif; min-height: 100vh; }
-
-  /* ── Header ── */
-  .header { position: sticky; top: 0; z-index: 50; background: var(--bg); border-bottom: 1px solid var(--border); padding: 10px 16px 8px; }
-  .header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .logo { font-size: 20px; font-weight: 900; color: var(--sky); letter-spacing: -.5px; }
-  .sub  { font-size: 10px; color: var(--muted); letter-spacing: .12em; text-transform: uppercase; }
-  .as-of { margin-left: auto; font-size: 9px; color: var(--dim); }
-
-  /* ── Tabs ── */
-  .tabs { display: grid; grid-template-columns: repeat(4,1fr); gap: 5px; }
-  .tab  { padding: 8px 4px; border-radius: 8px; font-size: 11px; font-weight: 700; text-align: center; cursor: pointer; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: var(--muted); transition: all .15s; line-height: 1.3; }
-  .tab.active { background: rgba(56,189,248,0.15); border-color: rgba(56,189,248,0.4); color: var(--sky); }
-
-  /* ── Store strip ── */
-  .store-strip-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -16px; padding: 8px 16px; }
-  .store-strip { display: flex; gap: 6px; min-width: max-content; }
-  .store-pill { flex-shrink: 0; padding: 6px 11px; border-radius: 8px; font-size: 11px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--muted); white-space: nowrap; transition: all .15s; }
-  .store-pill.active { background: rgba(56,189,248,0.18); border-color: rgba(56,189,248,0.4); color: var(--sky); font-weight: 800; }
-
-  /* ── Section ── */
-  .section { padding: 12px 16px 20px; }
-
-  /* ── Cards ── */
-  .card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 8px; overflow: hidden; }
-  .card-header { padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-  .card-title  { font-size: 10px; font-weight: 700; color: var(--sky); letter-spacing: .08em; text-transform: uppercase; }
-  .card-body   { padding: 0 14px 12px; }
-
-  /* ── Summary grid ── */
-  .stat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; padding: 10px 14px; }
-  .stat { text-align: center; }
-  .stat-val { font-size: 18px; font-weight: 800; }
-  .stat-lbl { font-size: 9px; color: var(--muted); margin-top: 2px; }
-
-  /* ── Waste table ── */
-  .waste-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); }
-  .waste-row:last-child { border-bottom: none; }
-  .waste-store { font-size: 12px; font-weight: 600; flex: 1.5; }
-  .waste-cols  { display: flex; gap: 0; }
-  .waste-cell  { text-align: right; width: 52px; font-size: 11px; font-weight: 700; }
-  .waste-hdr   { display: flex; justify-content: space-between; padding: 6px 14px 4px; border-bottom: 1px solid var(--border); }
-  .waste-hdr-store { font-size: 9px; color: var(--muted); font-weight: 700; flex: 1.5; }
-  .waste-hdr-cols  { display: flex; }
-  .waste-hdr-cell  { text-align: right; width: 52px; font-size: 9px; color: var(--muted); font-weight: 700; }
-  .flag-high { color: var(--red); }
-  .flag-warn { color: var(--yellow); }
-  .flag-ok   { color: var(--green); }
-
-  /* ── Gallon build table ── */
-  .build-hdr { display: grid; grid-template-columns: 1fr 70px 70px 70px; gap: 4px; padding: 8px 14px 4px; border-bottom: 1px solid var(--border); }
-  .build-hdr span { font-size: 9px; color: var(--muted); font-weight: 700; text-align: right; }
-  .build-hdr span:first-child { text-align: left; }
-  .build-section-label { font-size: 9px; font-weight: 800; color: var(--yellow); letter-spacing: .1em; text-transform: uppercase; padding: 8px 14px 3px; }
-  .build-row { display: grid; grid-template-columns: 1fr 70px 70px 70px; gap: 4px; padding: 6px 14px; border-bottom: 1px solid rgba(255,255,255,0.03); }
-  .build-row:last-child { border-bottom: none; }
-  .build-name { font-size: 11px; color: var(--text); }
-  .build-val  { font-size: 12px; font-weight: 700; text-align: right; }
-  .build-zero { color: var(--dim); }
-  .build-total-row { display: grid; grid-template-columns: 1fr 70px 70px 70px; gap: 4px; padding: 8px 14px; background: rgba(56,189,248,0.06); border-top: 1px solid rgba(56,189,248,0.15); }
-  .build-total-lbl { font-size: 11px; font-weight: 800; color: var(--sky); }
-  .build-total-val { font-size: 13px; font-weight: 800; color: var(--sky); text-align: right; }
-
-  /* ── Jugs table ── */
-  .jugs-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); }
-  .jugs-row:last-child { border-bottom: none; }
-  .jugs-store { font-size: 12px; font-weight: 600; flex: 1; }
-  .jugs-val   { font-size: 14px; font-weight: 800; min-width: 60px; text-align: right; }
-  .jugs-sub   { font-size: 9px; color: var(--muted); text-align: right; margin-top: 1px; }
-
-  /* ── Loading / error ── */
-  .loading { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 13px; }
-  .spinner { width: 24px; height: 24px; border: 2px solid var(--dim); border-top-color: var(--sky); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 12px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .err { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); border-radius: 10px; padding: 12px 14px; font-size: 12px; color: var(--red); margin: 12px 0; }
-
-  /* ── Collapsible region ── */
-  .region-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; cursor: pointer; border-bottom: 1px solid var(--border); }
-  .region-label { font-size: 12px; font-weight: 700; color: var(--text); }
-  .region-meta  { font-size: 11px; color: var(--muted); }
-  .chevron { font-size: 10px; color: var(--dim); margin-left: 8px; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,sans-serif;min-height:100vh;}
+  .header{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);padding:10px 16px 8px;}
+  .header-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .logo{font-size:20px;font-weight:900;color:var(--sky);letter-spacing:-.5px;}
+  .sub{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;}
+  .as-of{margin-left:auto;font-size:9px;color:var(--dim);}
+  .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
+  .tab{padding:8px 4px;border-radius:8px;font-size:11px;font-weight:700;text-align:center;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,0.03);color:var(--muted);line-height:1.3;}
+  .tab.active{background:rgba(56,189,248,0.15);border-color:rgba(56,189,248,0.4);color:var(--sky);}
+  .store-strip-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -16px;padding:6px 16px;}
+  .store-strip{display:flex;gap:6px;min-width:max-content;}
+  .store-pill{flex-shrink:0;padding:6px 11px;border-radius:8px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--muted);white-space:nowrap;}
+  .store-pill.active{background:rgba(56,189,248,0.18);border-color:rgba(56,189,248,0.4);color:var(--sky);font-weight:800;}
+  .section{padding:12px 16px 20px;}
+  .card{background:var(--card);border-radius:12px;border:1px solid var(--border);margin-bottom:8px;overflow:hidden;}
+  .card-hdr{padding:10px 14px;display:flex;justify-content:space-between;align-items:center;}
+  .card-title{font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.08em;text-transform:uppercase;}
+  .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px 14px;}
+  .stat{text-align:center;}
+  .stat-val{font-size:18px;font-weight:800;}
+  .stat-lbl{font-size:9px;color:var(--muted);margin-top:2px;}
+  .tbl-hdr{display:flex;justify-content:space-between;padding:6px 14px 4px;border-bottom:1px solid var(--border);}
+  .tbl-hdr-lbl{font-size:9px;color:var(--muted);font-weight:700;}
+  .tbl-row{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.04);}
+  .tbl-row:last-child{border-bottom:none;}
+  .tbl-store{font-size:12px;font-weight:600;flex:1.5;}
+  .tbl-cells{display:flex;}
+  .tbl-cell{text-align:right;width:54px;font-size:11px;font-weight:700;}
+  .section-lbl{font-size:9px;font-weight:800;color:var(--yellow);letter-spacing:.1em;text-transform:uppercase;padding:8px 14px 3px;background:rgba(251,191,36,0.04);}
+  .build-hdr{display:grid;grid-template-columns:1fr 60px 70px 70px;gap:2px;padding:7px 14px 5px;border-bottom:1px solid var(--border);}
+  .build-hdr span{font-size:9px;color:var(--muted);font-weight:700;text-align:right;}
+  .build-hdr span:first-child{text-align:left;}
+  .build-total{display:grid;grid-template-columns:1fr 60px 70px 70px;gap:2px;padding:7px 14px;background:rgba(56,189,248,0.07);border-bottom:1px solid rgba(56,189,248,0.2);}
+  .build-total-lbl{font-size:11px;font-weight:800;color:var(--sky);}
+  .build-total-val{font-size:13px;font-weight:800;color:var(--sky);text-align:right;}
+  .build-row{display:grid;grid-template-columns:1fr 60px 70px 70px;gap:2px;padding:5px 14px;border-bottom:1px solid rgba(255,255,255,0.03);}
+  .build-name{font-size:11px;}
+  .build-val{font-size:12px;font-weight:700;text-align:right;}
+  .zero{color:var(--dim);}
+  .flag-red{color:var(--red);}
+  .flag-yel{color:var(--yellow);}
+  .flag-grn{color:var(--green);}
 </style>
 </head>
 <body>
 
 <div class="header">
   <div class="header-top">
-    <div>
-      <div class="logo">🍵 HTeaO</div>
-      <div class="sub">Par Prep Tracking</div>
-    </div>
-    <div class="as-of" id="as-of">Loading…</div>
+    <div><div class="logo">🍵 HTeaO</div><div class="sub">Par Prep Tracking</div></div>
+    <div class="as-of" id="as-of"></div>
   </div>
   <div class="tabs">
     <div class="tab active" onclick="setTab('overview')" id="tab-overview">📊 System<br>Overview</div>
@@ -121,544 +71,328 @@
   </div>
 </div>
 
-<div id="app"><div class="loading"><div class="spinner"></div>Loading par data…</div></div>
+<div id="app"></div>
 
 <script>
-// ── Constants ──────────────────────────────────────────────────────────────
-const SHEET_ID = '1kCfXrYVqmnAvIVUoxLt6ykg_F_GfS3MUbhr_P0m_5rQ';
-const SUMMARY_GID = '1769914412';
+// ── Hardcoded data from Google Sheet (as of 03/15/26) ─────────────────────
+// Summary tab: col0=location, col1=last10pct, col4=trendWaste, col5=cogsAffect
+// col7=wastYestGal, col8=wastYestJug, col9=wastL7Gal, col10=wastL7Jug, col11=wastL30Gal, col12=wastL30Jug
 
-const STORES = [
-  {id:'01', name:'Yukon'},
-  {id:'02', name:'The Village'},
-  {id:'03', name:'Bartlesville'},
-  {id:'04', name:'SW OKC'},
-  {id:'05', name:'Uptown'},
-  {id:'06', name:'Norman 1'},
-  {id:'07', name:'Shawnee'},
-  {id:'08', name:'Duncan'},
-  {id:'09', name:'Lawton'},
-  {id:'10', name:'Chickasha'},
-  {id:'11', name:'OU Med'},
-  {id:'12', name:'Moore'},
-  {id:'13', name:'Norman 2'},
-  {id:'14', name:'Webb City'},
-  {id:'15', name:'Pecos'},
-  {id:'16', name:'Carlsbad'},
-  {id:'17', name:'Las Cruces'},
-  {id:'18', name:'Hutchinson'},
-  {id:'19', name:'Clovis'},
-  {id:'20', name:'Hereford'},
-];
-
-const FLAVORS = {
-  sweets:    ['Regular','Georgia Peach','Blueberry','Coconut','Watermelon','Raspberry','Mint','Peach Ginger'],
-  unsweets:  ['Regular','Georgia Peach','Blueberry','Coconut','Watermelon','Raspberry','Mint','Peach Ginger'],
-  specialty: ['Strawberry Passion','Texas Chai','Pink Lemonade','Green - Sweet Almond','Green - Unsweet','Mango Fresco','Sweet Zero','Ryan Palmer','Decaf - Unsweet','Cherry'],
+const WASTE_DATA = {
+  '01':{name:'Yukon',        last10:.0252, cogsAffect:.0035, wastYestGal:10,   wastYestJug:0,     wastL7Gal:18.5,  wastL7Jug:8.25,  wastL30Gal:83,    wastL30Jug:20},
+  '02':{name:'The Village',  last10:.0268, cogsAffect:.0012, wastYestGal:0,    wastYestJug:0,     wastL7Gal:8,     wastL7Jug:0,     wastL30Gal:53,    wastL30Jug:1},
+  '03':{name:'Bartlesville', last10:.0254, cogsAffect:.0051, wastYestGal:0,    wastYestJug:1,     wastL7Gal:0,     wastL7Jug:33,    wastL30Gal:2,     wastL30Jug:184.5},
+  '04':{name:'SW OKC',       last10:.0280, cogsAffect:.0015, wastYestGal:0,    wastYestJug:0,     wastL7Gal:8,     wastL7Jug:0,     wastL30Gal:57,    wastL30Jug:0},
+  '05':{name:'Uptown',       last10:.0241, cogsAffect:.0012, wastYestGal:0,    wastYestJug:0,     wastL7Gal:0,     wastL7Jug:6,     wastL30Gal:16,    wastL30Jug:7},
+  '06':{name:'Norman 1',     last10:.0316, cogsAffect:.0078, wastYestGal:0,    wastYestJug:14.25, wastL7Gal:0,     wastL7Jug:34.5,  wastL30Gal:13,    wastL30Jug:176},
+  '07':{name:'Shawnee',      last10:.0288, cogsAffect:.0046, wastYestGal:6,    wastYestJug:0,     wastL7Gal:50,    wastL7Jug:0,     wastL30Gal:170.5, wastL30Jug:0},
+  '08':{name:'Duncan',       last10:.0230, cogsAffect:.0061, wastYestGal:0,    wastYestJug:13,    wastL7Gal:13,    wastL7Jug:25,    wastL30Gal:46,    wastL30Jug:99},
+  '09':{name:'Lawton',       last10:.0277, cogsAffect:.0003, wastYestGal:0,    wastYestJug:0,     wastL7Gal:4,     wastL7Jug:0,     wastL30Gal:8,     wastL30Jug:0},
+  '10':{name:'Chickasha',    last10:.0272, cogsAffect:.0014, wastYestGal:0,    wastYestJug:0,     wastL7Gal:6,     wastL7Jug:0,     wastL30Gal:27,    wastL30Jug:9},
+  '11':{name:'OU Med',       last10:null,  cogsAffect:null,  wastYestGal:0,    wastYestJug:0,     wastL7Gal:0,     wastL7Jug:0,     wastL30Gal:0,     wastL30Jug:0},
+  '12':{name:'Moore',        last10:.0289, cogsAffect:.0058, wastYestGal:0,    wastYestJug:6.2,   wastL7Gal:0,     wastL7Jug:25.7,  wastL30Gal:6,     wastL30Jug:113.2},
+  '13':{name:'Norman 2',     last10:.0267, cogsAffect:.0032, wastYestGal:2,    wastYestJug:3.25,  wastL7Gal:2,     wastL7Jug:16,    wastL30Gal:5,     wastL30Jug:61.25},
+  '14':{name:'Webb City',    last10:.0304, cogsAffect:.0134, wastYestGal:0,    wastYestJug:3.5,   wastL7Gal:8,     wastL7Jug:36.25, wastL30Gal:23,    wastL30Jug:179.25},
+  '15':{name:'Pecos',        last10:.0257, cogsAffect:.0016, wastYestGal:0,    wastYestJug:0,     wastL7Gal:7,     wastL7Jug:16,    wastL30Gal:32,    wastL30Jug:32},
+  '16':{name:'Carlsbad',     last10:.0285, cogsAffect:.0000, wastYestGal:0,    wastYestJug:0,     wastL7Gal:0,     wastL7Jug:0,     wastL30Gal:0,     wastL30Jug:0},
+  '17':{name:'Las Cruces',   last10:.0244, cogsAffect:.0005, wastYestGal:0,    wastYestJug:0,     wastL7Gal:4,     wastL7Jug:4,     wastL30Gal:29,    wastL30Jug:13.5},
+  '18':{name:'Hutchinson',   last10:.0221, cogsAffect:.0028, wastYestGal:0,    wastYestJug:0,     wastL7Gal:0,     wastL7Jug:18.75, wastL30Gal:2,     wastL30Jug:104.98},
+  '19':{name:'Clovis',       last10:.0256, cogsAffect:.0004, wastYestGal:0,    wastYestJug:0,     wastL7Gal:1,     wastL7Jug:6,     wastL30Gal:6,     wastL30Jug:22},
+  '20':{name:'Hereford',     last10:.0256, cogsAffect:.0028, wastYestGal:0,    wastYestJug:2.25,  wastL7Gal:0,     wastL7Jug:8,     wastL30Gal:14,    wastL30Jug:68.65},
 };
+
+// ── Gallon Build Par by store, by DOW (Sun=0 ... Sat=6) ───────────────────
+// Format: { flavor: [Sun,Mon,Tue,Wed,Thu,Fri,Sat] }
+// Yukon data from screenshot; other stores use same structure (populate as available)
+const BUILD_PAR = {
+  '01': { // Yukon
+    sweets: {
+      'Regular':      [10,8,8,8,8,13,15],
+      'Georgia Peach': [8,6,6,6,6,10,11],
+      'Blueberry':    [7,6,6,6,6,9,10],
+      'Coconut':      [5,4,4,4,4,7,8],
+      'Watermelon':   [3,2,2,2,2,3,4],
+      'Raspberry':    [3,3,3,3,3,4,5],
+      'Mint':         [3,2,2,2,2,4,4],
+      'Peach Ginger': [2,2,2,2,2,3,3],
+    },
+    unsweets: {
+      'Regular':      [6,5,5,5,5,8,9],
+      'Georgia Peach':[3,3,3,3,3,4,5],
+      'Blueberry':    [2,0,0,0,0,2,2],
+      'Coconut':      [2,0,0,0,0,2,3],
+      'Watermelon':   [0,0,0,0,0,0,0],
+      'Raspberry':    [0,0,0,0,0,2,2],
+      'Mint':         [0,0,0,0,0,0,0],
+      'Peach Ginger': [0,0,0,0,0,0,0],
+    },
+    specialty: {
+      'Strawberry Passion':[0,0,0,0,0,0,0],
+      'Texas Chai':        [6,5,5,5,5,8,9],
+      'Pink Lemonade':     [0,0,0,0,0,0,0],
+      'Green - Sweet Almond':[2,2,2,2,2,3,4],
+      'Green - Unsweet':   [0,0,0,0,0,0,0],
+      'Mango Fresco':      [0,0,0,0,0,0,0],
+      'Sweet Zero':        [2,2,2,2,2,3,4],
+      'Ryan Palmer':       [2,2,2,2,2,3,3],
+      'Decaf - Unsweet':   [0,0,0,0,0,0,0],
+      'Cherry':            [2,2,2,2,2,3,3],
+    },
+  },
+};
+
+// ── Store list ────────────────────────────────────────────────────────────
+const STORES = [
+  {id:'01',name:'Yukon'},{id:'02',name:'The Village'},{id:'03',name:'Bartlesville'},
+  {id:'04',name:'SW OKC'},{id:'05',name:'Uptown'},{id:'06',name:'Norman 1'},
+  {id:'07',name:'Shawnee'},{id:'08',name:'Duncan'},{id:'09',name:'Lawton'},
+  {id:'10',name:'Chickasha'},{id:'11',name:'OU Med'},{id:'12',name:'Moore'},
+  {id:'13',name:'Norman 2'},{id:'14',name:'Webb City'},{id:'15',name:'Pecos'},
+  {id:'16',name:'Carlsbad'},{id:'17',name:'Las Cruces'},{id:'18',name:'Hutchinson'},
+  {id:'19',name:'Clovis'},{id:'20',name:'Hereford'},
+];
 
 // ── State ──────────────────────────────────────────────────────────────────
 let MODE = 'overview';
-let SEL_STORE = '01';
-let DATA = null;       // parsed summary data keyed by store id
-let WASTE_OPEN = {};   // which waste rows are expanded
-let JUGS_OPEN = {};
+let SEL = '01';
+const DOW = new Date().getDay(); // 0=Sun ... 6=Sat
+const DOW_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
-// ── Fetch Google Sheet via gviz ────────────────────────────────────────────
-async function fetchSheet(gid) {
-  // Use JSONP-style callback to avoid CORS — inject a script tag instead of fetch
-  return new Promise((resolve, reject) => {
-    const cbName = 'gvizCb_' + gid + '_' + Date.now();
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json:responseHandler:${cbName}&gid=${gid}`;
-    window[cbName] = function(data) {
-      delete window[cbName];
-      document.head.removeChild(script);
-      if (data && data.table) resolve(data.table);
-      else reject(new Error('No table data returned'));
-    };
-    const script = document.createElement('script');
-    script.src = url;
-    script.onerror = () => { delete window[cbName]; reject(new Error('Script load failed — check sheet is published publicly')); };
-    document.head.appendChild(script);
-  });
-}
+// ── Formatters ─────────────────────────────────────────────────────────────
+const fN = (v,d=1) => { if(v===null||v===undefined) return '—'; const n=parseFloat(v); return isNaN(n)?'—':n===0?'0':n.toFixed(d).replace(/\.0$/,''); };
+const fP = v => v===null||v===undefined?'—':(v*100).toFixed(2)+'%';
+const vc = v => v===null?'var(--muted)':v<=0.0025?'var(--green)':v<=0.004?'var(--yellow)':'var(--red)';
 
-async function fetchSheetByName(sheetName) {
-  return new Promise((resolve, reject) => {
-    const cbName = 'gvizCb_' + sheetName.replace(/[^a-zA-Z0-9]/g,'') + '_' + Date.now();
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json:responseHandler:${cbName}&sheet=${encodeURIComponent(sheetName)}`;
-    window[cbName] = function(data) {
-      delete window[cbName];
-      document.head.removeChild(script);
-      if (data && data.table) resolve(data.table);
-      else reject(new Error('No table data'));
-    };
-    const script = document.createElement('script');
-    script.src = url;
-    script.onerror = () => { delete window[cbName]; reject(new Error('Failed: ' + sheetName)); };
-    document.head.appendChild(script);
-  });
-}
+// ── Navigation ─────────────────────────────────────────────────────────────
+function setTab(t){ MODE=t; document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); document.getElementById('tab-'+t).classList.add('active'); render(); }
 
-// ── Parse summary table ────────────────────────────────────────────────────
-function parseSummary(table) {
-  const rows = table.rows;
-  const data = {};
-  // Rows 5-24 (0-indexed) are the store rows
-  // Col 0: Location, Col 1: Last10Day%, Col 2: BaseSales, Col 3: BaseCOGS
-  // Col 4: TrendingWaste, Col 5: COGSAffect
-  // Col 7: WasteYest_Gal, Col 8: WasteYest_Jug
-  // Col 9: WasteL7_Gal, Col 10: WasteL7_Jug
-  // Col 11: WasteL30_Gal, Col 12: WasteL30_Jug
-  for (let i = 5; i <= 24; i++) {
-    const row = rows[i];
-    if (!row) continue;
-    const v = (col) => {
-      const c = row.c[col];
-      if (!c || c.v === null || c.v === undefined) return null;
-      return c.v;
-    };
-    const loc = v(0);
-    if (!loc || typeof loc !== 'string') continue;
-    const match = loc.match(/^(\d+)/);
-    if (!match) continue;
-    const id = match[1].padStart(2, '0');
-    data[id] = {
-      id, name: loc.replace(/^\d+\s*-\s*/,'').trim(),
-      last10pct:    v(1),
-      baseSales:    v(2),
-      baseCOGS:     v(3),
-      trendWaste:   v(4),
-      cogsAffect:   v(5),
-      wastYestGal:  v(7),
-      wastYestJug:  v(8),
-      wastL7Gal:    v(9),
-      wastL7Jug:    v(10),
-      wastL30Gal:   v(11),
-      wastL30Jug:   v(12),
-    };
-  }
-  return data;
-}
-
-// ── Fetch store-specific tab for gallon build par ──────────────────────────
-// Store tabs are named: Yukon, Village, Bartlesville, SWOKC, Uptown, Norman, Shawnee, Duncan, Lawton, Chickisha, Moore, Norman2, WebbCity, Pecos, Carlsbad, Cruces, Hutchinson, Clovis, Hereford
-// We'll map store id to sheet name
-const STORE_SHEET_NAMES = {
-  '01':'Yukon','02':'Village','03':'Bartlesville','04':'SWOKC','05':'Uptown',
-  '06':'Norman','07':'Shawnee','08':'Duncan','09':'Lawton','10':'Chickasha',
-  '11':'OUMed','12':'Moore','13':'Norman2','14':'WebbCity','15':'Pecos',
-  '16':'Carlsbad','17':'Cruces','18':'Hutchinson','19':'Clovis','20':'Hereford',
-};
-
-let BUILD_DATA = {}; // cached per store
-
-async function fetchBuildPar(storeId) {
-  if (BUILD_DATA[storeId]) return BUILD_DATA[storeId];
-  const sheetName = STORE_SHEET_NAMES[storeId];
-  if (!sheetName) return null;
-  try {
-    const table = await fetchSheetByName(sheetName);
-    BUILD_DATA[storeId] = table;
-    return table;
-  } catch(e) {
-    console.warn('Could not load store tab:', sheetName, e);
-    return null;
-  }
-}
-
-// ── Formatters ──────────────────────────────────────────────────────────────
-function fmtN(v, dec=1) {
-  if (v === null || v === undefined || v === '') return '—';
-  const n = parseFloat(v);
-  if (isNaN(n)) return '—';
-  if (n === 0) return '0';
-  return n % 1 === 0 ? n.toFixed(0) : n.toFixed(dec);
-}
-function fmtP(v) {
-  if (v === null || v === undefined) return '—';
-  const n = parseFloat(v);
-  if (isNaN(n)) return '—';
-  return (n * 100).toFixed(2) + '%';
-}
-function vc(pct) {
-  if (pct === null || pct === undefined) return 'var(--muted)';
-  const n = parseFloat(pct);
-  if (isNaN(n)) return 'var(--muted)';
-  if (n <= 0.0025) return 'var(--green)';
-  if (n <= 0.004)  return 'var(--yellow)';
-  return 'var(--red)';
-}
-
-// ── Tab navigation ─────────────────────────────────────────────────────────
-function setTab(tab) {
-  MODE = tab;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-'+tab)?.classList.add('active');
-  render();
-}
-
-// ── Store selector ─────────────────────────────────────────────────────────
-function storeStrip() {
+function storeStrip(){
   return `<div class="store-strip-wrap"><div class="store-strip">
-    ${STORES.map(s => `<div class="store-pill${s.id===SEL_STORE?' active':''}"
-      onclick="SEL_STORE='${s.id}';render();">${s.id} - ${s.name}</div>`).join('')}
+    ${STORES.map(s=>`<div class="store-pill${s.id===SEL?' active':''}" onclick="SEL='${s.id}';render();">${s.id} - ${s.name}</div>`).join('')}
   </div></div>`;
 }
 
 // ── OVERVIEW ───────────────────────────────────────────────────────────────
-function renderOverview() {
-  if (!DATA) return '<div class="loading"><div class="spinner"></div>Loading…</div>';
-  const stores = Object.values(DATA);
-  const totalWasteYest = stores.reduce((a,s) => a + (s.wastYestGal||0) + (s.wastYestJug||0)*2.5, 0);
-  const totalWasteL7   = stores.reduce((a,s) => a + (s.wastL7Gal||0)   + (s.wastL7Jug||0)*2.5, 0);
-  const totalWasteL30  = stores.reduce((a,s) => a + (s.wastL30Gal||0)  + (s.wastL30Jug||0)*2.5, 0);
-  const aboveTarget    = stores.filter(s => s.cogsAffect > 0.0025).length;
-  const atTarget       = stores.filter(s => s.cogsAffect !== null && s.cogsAffect <= 0.0025).length;
-  const systemCOGS     = stores.reduce((a,s) => a + (s.cogsAffect||0), 0) / stores.filter(s=>s.cogsAffect!==null).length;
-
-  // Flag stores
-  const flagged = stores.filter(s => s.cogsAffect > 0.004).sort((a,b) => b.cogsAffect - a.cogsAffect);
-  const warn    = stores.filter(s => s.cogsAffect > 0.0025 && s.cogsAffect <= 0.004).sort((a,b) => b.cogsAffect - a.cogsAffect);
+function renderOverview(){
+  const stores = STORES.map(s=>WASTE_DATA[s.id]).filter(Boolean);
+  const totYestGal = stores.reduce((a,s)=>a+(s.wastYestGal||0),0);
+  const totL7Gal   = stores.reduce((a,s)=>a+(s.wastL7Gal||0),0);
+  const totL30Gal  = stores.reduce((a,s)=>a+(s.wastL30Gal||0),0);
+  const totYestJug = stores.reduce((a,s)=>a+(s.wastYestJug||0),0);
+  const totL7Jug   = stores.reduce((a,s)=>a+(s.wastL7Jug||0),0);
+  const totL30Jug  = stores.reduce((a,s)=>a+(s.wastL30Jug||0),0);
+  const valid = stores.filter(s=>s.cogsAffect!==null);
+  const avgCOGS = valid.reduce((a,s)=>a+s.cogsAffect,0)/valid.length;
+  const above = valid.filter(s=>s.cogsAffect>0.0025);
+  const flagged = above.filter(s=>s.cogsAffect>0.004).sort((a,b)=>b.cogsAffect-a.cogsAffect);
+  const warn    = above.filter(s=>s.cogsAffect<=0.004).sort((a,b)=>b.cogsAffect-a.cogsAffect);
 
   return `<div class="section">
-    <!-- System waste stats -->
-    <div class="card" style="margin-bottom:8px">
-      <div class="card-header"><div class="card-title">System Waste — Gallons (equiv.)</div></div>
+    <div class="card">
+      <div class="card-hdr"><div class="card-title">Gallons Wasted</div></div>
       <div class="stat-grid">
-        <div class="stat"><div class="stat-val">${fmtN(totalWasteYest,1)}</div><div class="stat-lbl">Yesterday</div></div>
-        <div class="stat"><div class="stat-val">${fmtN(totalWasteL7,1)}</div><div class="stat-lbl">Last 7 Days</div></div>
-        <div class="stat"><div class="stat-val">${fmtN(totalWasteL30,1)}</div><div class="stat-lbl">Last 30 Days</div></div>
+        <div class="stat"><div class="stat-val">${fN(totYestGal)}</div><div class="stat-lbl">Yesterday</div></div>
+        <div class="stat"><div class="stat-val">${fN(totL7Gal)}</div><div class="stat-lbl">Last 7 Days</div></div>
+        <div class="stat"><div class="stat-val">${fN(totL30Gal)}</div><div class="stat-lbl">Last 30 Days</div></div>
       </div>
     </div>
-
-    <!-- COGS impact -->
-    <div class="card" style="margin-bottom:8px">
-      <div class="card-header"><div class="card-title">Waste COGS Impact</div><div style="font-size:10px;color:var(--muted)">Target &lt; 0.25%</div></div>
+    <div class="card">
+      <div class="card-hdr"><div class="card-title">2.5 Gal Jugs Wasted</div></div>
       <div class="stat-grid">
-        <div class="stat"><div class="stat-val" style="color:${systemCOGS<=0.0025?'var(--green)':'var(--red)'}">${(systemCOGS*100).toFixed(2)}%</div><div class="stat-lbl">Avg COGS %</div></div>
-        <div class="stat"><div class="stat-val" style="color:var(--green)">${atTarget}</div><div class="stat-lbl">At Target</div></div>
-        <div class="stat"><div class="stat-val" style="color:var(--red)">${aboveTarget}</div><div class="stat-lbl">Above Target</div></div>
+        <div class="stat"><div class="stat-val">${fN(totYestJug)}</div><div class="stat-lbl">Yesterday</div></div>
+        <div class="stat"><div class="stat-val">${fN(totL7Jug)}</div><div class="stat-lbl">Last 7 Days</div></div>
+        <div class="stat"><div class="stat-val">${fN(totL30Jug)}</div><div class="stat-lbl">Last 30 Days</div></div>
       </div>
     </div>
-
-    <!-- Flagged stores -->
-    ${flagged.length > 0 ? `<div class="card" style="margin-bottom:8px;border-color:rgba(248,113,113,0.3)">
-      <div class="card-header"><div class="card-title" style="color:var(--red)">🚨 Needs Attention</div></div>
-      <div class="card-body">
-        ${flagged.map(s=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
-          <div style="font-size:12px;font-weight:600">${s.id} - ${s.name}</div>
-          <div style="font-size:13px;font-weight:800;color:var(--red)">${fmtP(s.cogsAffect)} COGS</div>
-        </div>`).join('')}
+    <div class="card">
+      <div class="card-hdr"><div class="card-title">Waste COGS Impact</div><div style="font-size:10px;color:var(--muted)">Target &lt; 0.25%</div></div>
+      <div class="stat-grid">
+        <div class="stat"><div class="stat-val" style="color:${vc(avgCOGS)}">${fP(avgCOGS)}</div><div class="stat-lbl">Avg COGS %</div></div>
+        <div class="stat"><div class="stat-val" style="color:var(--green)">${valid.length-above.length}</div><div class="stat-lbl">At Target</div></div>
+        <div class="stat"><div class="stat-val" style="color:var(--red)">${above.length}</div><div class="stat-lbl">Above Target</div></div>
       </div>
-    </div>` : ''}
-
-    ${warn.length > 0 ? `<div class="card" style="border-color:rgba(251,191,36,0.3)">
-      <div class="card-header"><div class="card-title" style="color:var(--yellow)">⚠ Watch List</div></div>
-      <div class="card-body">
-        ${warn.map(s=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
-          <div style="font-size:12px;font-weight:600">${s.id} - ${s.name}</div>
-          <div style="font-size:13px;font-weight:800;color:var(--yellow)">${fmtP(s.cogsAffect)} COGS</div>
-        </div>`).join('')}
-      </div>
-    </div>` : ''}
+    </div>
+    ${flagged.length?`<div class="card" style="border-color:rgba(248,113,113,0.3)">
+      <div class="card-hdr"><div class="card-title" style="color:var(--red)">🚨 Needs Attention</div></div>
+      <div>${flagged.map(s=>`<div class="tbl-row"><div class="tbl-store">${s.id||''} - ${s.name}</div><div style="font-size:13px;font-weight:800;color:var(--red)">${fP(s.cogsAffect)}</div></div>`).join('')}</div>
+    </div>`:''}
+    ${warn.length?`<div class="card" style="border-color:rgba(251,191,36,0.3)">
+      <div class="card-hdr"><div class="card-title" style="color:var(--yellow)">⚠ Watch List</div></div>
+      <div>${warn.map(s=>`<div class="tbl-row"><div class="tbl-store">${s.id||''} - ${s.name}</div><div style="font-size:13px;font-weight:800;color:var(--yellow)">${fP(s.cogsAffect)}</div></div>`).join('')}</div>
+    </div>`:''}
   </div>`;
 }
 
 // ── WASTE ──────────────────────────────────────────────────────────────────
-function renderWaste() {
-  if (!DATA) return '<div class="loading"><div class="spinner"></div>Loading…</div>';
-  const stores = STORES.map(s => DATA[s.id]).filter(Boolean);
+function renderWaste(){
+  const stores = STORES.map(s=>({...WASTE_DATA[s.id],id:s.id})).filter(Boolean);
+  const hdr = `<div class="tbl-hdr">
+    <div class="tbl-hdr-lbl" style="flex:1.5">Store</div>
+    <div class="tbl-cells">
+      <div class="tbl-hdr-lbl" style="width:54px;text-align:right">Yest</div>
+      <div class="tbl-hdr-lbl" style="width:54px;text-align:right">L7</div>
+      <div class="tbl-hdr-lbl" style="width:54px;text-align:right">L30</div>
+      <div class="tbl-hdr-lbl" style="width:54px;text-align:right">COGS%</div>
+    </div>
+  </div>`;
+  const galRows = stores.map(s=>`<div class="tbl-row">
+    <div class="tbl-store">${s.id} - ${s.name}</div>
+    <div class="tbl-cells">
+      <div class="tbl-cell">${fN(s.wastYestGal)}</div>
+      <div class="tbl-cell">${fN(s.wastL7Gal)}</div>
+      <div class="tbl-cell">${fN(s.wastL30Gal)}</div>
+      <div class="tbl-cell" style="color:${vc(s.cogsAffect)}">${fP(s.cogsAffect)}</div>
+    </div>
+  </div>`).join('');
+  const jugRows = stores.map(s=>`<div class="tbl-row">
+    <div class="tbl-store">${s.id} - ${s.name}</div>
+    <div class="tbl-cells">
+      <div class="tbl-cell">${fN(s.wastYestJug,2)}</div>
+      <div class="tbl-cell">${fN(s.wastL7Jug,2)}</div>
+      <div class="tbl-cell">${fN(s.wastL30Jug,2)}</div>
+      <div class="tbl-cell" style="color:var(--dim)">—</div>
+    </div>
+  </div>`).join('');
   return `<div class="section">
     <div class="card">
-      <div class="waste-hdr">
-        <span class="waste-hdr-store">Store</span>
-        <div class="waste-hdr-cols">
-          <span class="waste-hdr-cell">Yest</span>
-          <span class="waste-hdr-cell">L7</span>
-          <span class="waste-hdr-cell">L30</span>
-          <span class="waste-hdr-cell">COGS%</span>
-        </div>
-      </div>
-      <!-- Gallons sub-header -->
-      <div style="padding:5px 14px 2px;font-size:9px;color:var(--sky);font-weight:700;letter-spacing:.08em;text-transform:uppercase">Gallons Wasted</div>
-      ${stores.map(s => `<div class="waste-row">
-        <div class="waste-store">${s.id} - ${s.name}</div>
-        <div class="waste-cols">
-          <div class="waste-cell">${fmtN(s.wastYestGal)}</div>
-          <div class="waste-cell">${fmtN(s.wastL7Gal)}</div>
-          <div class="waste-cell">${fmtN(s.wastL30Gal)}</div>
-          <div class="waste-cell" style="color:${vc(s.cogsAffect)}">${fmtP(s.cogsAffect)}</div>
-        </div>
-      </div>`).join('')}
-      <!-- Jugs sub-header -->
-      <div style="padding:8px 14px 2px;font-size:9px;color:var(--teal);font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-top:1px solid var(--border)">2.5 Gal Jugs Wasted</div>
-      ${stores.map(s => `<div class="waste-row">
-        <div class="waste-store">${s.id} - ${s.name}</div>
-        <div class="waste-cols">
-          <div class="waste-cell">${fmtN(s.wastYestJug)}</div>
-          <div class="waste-cell">${fmtN(s.wastL7Jug)}</div>
-          <div class="waste-cell">${fmtN(s.wastL30Jug)}</div>
-          <div class="waste-cell" style="color:var(--dim)">—</div>
-        </div>
-      </div>`).join('')}
+      ${hdr}
+      <div class="section-lbl">Gallons Wasted</div>
+      ${galRows}
+      <div class="section-lbl" style="color:var(--teal);background:rgba(45,212,191,0.04);border-top:1px solid var(--border)">2.5 Gal Jugs Wasted</div>
+      ${jugRows}
     </div>
   </div>`;
 }
 
 // ── GALLON BUILD PAR ───────────────────────────────────────────────────────
-function renderGallon() {
+function renderGallon(){
+  const dow = DOW;
+  const dayName = DOW_NAMES[dow];
+  const storePar = BUILD_PAR[SEL];
+
+  const colHdr = `<div class="build-hdr">
+    <span>Flavor</span>
+    <span>Par</span>
+    <span>Pre-HH<br>1PM 70%</span>
+    <span>Post-HH<br>4PM 30%</span>
+  </div>`;
+
+  function makeRows(flavors){
+    return Object.entries(flavors).map(([name,days])=>{
+      const par  = days[dow]||0;
+      const pre  = par>0 ? Math.round(par*0.7) : 0;
+      const post = par>0 ? Math.max(1,Math.round(par*0.3)) : 0;
+      const z    = par===0;
+      return `<div class="build-row">
+        <div class="build-name${z?' zero':''}">${name}</div>
+        <div class="build-val${z?' zero':''}">${z?'—':par}</div>
+        <div class="build-val${z?' zero':''}">${z?'—':pre}</div>
+        <div class="build-val${z?' zero':''}">${z?'—':post}</div>
+      </div>`;
+    }).join('');
+  }
+
+  let content;
+  if(!storePar){
+    content = `<div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--yellow)">
+      ⚠ Par data for this store has not been entered yet. Contact your developer to add this store's flavor par values.
+    </div>`;
+  } else {
+    const allFlavors = [
+      ...Object.values(storePar.sweets),
+      ...Object.values(storePar.unsweets),
+      ...Object.values(storePar.specialty),
+    ];
+    const totPar  = allFlavors.reduce((a,days)=>a+(days[dow]||0),0);
+    const totPre  = Math.round(totPar*0.7);
+    const totPost = Math.round(totPar*0.3);
+
+    const totalRow = `<div class="build-total">
+      <div class="build-total-lbl">TOTAL</div>
+      <div class="build-total-val">${totPar}</div>
+      <div class="build-total-val">${totPre}</div>
+      <div class="build-total-val">${totPost}</div>
+    </div>`;
+
+    content = `<div class="card">
+      <div style="position:sticky;top:0;z-index:10;background:var(--card)">
+        <div style="padding:8px 14px 5px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)">
+          <div style="font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.08em;text-transform:uppercase">Today — ${dayName}</div>
+          <div style="font-size:9px;color:var(--muted)">Par | 1PM Check | 4PM Check</div>
+        </div>
+        ${colHdr}
+        ${totalRow}
+      </div>
+      <div class="section-lbl">Sweets</div>
+      ${makeRows(storePar.sweets)}
+      <div class="section-lbl">Un-Sweets</div>
+      ${makeRows(storePar.unsweets)}
+      <div class="section-lbl">Specialty</div>
+      ${makeRows(storePar.specialty)}
+    </div>`;
+  }
+
   return `<div>
     <div style="position:sticky;top:97px;z-index:40;background:var(--bg);padding:0 0 6px;border-bottom:1px solid var(--border)">
       ${storeStrip()}
     </div>
-    <div class="section" style="padding-top:8px">
-      <div id="gallon-content">
-        <div class="loading"><div class="spinner"></div>Loading build par…</div>
-      </div>
-    </div>
-  </div>`;
-}
-
-async function loadBuildPar() {
-  const el = document.getElementById('gallon-content');
-  if (!el) return;
-
-  const table = await fetchBuildPar(SEL_STORE);
-
-  if (!table) {
-    // Fall back to showing the gallon build par from hardcoded flavor list
-    // with daily par numbers from the Summary data if available
-    el.innerHTML = buildParFromSummary();
-    return;
-  }
-
-  // Try to parse the store tab
-  // Store tabs have the gallon build par data
-  // Structure: rows have flavor names and daily par values
-  el.innerHTML = buildParFromTable(table);
-}
-
-function buildParFromSummary() {
-  const store = DATA ? DATA[SEL_STORE] : null;
-  const sname = store ? store.name : STORES.find(s=>s.id===SEL_STORE)?.name || '';
-
-  return `<div>
-    <div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:11px;color:var(--yellow)">
-      ⚠ Store tab for <b>${SEL_STORE} - ${sname}</b> is not yet published in the Google Sheet.
-      Par values will appear once the tab is populated and published.
-      Showing flavor structure for reference.
-    </div>
-    ${buildParTable(null, null)}
-  </div>`;
-}
-
-function buildParFromTable(table) {
-  const rows = table.rows || [];
-  const allFlavors = FLAVORS.sweets.concat(FLAVORS.unsweets).concat(FLAVORS.specialty);
-
-  // ── Find the DOW header row ──────────────────────────────────────────────
-  // Look for a row containing "Sunday" or "Monday" to identify DOW columns
-  let dowColMap = {}; // {0:colIdx, 1:colIdx, ...} where 0=Sun,1=Mon,...,6=Sat
-  let dowRowIdx = -1;
-  const dowLabels = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
-
-  for (let r = 0; r < rows.length; r++) {
-    const row = rows[r];
-    if (!row.c) continue;
-    const rowText = row.c.map(c => c && c.v ? String(c.v).toLowerCase().trim() : '').join('|');
-    if (rowText.includes('sunday') && rowText.includes('monday')) {
-      dowRowIdx = r;
-      // Map each DOW to its column index
-      row.c.forEach((cell, colIdx) => {
-        if (!cell || !cell.v) return;
-        const dayIdx = dowLabels.indexOf(String(cell.v).toLowerCase().trim());
-        if (dayIdx >= 0) dowColMap[dayIdx] = colIdx;
-      });
-      break;
-    }
-  }
-
-  // ── Today's DOW column ───────────────────────────────────────────────────
-  const todayDow = new Date().getDay(); // 0=Sun, 1=Mon ... 6=Sat
-  const parColIdx = dowColMap[todayDow];
-
-  // ── Build par map from today's column ────────────────────────────────────
-  const parMap = {};
-  if (parColIdx !== undefined) {
-    for (let r = dowRowIdx + 1; r < rows.length; r++) {
-      const row = rows[r];
-      if (!row.c || !row.c[0] || row.c[0].v === null) continue;
-      const label = String(row.c[0].v).trim();
-
-      const matchedFlavor = allFlavors.find(f =>
-        label.toLowerCase() === f.toLowerCase() ||
-        label.toLowerCase().includes(f.toLowerCase()) ||
-        f.toLowerCase().includes(label.toLowerCase())
-      );
-      if (!matchedFlavor) continue;
-
-      const cell = row.c[parColIdx];
-      const val = cell && cell.v !== null ? parseFloat(cell.v) : 0;
-      parMap[matchedFlavor] = isNaN(val) ? 0 : val;
-    }
-  }
-
-  const hasData = Object.keys(parMap).length > 0;
-  if (!hasData) return buildParFromSummary();
-
-  const dow = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][todayDow];
-  return buildParTable(parMap, dow);
-}
-
-function buildParTable(parMap, dayLabel) {
-  function parVal(flavor) {
-    if (!parMap) return null;
-    if (parMap[flavor] !== undefined) return parMap[flavor];
-    for (const key of Object.keys(parMap)) {
-      if (key.toLowerCase().includes(flavor.toLowerCase()) ||
-          flavor.toLowerCase().includes(key.toLowerCase())) return parMap[key];
-    }
-    return null;
-  }
-
-  function parRow(flavor) {
-    const par  = parVal(flavor);
-    // Use Math.round for both splits so small numbers don't zero out
-    const pre  = par !== null && par > 0 ? Math.round(par * 0.7) : null;
-    const post = par !== null && par > 0 ? Math.max(1, Math.round(par * 0.3)) : null;
-    const isEmpty = par === null || par === 0;
-    return `<div class="build-row">
-      <div class="build-name${isEmpty?' build-zero':''}">${flavor}</div>
-      <div class="build-val${isEmpty?' build-zero':''}">${par !== null && par > 0 ? par : '—'}</div>
-      <div class="build-val${isEmpty?' build-zero':''}">${pre !== null ? pre : '—'}</div>
-      <div class="build-val${isEmpty?' build-zero':''}">${post !== null ? post : '—'}</div>
-    </div>`;
-  }
-
-  const allFlavors = FLAVORS.sweets.concat(FLAVORS.unsweets).concat(FLAVORS.specialty);
-  const totalPar  = allFlavors.reduce((a,f) => a + (parVal(f)||0), 0);
-  const totalPre  = Math.round(totalPar * 0.7);
-  const totalPost = Math.round(totalPar * 0.3);
-
-  // Total row at TOP (below header), then flavors below
-  const totalRow = `<div class="build-total-row">
-    <div class="build-total-lbl">Total</div>
-    <div class="build-total-val">${totalPar||'—'}</div>
-    <div class="build-total-val">${totalPre||'—'}</div>
-    <div class="build-total-val">${totalPost||'—'}</div>
-  </div>`;
-
-  const dayStr = dayLabel || ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][new Date().getDay()];
-  return `<div class="card" style="overflow:hidden">
-    <!-- Sticky header + total — always visible -->
-    <div style="position:sticky;top:0;z-index:10;background:var(--card)">
-      <div style="padding:8px 14px 4px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)">
-        <div style="font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.08em;text-transform:uppercase">Today — ${dayStr}</div>
-        <div style="font-size:9px;color:var(--muted)">Starts Day | 1PM Check | 4PM Check</div>
-      </div>
-      <div class="build-hdr">
-        <span>Flavor</span>
-        <span>Par</span>
-        <span>Pre-HH<br>1PM 70%</span>
-        <span>Post-HH<br>4PM 30%</span>
-      </div>
-      ${totalRow}
-    </div>
-    <!-- Scrollable flavor list -->
-    <div>
-      <div class="build-section-label">Sweets</div>
-      ${FLAVORS.sweets.map(f => parRow(f)).join('')}
-      <div class="build-section-label">Un-Sweets</div>
-      ${FLAVORS.unsweets.map(f => parRow(f)).join('')}
-      <div class="build-section-label">Specialty</div>
-      ${FLAVORS.specialty.map(f => parRow(f)).join('')}
-    </div>
+    <div class="section" style="padding-top:8px">${content}</div>
   </div>`;
 }
 
 // ── JUGS IN ROTATION ───────────────────────────────────────────────────────
-function renderJugs() {
-  if (!DATA) return '<div class="loading"><div class="spinner"></div>Loading…</div>';
-  const stores = STORES.map(s => DATA[s.id]).filter(Boolean);
-
-  // Jugs data: L7 and L30 jug waste as proxy for rotation activity
-  // Summary col 8 = WasteYest_Jug, col 10 = WasteL7_Jug, col 12 = WasteL30_Jug
-  const totalYest = stores.reduce((a,s)=>a+(s.wastYestJug||0),0);
-  const totalL7   = stores.reduce((a,s)=>a+(s.wastL7Jug||0),0);
-  const totalL30  = stores.reduce((a,s)=>a+(s.wastL30Jug||0),0);
-
+function renderJugs(){
+  const stores = STORES.map(s=>({...WASTE_DATA[s.id],id:s.id})).filter(Boolean);
+  const totY = stores.reduce((a,s)=>a+(s.wastYestJug||0),0);
+  const totL7= stores.reduce((a,s)=>a+(s.wastL7Jug||0),0);
+  const totL30=stores.reduce((a,s)=>a+(s.wastL30Jug||0),0);
   return `<div class="section">
-    <!-- System totals -->
-    <div class="card" style="margin-bottom:8px">
-      <div class="card-header"><div class="card-title">2.5 Gal Jugs — System Totals</div></div>
+    <div class="card">
+      <div class="card-hdr"><div class="card-title">2.5 Gal Jugs — System</div></div>
       <div class="stat-grid">
-        <div class="stat"><div class="stat-val">${fmtN(totalYest,1)}</div><div class="stat-lbl">Yesterday</div></div>
-        <div class="stat"><div class="stat-val">${fmtN(totalL7,1)}</div><div class="stat-lbl">Last 7 Days</div></div>
-        <div class="stat"><div class="stat-val">${fmtN(totalL30,1)}</div><div class="stat-lbl">Last 30 Days</div></div>
+        <div class="stat"><div class="stat-val">${fN(totY,1)}</div><div class="stat-lbl">Yesterday</div></div>
+        <div class="stat"><div class="stat-val">${fN(totL7,1)}</div><div class="stat-lbl">Last 7 Days</div></div>
+        <div class="stat"><div class="stat-val">${fN(totL30,1)}</div><div class="stat-lbl">Last 30 Days</div></div>
       </div>
     </div>
-
-    <!-- Per-store jugs -->
     <div class="card">
-      <div class="waste-hdr">
-        <span class="waste-hdr-store">Store</span>
-        <div class="waste-hdr-cols">
-          <span class="waste-hdr-cell">Yest</span>
-          <span class="waste-hdr-cell">L7</span>
-          <span class="waste-hdr-cell">L30</span>
+      <div class="tbl-hdr">
+        <div class="tbl-hdr-lbl" style="flex:1.5">Store</div>
+        <div class="tbl-cells">
+          <div class="tbl-hdr-lbl" style="width:60px;text-align:right">Yest</div>
+          <div class="tbl-hdr-lbl" style="width:60px;text-align:right">L7</div>
+          <div class="tbl-hdr-lbl" style="width:60px;text-align:right">L30</div>
         </div>
       </div>
-      ${stores.map(s => {
-        const yest = s.wastYestJug||0;
-        const l7   = s.wastL7Jug||0;
-        const l30  = s.wastL30Jug||0;
-        const flag = l30 > 50 ? 'var(--red)' : l30 > 20 ? 'var(--yellow)' : 'var(--text)';
-        return `<div class="waste-row">
-          <div class="waste-store" style="color:${flag}">${s.id} - ${s.name}</div>
-          <div class="waste-cols">
-            <div class="waste-cell" style="width:70px">${fmtN(yest,2)}</div>
-            <div class="waste-cell" style="width:70px">${fmtN(l7,2)}</div>
-            <div class="waste-cell" style="width:70px">${fmtN(l30,2)}</div>
+      ${stores.map(s=>{
+        const hi = s.wastL30Jug>50;
+        const md = s.wastL30Jug>20&&s.wastL30Jug<=50;
+        return `<div class="tbl-row">
+          <div class="tbl-store" style="color:${hi?'var(--red)':md?'var(--yellow)':'var(--text)'}">${s.id} - ${s.name}</div>
+          <div class="tbl-cells">
+            <div class="tbl-cell" style="width:60px">${fN(s.wastYestJug,2)}</div>
+            <div class="tbl-cell" style="width:60px">${fN(s.wastL7Jug,2)}</div>
+            <div class="tbl-cell" style="width:60px">${fN(s.wastL30Jug,2)}</div>
           </div>
         </div>`;
       }).join('')}
     </div>
-    <div style="font-size:9px;color:var(--dim);text-align:center;margin-top:8px">
-      Jug counts from waste log · 1 jug = 2.5 gallons
-    </div>
+    <div style="font-size:9px;color:var(--dim);text-align:center;margin-top:8px">1 jug = 2.5 gallons · Data as of 03/15/26</div>
   </div>`;
 }
 
-// ── Main render ────────────────────────────────────────────────────────────
-function render() {
+// ── Render ──────────────────────────────────────────────────────────────────
+function render(){
   const app = document.getElementById('app');
-  if (MODE === 'overview') { app.innerHTML = renderOverview(); }
-  else if (MODE === 'waste')   { app.innerHTML = renderWaste(); }
-  else if (MODE === 'gallon')  {
-    app.innerHTML = renderGallon();
-    loadBuildPar();
-  }
-  else if (MODE === 'jugs')    { app.innerHTML = renderJugs(); }
+  if(MODE==='overview') app.innerHTML=renderOverview();
+  else if(MODE==='waste')  app.innerHTML=renderWaste();
+  else if(MODE==='gallon') app.innerHTML=renderGallon();
+  else if(MODE==='jugs')   app.innerHTML=renderJugs();
 }
 
-// ── Init ───────────────────────────────────────────────────────────────────
-async function init() {
-  try {
-    const table = await fetchSheet(SUMMARY_GID);
-    DATA = parseSummary(table);
-    const now = new Date();
-    document.getElementById('as-of').textContent =
-      'As Of: ' + now.toLocaleDateString('en-US', {month:'numeric',day:'numeric',year:'2-digit'});
-    render();
-  } catch(e) {
-    document.getElementById('app').innerHTML =
-      `<div class="section"><div class="err">Failed to load sheet data. Check that the Google Sheet is published publicly.<br><br>Error: ${e.message}</div></div>`;
-    console.error(e);
-  }
-}
-
-init();
+// ── Init ────────────────────────────────────────────────────────────────────
+document.getElementById('as-of').textContent = 'Data as of 03/15/26';
+render();
 </script>
 </body>
 </html>
