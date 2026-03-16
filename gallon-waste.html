@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HTeaO — Waste · Gallons</title>
+<style>
+  :root {
+    --bg:#080e1a; --card:#0d1526; --border:rgba(255,255,255,0.08);
+    --text:#e2e8f0; --muted:#64748b; --dim:#334155;
+    --sky:#38bdf8; --green:#4ade80; --yellow:#fbbf24; --red:#f87171;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,sans-serif;min-height:100vh;padding-bottom:40px;}
+
+  /* Header */
+  .header{background:var(--bg);border-bottom:1px solid var(--border);padding:12px 16px;position:sticky;top:0;z-index:50;}
+  .header-top{display:flex;align-items:center;gap:10px;}
+  .logo{font-size:18px;font-weight:900;color:var(--sky);}
+  .sub{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;}
+
+  /* Steps */
+  .steps{display:flex;gap:4px;padding:10px 16px 0;}
+  .step{flex:1;height:3px;border-radius:2px;background:var(--dim);transition:background .3s;}
+  .step.done{background:var(--green);}
+  .step.active{background:var(--sky);}
+
+  /* Section */
+  .section{padding:16px;}
+  .section-title{font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;}
+
+  /* Fields */
+  .field{margin-bottom:14px;}
+  .label{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px;display:block;}
+  .label span{color:var(--red);}
+  input,select{width:100%;padding:11px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:15px;font-family:inherit;-webkit-appearance:none;appearance:none;outline:none;}
+  input:focus,select:focus{border-color:rgba(56,189,248,0.5);}
+  .name-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+
+  /* Flavor table */
+  .flavor-table{background:var(--card);border-radius:10px;border:1px solid var(--border);overflow:hidden;margin-bottom:14px;}
+  .flavor-hdr{display:grid;padding:8px 12px;background:rgba(56,189,248,0.08);border-bottom:1px solid var(--border);}
+  .flavor-hdr.two-col{grid-template-columns:1fr 88px 88px;}
+  .flavor-hdr.one-col{grid-template-columns:1fr 88px;}
+  .flavor-hdr span{font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.08em;text-transform:uppercase;}
+  .flavor-hdr span:not(:first-child){text-align:center;}
+  .flavor-row{display:grid;padding:0 12px;border-bottom:1px solid var(--border);align-items:center;min-height:48px;}
+  .flavor-row:last-child{border-bottom:none;}
+  .flavor-row.two-col{grid-template-columns:1fr 88px 88px;}
+  .flavor-row.one-col{grid-template-columns:1fr 88px;}
+  .flavor-name{font-size:13px;color:var(--text);padding:8px 0;}
+  .flavor-name.dim{color:var(--muted);}
+  .qty-input{width:60px;padding:6px 8px;text-align:center;font-size:15px;font-weight:700;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;-webkit-appearance:none;}
+  .qty-input:focus{border-color:rgba(56,189,248,0.5);outline:none;}
+  .section-label{font-size:10px;font-weight:700;color:var(--yellow);letter-spacing:.08em;text-transform:uppercase;padding:8px 12px 4px;background:rgba(251,191,36,0.05);border-bottom:1px solid var(--border);}
+
+  /* Total */
+  .total-bar{background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+  .total-bar .lbl{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
+  .total-bar .val{font-size:24px;font-weight:900;color:var(--sky);}
+
+  /* Buttons */
+  .btn-row{display:flex;gap:8px;}
+  .btn{flex:1;padding:14px;border-radius:10px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;border:none;transition:opacity .15s;}
+  .btn-primary{background:var(--sky);color:#080e1a;}
+  .btn-secondary{background:var(--card);color:var(--muted);border:1px solid var(--border);}
+  .btn:active{opacity:.75;}
+
+  /* Stepper */
+  .stepper{display:flex;align-items:center;width:84px;}
+  .stepper-btn{width:28px;height:36px;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;user-select:none;flex-shrink:0;}
+  .stepper-btn:first-child{border-radius:6px 0 0 6px;}
+  .stepper-btn:last-child{border-radius:0 6px 6px 0;}
+  .stepper-btn:active{background:rgba(56,189,248,0.2);}
+  .stepper-val{flex:1;text-align:center;font-size:15px;font-weight:700;color:var(--text);background:rgba(255,255,255,0.03);border-top:1px solid var(--border);border-bottom:1px solid var(--border);height:36px;line-height:36px;pointer-events:none;}
+  .stepper-val.nonzero{color:var(--sky);}
+
+  /* Success */
+  .success{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:32px;}
+  .success.show{display:flex;}
+  .success-icon{font-size:56px;margin-bottom:16px;}
+  .success h2{font-size:22px;font-weight:900;color:var(--green);margin-bottom:8px;}
+  .success p{font-size:14px;color:var(--muted);margin-bottom:24px;}
+  .success .btn-primary{max-width:200px;padding:12px 24px;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div><div class="logo">HTeaO</div><div class="sub">Waste — Gallons</div></div>
+  </div>
+  <div class="steps" id="steps">
+    <div class="step active" id="s1"></div>
+    <div class="step" id="s2"></div>
+  </div>
+</div>
+
+<!-- Step 1: Info -->
+<div id="step1">
+  <div class="section">
+    <div class="section-title">Submission Info</div>
+
+    <div class="field">
+      <label class="label">Your Name </label>
+      <div class="name-row">
+        <input type="text" id="firstName" placeholder="First" autocomplete="given-name">
+        <input type="text" id="lastName" placeholder="Last" autocomplete="family-name">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label" for="location">Location </label>
+      <select id="location">
+        <option value="">Please Select</option>
+        <option>01 - Yukon</option>
+        <option>02 - The Village</option>
+        <option>03 - Bartlesville</option>
+        <option>04 - SW OKC</option>
+        <option>05 - Uptown</option>
+        <option>06 - Norman1</option>
+        <option>07 - Shawnee</option>
+        <option>08 - Duncan</option>
+        <option>09 - Lawton</option>
+        <option>10 - Chickisha</option>
+        <option>11 - OU Med</option>
+        <option>12 - Moore</option>
+        <option>13 - Norman2</option>
+        <option>14 - Webb City</option>
+        <option>15 - Pecos</option>
+        <option>16 - Carlsbad</option>
+        <option>17 - Las Cruces</option>
+        <option>18 - Hutchinson</option>
+        <option>19 - Clovis</option>
+        <option>20 - Hereford</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label class="label">Type of Submittal</label>
+      <select id="submitType" style="display:none"><option value="Waste - Gallons" selected>Waste - Gallons</option></select>
+      <div style="padding:11px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:15px;">Waste - Gallons</div>
+    </div>
+
+    <div class="field">
+      <label class="label" for="date">Date </label>
+      <input type="date" id="date">
+    </div>
+
+    <button class="btn btn-primary" onclick="goStep2()">Next →</button>
+  </div>
+</div>
+
+<!-- Step 2: Flavors -->
+<div id="step2" style="display:none">
+  <div class="section">
+
+    <!-- SWEET table -->
+    <div class="flavor-table">
+      <div class="flavor-hdr one-col"><span>Sweet</span><span>Qty</span></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Regular</div><div class="stepper"><button class="stepper-btn" onclick="adj('REG',-1)">−</button><div class="stepper-val" id="disp_REG">0</div><input type="hidden" id="REG" value="0"><button class="stepper-btn" onclick="adj('REG',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Georgia Peach</div><div class="stepper"><button class="stepper-btn" onclick="adj('SW_PEACH',-1)">−</button><div class="stepper-val" id="disp_SW_PEACH">0</div><input type="hidden" id="SW_PEACH" value="0"><button class="stepper-btn" onclick="adj('SW_PEACH',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Blueberry</div><div class="stepper"><button class="stepper-btn" onclick="adj('SW_BB',-1)">−</button><div class="stepper-val" id="disp_SW_BB">0</div><input type="hidden" id="SW_BB" value="0"><button class="stepper-btn" onclick="adj('SW_BB',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Coconut</div><div class="stepper"><button class="stepper-btn" onclick="adj('SW_COCO',-1)">−</button><div class="stepper-val" id="disp_SW_COCO">0</div><input type="hidden" id="SW_COCO" value="0"><button class="stepper-btn" onclick="adj('SW_COCO',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Watermelon</div><div class="stepper"><button class="stepper-btn" onclick="adj('SW_MELON',-1)">−</button><div class="stepper-val" id="disp_SW_MELON">0</div><input type="hidden" id="SW_MELON" value="0"><button class="stepper-btn" onclick="adj('SW_MELON',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Raspberry</div><div class="stepper"><button class="stepper-btn" onclick="adj('SW_RAS',-1)">−</button><div class="stepper-val" id="disp_SW_RAS">0</div><input type="hidden" id="SW_RAS" value="0"><button class="stepper-btn" onclick="adj('SW_RAS',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Mint</div><div class="stepper"><button class="stepper-btn" onclick="adj('SW_MINT',-1)">−</button><div class="stepper-val" id="disp_SW_MINT">0</div><input type="hidden" id="SW_MINT" value="0"><button class="stepper-btn" onclick="adj('SW_MINT',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Peach Ginger</div><div class="stepper"><button class="stepper-btn" onclick="adj('SW_PG',-1)">−</button><div class="stepper-val" id="disp_SW_PG">0</div><input type="hidden" id="SW_PG" value="0"><button class="stepper-btn" onclick="adj('SW_PG',1)">+</button></div></div>
+    </div>
+
+    <!-- UN-SWEET table -->
+    <div class="flavor-table">
+      <div class="flavor-hdr one-col"><span>Un-Sweet</span><span>Qty</span></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Regular</div><div class="stepper"><button class="stepper-btn" onclick="adj('UNREG',-1)">−</button><div class="stepper-val" id="disp_UNREG">0</div><input type="hidden" id="UNREG" value="0"><button class="stepper-btn" onclick="adj('UNREG',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Georgia Peach</div><div class="stepper"><button class="stepper-btn" onclick="adj('UN_PEACH',-1)">−</button><div class="stepper-val" id="disp_UN_PEACH">0</div><input type="hidden" id="UN_PEACH" value="0"><button class="stepper-btn" onclick="adj('UN_PEACH',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Blueberry</div><div class="stepper"><button class="stepper-btn" onclick="adj('UN_BB',-1)">−</button><div class="stepper-val" id="disp_UN_BB">0</div><input type="hidden" id="UN_BB" value="0"><button class="stepper-btn" onclick="adj('UN_BB',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Coconut</div><div class="stepper"><button class="stepper-btn" onclick="adj('UN_COCO',-1)">−</button><div class="stepper-val" id="disp_UN_COCO">0</div><input type="hidden" id="UN_COCO" value="0"><button class="stepper-btn" onclick="adj('UN_COCO',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Watermelon</div><div class="stepper"><button class="stepper-btn" onclick="adj('UN_MELON',-1)">−</button><div class="stepper-val" id="disp_UN_MELON">0</div><input type="hidden" id="UN_MELON" value="0"><button class="stepper-btn" onclick="adj('UN_MELON',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Raspberry</div><div class="stepper"><button class="stepper-btn" onclick="adj('UN_RAS',-1)">−</button><div class="stepper-val" id="disp_UN_RAS">0</div><input type="hidden" id="UN_RAS" value="0"><button class="stepper-btn" onclick="adj('UN_RAS',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Mint</div><div class="stepper"><button class="stepper-btn" onclick="adj('UN_MINT',-1)">−</button><div class="stepper-val" id="disp_UN_MINT">0</div><input type="hidden" id="UN_MINT" value="0"><button class="stepper-btn" onclick="adj('UN_MINT',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Peach Ginger</div><div class="stepper"><button class="stepper-btn" onclick="adj('UN_PG',-1)">−</button><div class="stepper-val" id="disp_UN_PG">0</div><input type="hidden" id="UN_PG" value="0"><button class="stepper-btn" onclick="adj('UN_PG',1)">+</button></div></div>
+    </div>
+
+    <!-- SPECIALTY table -->
+    <div class="flavor-table">
+      <div class="flavor-hdr one-col"><span>Specialty</span><span>Qty</span></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Strawberry Passion</div><div class="stepper"><button class="stepper-btn" onclick="adj('SPASSION',-1)">−</button><div class="stepper-val" id="disp_SPASSION">0</div><input type="hidden" id="SPASSION" value="0"><button class="stepper-btn" onclick="adj('SPASSION',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Texas Chai</div><div class="stepper"><button class="stepper-btn" onclick="adj('CHAI',-1)">−</button><div class="stepper-val" id="disp_CHAI">0</div><input type="hidden" id="CHAI" value="0"><button class="stepper-btn" onclick="adj('CHAI',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Lemonade</div><div class="stepper"><button class="stepper-btn" onclick="adj('LEMONADE',-1)">−</button><div class="stepper-val" id="disp_LEMONADE">0</div><input type="hidden" id="LEMONADE" value="0"><button class="stepper-btn" onclick="adj('LEMONADE',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Green — Sweet Almond</div><div class="stepper"><button class="stepper-btn" onclick="adj('SW_ALM_GRN',-1)">−</button><div class="stepper-val" id="disp_SW_ALM_GRN">0</div><input type="hidden" id="SW_ALM_GRN" value="0"><button class="stepper-btn" onclick="adj('SW_ALM_GRN',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Green — Unsweet</div><div class="stepper"><button class="stepper-btn" onclick="adj('UN_GRN',-1)">−</button><div class="stepper-val" id="disp_UN_GRN">0</div><input type="hidden" id="UN_GRN" value="0"><button class="stepper-btn" onclick="adj('UN_GRN',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Mango Fresco</div><div class="stepper"><button class="stepper-btn" onclick="adj('MANGO',-1)">−</button><div class="stepper-val" id="disp_MANGO">0</div><input type="hidden" id="MANGO" value="0"><button class="stepper-btn" onclick="adj('MANGO',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Sweet Zero</div><div class="stepper"><button class="stepper-btn" onclick="adj('SW_ZERO',-1)">−</button><div class="stepper-val" id="disp_SW_ZERO">0</div><input type="hidden" id="SW_ZERO" value="0"><button class="stepper-btn" onclick="adj('SW_ZERO',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Ryan Palmer</div><div class="stepper"><button class="stepper-btn" onclick="adj('PALMER',-1)">−</button><div class="stepper-val" id="disp_PALMER">0</div><input type="hidden" id="PALMER" value="0"><button class="stepper-btn" onclick="adj('PALMER',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Decaf — Unsweet</div><div class="stepper"><button class="stepper-btn" onclick="adj('DECAF',-1)">−</button><div class="stepper-val" id="disp_DECAF">0</div><input type="hidden" id="DECAF" value="0"><button class="stepper-btn" onclick="adj('DECAF',1)">+</button></div></div>
+      <div class="flavor-row one-col"><div class="flavor-name">Cherry</div><div class="stepper"><button class="stepper-btn" onclick="adj('CHERRY',-1)">−</button><div class="stepper-val" id="disp_CHERRY">0</div><input type="hidden" id="CHERRY" value="0"><button class="stepper-btn" onclick="adj('CHERRY',1)">+</button></div></div>
+    </div>
+
+    <div class="total-bar">
+      <div class="lbl">Total Jugs</div>
+      <div class="val" id="totalJugs">0</div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep1()">← Back</button>
+      <button class="btn btn-primary" onclick="submitForm()">Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Success -->
+<div class="success" id="success">
+  <div class="success-icon">✅</div>
+  <h2>Submitted!</h2>
+  <p id="successMsg"></p>
+  <button class="btn btn-primary" onclick="resetForm()">Submit Another</button>
+</div>
+
+<script>
+// Set today's date as default
+document.getElementById('date').valueAsDate = new Date();
+
+// All qty field IDs
+const QTY_IDS = [
+  'REG','UNREG','SW_PEACH','UN_PEACH','SW_BB','UN_BB','SW_COCO','UN_COCO',
+  'SW_MELON','UN_MELON','SW_RAS','UN_RAS','SW_MINT','UN_MINT','SW_PG','UN_PG',
+  'SPASSION','CHAI','LEMONADE','SW_ALM_GRN','UN_GRN','MANGO','SW_ZERO','PALMER','DECAF','CHERRY'
+];
+
+// Live total
+QTY_IDS.forEach(id => {
+  document.getElementById(id).addEventListener('input', updateTotal);
+});
+
+function adj(id, delta) {
+  const inp = document.getElementById(id);
+  const disp = document.getElementById('disp_' + id);
+  let val = parseInt(inp.value) || 0;
+  val = Math.max(0, val + delta);
+  inp.value = val;
+  disp.textContent = val;
+  disp.className = val > 0 ? 'stepper-val nonzero' : 'stepper-val';
+  updateTotal();
+}
+
+function updateTotal() {
+  const total = QTY_IDS.reduce((sum, id) => {
+    const v = parseInt(document.getElementById(id).value) || 0;
+    return sum + v;
+  }, 0);
+  document.getElementById('totalJugs').textContent = total;
+}
+
+function goStep2() {
+  const first = document.getElementById('firstName').value.trim();
+  const last  = document.getElementById('lastName').value.trim();
+  const loc   = document.getElementById('location').value;
+  const type  = document.getElementById('submitType').value;
+  const date  = document.getElementById('date').value;
+  // validation removed for testing
+  document.getElementById('step1').style.display = 'none';
+  document.getElementById('step2').style.display = 'block';
+  document.getElementById('s1').className = 'step done';
+  document.getElementById('s2').className = 'step active';
+  window.scrollTo(0,0);
+}
+
+function goStep1() {
+  document.getElementById('step2').style.display = 'none';
+  document.getElementById('step1').style.display = 'block';
+  document.getElementById('s1').className = 'step active';
+  document.getElementById('s2').className = 'step';
+  window.scrollTo(0,0);
+}
+
+function submitForm() {
+  const data = {
+    submissionDate: new Date().toISOString(),
+    firstName: document.getElementById('firstName').value.trim(),
+    lastName:  document.getElementById('lastName').value.trim(),
+    location:  document.getElementById('location').value,
+    type:      document.getElementById('submitType').value,
+    date:      document.getElementById('date').value,
+  };
+  QTY_IDS.forEach(id => {
+    const v = document.getElementById(id).value;
+    data[id] = v ? parseFloat(v) : null;
+  });
+  data.totalJugs = parseFloat(document.getElementById('totalJugs').textContent) || 0;
+
+  // Log to console (developer can wire to backend/sheet here)
+  console.log('HTeaO Jug Build Submission:', JSON.stringify(data, null, 2));
+
+  // Show success
+  document.getElementById('step2').style.display = 'none';
+  document.getElementById('s2').className = 'step done';
+  const success = document.getElementById('success');
+  success.classList.add('show');
+  document.getElementById('successMsg').textContent =
+    `${data.firstName} ${data.lastName} · ${data.location} · ${data.totalJugs} total jugs`;
+  window.scrollTo(0,0);
+}
+
+function resetForm() {
+  // Clear all qty fields
+  QTY_IDS.forEach(id => {
+    document.getElementById(id).value = 0;
+    const d = document.getElementById('disp_' + id);
+    if(d){ d.textContent = '0'; d.className = 'stepper-val'; }
+  });
+  updateTotal();
+  // Reset step indicators
+  document.getElementById('s1').className = 'step active';
+  document.getElementById('s2').className = 'step';
+  // Show step 1
+  document.getElementById('success').classList.remove('show');
+  document.getElementById('step1').style.display = 'block';
+  // Reset date to today
+  document.getElementById('date').valueAsDate = new Date();
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
