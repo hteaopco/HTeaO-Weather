@@ -439,7 +439,7 @@ function renderGallon(){
     </div>`;
 
     content = `<div class="card">
-      <div style="position:sticky;top:0;z-index:10;background:var(--card)">
+      <div style="position:sticky;top:calc(var(--hdr-h,97px) + 44px);z-index:10;background:var(--card)">
         <div style="padding:8px 14px 5px;border-bottom:1px solid var(--border)">
           <div style="font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.08em;text-transform:uppercase">Today — ${dayName}</div>
         </div>
@@ -456,7 +456,7 @@ function renderGallon(){
   }
 
   return `<div>
-    <div style="position:sticky;top:97px;z-index:40;background:var(--bg);padding:0 0 6px;border-bottom:1px solid var(--border)">
+    <div id="gallon-store-strip" style="position:sticky;top:var(--hdr-h,97px);z-index:40;background:var(--bg);padding:0 0 6px;border-bottom:1px solid var(--border)">
       ${storeStrip()}
     </div>
     <div class="section" style="padding-top:8px">${content}</div>
@@ -590,7 +590,7 @@ function renderJugs(){
   }
 
   return `<div>
-    <div style="position:sticky;top:97px;z-index:40;background:var(--bg);padding:0 0 6px;border-bottom:1px solid var(--border)">
+    <div id="jugs-store-strip" style="position:sticky;top:var(--hdr-h,97px);z-index:40;background:var(--bg);padding:0 0 6px;border-bottom:1px solid var(--border)">
       ${storeStrip()}
     </div>
     <div class="section" style="padding-top:8px">${jugTable}</div>
@@ -604,10 +604,25 @@ function render(){
   else if(MODE==='waste')  app.innerHTML=renderWaste();
   else if(MODE==='gallon') app.innerHTML=renderGallon();
   else if(MODE==='jugs')   app.innerHTML=renderJugs();
+  // Re-apply header height after DOM update
+  setHdrHeight();
 }
 
 // ── Init ────────────────────────────────────────────────────────────────────
 document.getElementById('as-of').textContent = 'Data as of 03/15/26';
+
+// Measure actual header height and set CSS variable so store strips
+// and inner sticky headers land exactly below the header on any device
+function setHdrHeight(){
+  const hdr = document.querySelector('.header');
+  if(hdr){
+    const h = hdr.getBoundingClientRect().height;
+    document.documentElement.style.setProperty('--hdr-h', h + 'px');
+  }
+}
+setHdrHeight();
+// Re-measure on resize (orientation change etc)
+window.addEventListener('resize', setHdrHeight);
 render();
 </script>
 </body>
