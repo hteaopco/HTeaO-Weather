@@ -93,7 +93,7 @@
     <div class="section-title">Submission Info</div>
 
     <div class="field">
-      <label class="label">Your Name <span>*</span></label>
+      <label class="label">Your Name </label>
       <div class="name-row">
         <input type="text" id="firstName" placeholder="First" autocomplete="given-name">
         <input type="text" id="lastName" placeholder="Last" autocomplete="family-name">
@@ -101,7 +101,7 @@
     </div>
 
     <div class="field">
-      <label class="label" for="location">Location <span>*</span></label>
+      <label class="label" for="location">Location </label>
       <select id="location">
         <option value="">Please Select</option>
         <option>01 - Yukon</option>
@@ -128,7 +128,7 @@
     </div>
 
     <div class="field">
-      <label class="label" for="submitType">Type of Submittal <span>*</span></label>
+      <label class="label" for="submitType">Type of Submittal </label>
       <select id="submitType">
         <option value="">Please Select</option>
         <option>Daily Prep</option>
@@ -137,7 +137,7 @@
     </div>
 
     <div class="field">
-      <label class="label" for="date">Date <span>*</span></label>
+      <label class="label" for="date">Date </label>
       <input type="date" id="date">
     </div>
 
@@ -231,10 +231,7 @@ function goStep2() {
   const loc   = document.getElementById('location').value;
   const type  = document.getElementById('submitType').value;
   const date  = document.getElementById('date').value;
-  if (!first || !last || !loc || !type || !date) {
-    alert('Please fill in all required fields.');
-    return;
-  }
+  // validation removed for testing
   document.getElementById('step1').style.display = 'none';
   document.getElementById('step2').style.display = 'block';
   document.getElementById('s1').className = 'step done';
