@@ -79,26 +79,27 @@
 // col7=wastYestGal, col8=wastYestJug, col9=wastL7Gal, col10=wastL7Jug, col11=wastL30Gal, col12=wastL30Jug
 
 const WASTE_DATA = {
-  '01':{name:'Yukon',        last10:.0252, cogsAffect:.0035, wastYestGal:10,   wastYestJug:0,     wastL7Gal:18.5,  wastL7Jug:8.25,  wastL30Gal:83,    wastL30Jug:20},
-  '02':{name:'The Village',  last10:.0268, cogsAffect:.0012, wastYestGal:0,    wastYestJug:0,     wastL7Gal:8,     wastL7Jug:0,     wastL30Gal:53,    wastL30Jug:1},
-  '03':{name:'Bartlesville', last10:.0254, cogsAffect:.0051, wastYestGal:0,    wastYestJug:1,     wastL7Gal:0,     wastL7Jug:33,    wastL30Gal:2,     wastL30Jug:184.5},
-  '04':{name:'SW OKC',       last10:.0280, cogsAffect:.0015, wastYestGal:0,    wastYestJug:0,     wastL7Gal:8,     wastL7Jug:0,     wastL30Gal:57,    wastL30Jug:0},
-  '05':{name:'Uptown',       last10:.0241, cogsAffect:.0012, wastYestGal:0,    wastYestJug:0,     wastL7Gal:0,     wastL7Jug:6,     wastL30Gal:16,    wastL30Jug:7},
-  '06':{name:'Norman 1',     last10:.0316, cogsAffect:.0078, wastYestGal:0,    wastYestJug:14.25, wastL7Gal:0,     wastL7Jug:34.5,  wastL30Gal:13,    wastL30Jug:176},
-  '07':{name:'Shawnee',      last10:.0288, cogsAffect:.0046, wastYestGal:6,    wastYestJug:0,     wastL7Gal:50,    wastL7Jug:0,     wastL30Gal:170.5, wastL30Jug:0},
-  '08':{name:'Duncan',       last10:.0230, cogsAffect:.0061, wastYestGal:0,    wastYestJug:13,    wastL7Gal:13,    wastL7Jug:25,    wastL30Gal:46,    wastL30Jug:99},
-  '09':{name:'Lawton',       last10:.0277, cogsAffect:.0003, wastYestGal:0,    wastYestJug:0,     wastL7Gal:4,     wastL7Jug:0,     wastL30Gal:8,     wastL30Jug:0},
-  '10':{name:'Chickasha',    last10:.0272, cogsAffect:.0014, wastYestGal:0,    wastYestJug:0,     wastL7Gal:6,     wastL7Jug:0,     wastL30Gal:27,    wastL30Jug:9},
-  '11':{name:'OU Med',       last10:null,  cogsAffect:null,  wastYestGal:0,    wastYestJug:0,     wastL7Gal:0,     wastL7Jug:0,     wastL30Gal:0,     wastL30Jug:0},
-  '12':{name:'Moore',        last10:.0289, cogsAffect:.0058, wastYestGal:0,    wastYestJug:6.2,   wastL7Gal:0,     wastL7Jug:25.7,  wastL30Gal:6,     wastL30Jug:113.2},
-  '13':{name:'Norman 2',     last10:.0267, cogsAffect:.0032, wastYestGal:2,    wastYestJug:3.25,  wastL7Gal:2,     wastL7Jug:16,    wastL30Gal:5,     wastL30Jug:61.25},
-  '14':{name:'Webb City',    last10:.0304, cogsAffect:.0134, wastYestGal:0,    wastYestJug:3.5,   wastL7Gal:8,     wastL7Jug:36.25, wastL30Gal:23,    wastL30Jug:179.25},
-  '15':{name:'Pecos',        last10:.0257, cogsAffect:.0016, wastYestGal:0,    wastYestJug:0,     wastL7Gal:7,     wastL7Jug:16,    wastL30Gal:32,    wastL30Jug:32},
-  '16':{name:'Carlsbad',     last10:.0285, cogsAffect:.0000, wastYestGal:0,    wastYestJug:0,     wastL7Gal:0,     wastL7Jug:0,     wastL30Gal:0,     wastL30Jug:0},
-  '17':{name:'Las Cruces',   last10:.0244, cogsAffect:.0005, wastYestGal:0,    wastYestJug:0,     wastL7Gal:4,     wastL7Jug:4,     wastL30Gal:29,    wastL30Jug:13.5},
-  '18':{name:'Hutchinson',   last10:.0221, cogsAffect:.0028, wastYestGal:0,    wastYestJug:0,     wastL7Gal:0,     wastL7Jug:18.75, wastL30Gal:2,     wastL30Jug:104.98},
-  '19':{name:'Clovis',       last10:.0256, cogsAffect:.0004, wastYestGal:0,    wastYestJug:0,     wastL7Gal:1,     wastL7Jug:6,     wastL30Gal:6,     wastL30Jug:22},
-  '20':{name:'Hereford',     last10:.0256, cogsAffect:.0028, wastYestGal:0,    wastYestJug:2.25,  wastL7Gal:0,     wastL7Jug:8,     wastL30Gal:14,    wastL30Jug:68.65},
+  // Source: Par Prep Tracking Form CSV · Data as of 03/15/2026
+  '01':{name:'Yukon',        last10:0.0252, cogsAffect:0.0035, wastYestGal:0.0,  wastYestJug:2.0,  wastL7Gal:18.5, wastL7Jug:8.2,  wastL14Gal:42.2, wastL14Jug:17.0,  wastL30Gal:83.0,  wastL30Jug:20.0},
+  '02':{name:'The Village',  last10:0.0268, cogsAffect:0.0012, wastYestGal:0,    wastYestJug:0,    wastL7Gal:8.0,  wastL7Jug:0.0,  wastL14Gal:8.0,  wastL14Jug:0.0,   wastL30Gal:53.0,  wastL30Jug:2.2},
+  '03':{name:'Bartlesville', last10:0.0254, cogsAffect:0.0051, wastYestGal:0.0,  wastYestJug:6.8,  wastL7Gal:0.0,  wastL7Jug:41.5, wastL14Gal:2.0,  wastL14Jug:82.8,  wastL30Gal:2.0,   wastL30Jug:192.8},
+  '04':{name:'SW OKC',       last10:0.0280, cogsAffect:0.0015, wastYestGal:0,    wastYestJug:0,    wastL7Gal:13.0, wastL7Jug:0.0,  wastL14Gal:33.0, wastL14Jug:0.0,   wastL30Gal:57.0,  wastL30Jug:0.0},
+  '05':{name:'Uptown',       last10:0.0241, cogsAffect:0.0012, wastYestGal:0.0,  wastYestJug:6.0,  wastL7Gal:0.0,  wastL7Jug:6.0,  wastL14Gal:0.0,  wastL14Jug:7.0,   wastL30Gal:16.0,  wastL30Jug:7.0},
+  '06':{name:'Norman 1',     last10:0.0316, cogsAffect:0.0078, wastYestGal:0.0,  wastYestJug:8.5,  wastL7Gal:0.0,  wastL7Jug:40.5, wastL14Gal:0.0,  wastL14Jug:87.0,  wastL30Gal:13.0,  wastL30Jug:184.7},
+  '07':{name:'Shawnee',      last10:0.0288, cogsAffect:0.0046, wastYestGal:5.0,  wastYestJug:0.0,  wastL7Gal:55.0, wastL7Jug:0.0,  wastL14Gal:96.0, wastL14Jug:0.0,   wastL30Gal:176.5, wastL30Jug:0.0},
+  '08':{name:'Duncan',       last10:0.0230, cogsAffect:0.0061, wastYestGal:0,    wastYestJug:0,    wastL7Gal:13.0, wastL7Jug:35.0, wastL14Gal:32.0, wastL14Jug:52.0,  wastL30Gal:47.0,  wastL30Jug:103.0},
+  '09':{name:'Lawton',       last10:0.0277, cogsAffect:0.0003, wastYestGal:0,    wastYestJug:0,    wastL7Gal:7.0,  wastL7Jug:0.0,  wastL14Gal:7.0,  wastL14Jug:0.0,   wastL30Gal:8.0,   wastL30Jug:0.0},
+  '10':{name:'Chickasha',    last10:0.0272, cogsAffect:0.0014, wastYestGal:0,    wastYestJug:0,    wastL7Gal:6.0,  wastL7Jug:0.0,  wastL14Gal:10.0, wastL14Jug:1.0,   wastL30Gal:27.0,  wastL30Jug:9.0},
+  '11':{name:'OU Med',       last10:null,   cogsAffect:null,   wastYestGal:0,    wastYestJug:0,    wastL7Gal:0,    wastL7Jug:0,    wastL14Gal:0,    wastL14Jug:0,     wastL30Gal:0,     wastL30Jug:0},
+  '12':{name:'Moore',        last10:0.0289, cogsAffect:0.0058, wastYestGal:0.0,  wastYestJug:3.0,  wastL7Gal:0.0,  wastL7Jug:29.9, wastL14Gal:0.0,  wastL14Jug:55.7,  wastL30Gal:6.0,   wastL30Jug:116.7},
+  '13':{name:'Norman 2',     last10:0.0267, cogsAffect:0.0032, wastYestGal:0,    wastYestJug:0,    wastL7Gal:3.0,  wastL7Jug:16.0, wastL14Gal:5.0,  wastL14Jug:32.0,  wastL30Gal:5.0,   wastL30Jug:63.8},
+  '14':{name:'Webb City',    last10:0.0304, cogsAffect:0.0134, wastYestGal:0,    wastYestJug:0,    wastL7Gal:8.0,  wastL7Jug:46.0, wastL14Gal:14.0, wastL14Jug:93.8,  wastL30Gal:24.0,  wastL30Jug:179.8},
+  '15':{name:'Pecos',        last10:0.0257, cogsAffect:0.0016, wastYestGal:0.0,  wastYestJug:8.0,  wastL7Gal:8.0,  wastL7Jug:16.0, wastL14Gal:16.0, wastL14Jug:20.0,  wastL30Gal:32.0,  wastL30Jug:32.0},
+  '16':{name:'Carlsbad',     last10:0.0285, cogsAffect:0.0000, wastYestGal:0,    wastYestJug:0,    wastL7Gal:0.0,  wastL7Jug:0.0,  wastL14Gal:0.0,  wastL14Jug:0.0,   wastL30Gal:0.0,   wastL30Jug:0.0},
+  '17':{name:'Las Cruces',   last10:0.0244, cogsAffect:0.0005, wastYestGal:0,    wastYestJug:0,    wastL7Gal:4.0,  wastL7Jug:4.0,  wastL14Gal:10.0, wastL14Jug:5.0,   wastL30Gal:29.0,  wastL30Jug:13.5},
+  '18':{name:'Hutchinson',   last10:0.0221, cogsAffect:0.0028, wastYestGal:0,    wastYestJug:0,    wastL7Gal:0.0,  wastL7Jug:26.5, wastL14Gal:1.0,  wastL14Jug:53.8,  wastL30Gal:2.0,   wastL30Jug:105.0},
+  '19':{name:'Clovis',       last10:0.0256, cogsAffect:0.0004, wastYestGal:0,    wastYestJug:0,    wastL7Gal:1.0,  wastL7Jug:6.0,  wastL14Gal:1.0,  wastL14Jug:6.0,   wastL30Gal:6.0,   wastL30Jug:22.0},
+  '20':{name:'Hereford',     last10:0.0256, cogsAffect:0.0028, wastYestGal:0,    wastYestJug:0,    wastL7Gal:1.0,  wastL7Jug:12.0, wastL14Gal:6.0,  wastL14Jug:23.8,  wastL30Gal:17.0,  wastL30Jug:69.7},
 };
 
 // ── Gallon Build Par by store, by DOW (Sun=0 ... Sat=6) ───────────────────
@@ -236,7 +237,7 @@ function getWasteForPeriod(store, period) {
   switch(period) {
     case 'Yesterday': return { gal: store.wastYestGal||0, jug: store.wastYestJug||0 };
     case 'L7':        return { gal: store.wastL7Gal||0,   jug: store.wastL7Jug||0   };
-    case 'L14':       return { gal: (store.wastL30Gal||0)/2, jug: (store.wastL30Jug||0)/2 };
+    case 'L14':       return { gal: store.wastL14Gal||0,   jug: store.wastL14Jug||0   };
     case 'L30':       return { gal: store.wastL30Gal||0,  jug: store.wastL30Jug||0  };
     default:          return { gal: 0, jug: 0 };
   }
@@ -383,7 +384,7 @@ function renderWaste(){
     ${drillDown}
 
     <div style="font-size:9px;color:var(--dim);text-align:center;margin-top:10px">
-      Gal = $1.75/unit · Jug = $2.25/unit · L14 estimated (L30÷2) · Data as of 03/15/26
+      Gal = $1.75/unit · Jug = $2.25/unit · Data as of 03/15/26
     </div>
   </div>`;
 }
