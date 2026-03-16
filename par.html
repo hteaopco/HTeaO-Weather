@@ -602,17 +602,23 @@ function renderJugs(){
 // ── Render ──────────────────────────────────────────────────────────────────
 function renderHome(){
   const links = [
-    { label:'Submit Daily 2.5g Jug Builds', icon:'', url:'jug-builds.html', color:'var(--sky)' },
-    { label:'Submit Waste — Gallons',        icon:'', url:'#TODO_WASTE_GALLONS_URL', color:'var(--yellow)' },
-    { label:'Submit Waste — Jugs',           icon:'', url:'#TODO_WASTE_JUGS_URL', color:'var(--yellow)' },
-    { label:'Audit Log',                     icon:'', url:'#TODO_AUDIT_LOG_URL', color:'var(--muted)' },
+    { label:'Submit Daily 2.5g Jug Builds', url:'jug-builds.html' },
+    { label:'Submit Waste — Gallons',        url:'#TODO_WASTE_GALLONS_URL' },
+    { label:'Submit Waste — Jugs',           url:'#TODO_WASTE_JUGS_URL' },
   ];
-  const cards = links.map(l => `
-    <a href="${l.url}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:14px;padding:18px 16px;background:var(--card);border-radius:12px;border:1px solid var(--border);text-decoration:none;margin-bottom:10px;-webkit-tap-highlight-color:transparent;">
-      <div style="font-size:15px;font-weight:700;color:${l.color};flex:1">${l.label}</div>
+  const auditLink = { label:'Audit Log', url:'#TODO_AUDIT_LOG_URL' };
+
+  const makeCard = l => `
+    <a href="${l.url}" target="_blank" rel="noopener" style="display:flex;align-items:center;padding:18px 16px;background:var(--card);border-radius:12px;border:1px solid var(--border);text-decoration:none;margin-bottom:10px;-webkit-tap-highlight-color:transparent;">
+      <div style="font-size:15px;font-weight:700;color:var(--text);flex:1">${l.label}</div>
       <div style="font-size:18px;color:var(--dim)">›</div>
-    </a>`).join('');
-  return `<div class="section" style="padding-top:16px">${cards}</div>`;
+    </a>`;
+
+  const cards = links.map(makeCard).join('');
+  const divider = `<div style="height:1px;background:var(--border);margin:16px 0"></div>`;
+  const audit = makeCard(auditLink);
+
+  return `<div class="section" style="padding-top:16px">${cards}${divider}${audit}</div>`;
 }
 
 function render(){
