@@ -263,8 +263,7 @@ function render(){
     rows.push(target + i*100);
   }
 
-  let html = `<div class="table-wrap">
-    <div class="table-hdr"><span>Sales Bracket</span><span>12PM</span><span>4PM</span><span>Total Day</span></div>`;
+  let html = `<div class="table-hdr"><span>Sales Bracket</span><span>12PM</span><span>4PM</span><span>Total Day</span></div>`;
 
   rows.forEach(s => {
     const isTarget = s === target;
@@ -277,12 +276,22 @@ function render(){
     </div>`;
   });
 
-  // Always show both expand buttons (below can always expand, above limited to >0)
-  html += `<div class="expand-row" style="gap:12px;flex-wrap:wrap;">`;
+  // Top expand row (show more lower + collapse above)
+  let topHtml = `<div class="expand-row" style="gap:12px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,0.04);border-top:none;">`;
   if(rows[0] > 100)
-    html += `<button class="expand-btn-sm" onclick="expandDir('above')">↑ Show more lower</button>`;
-  html += `<button class="expand-btn-sm" onclick="expandDir('below')">↓ Show more higher</button>`;
-  html += `</div></div>`;
+    topHtml += `<button class="expand-btn-sm" onclick="expandDir('above')">↑ Show more lower</button>`;
+  if(EXPAND_ABOVE > 9)
+    topHtml += `<button class="expand-btn-sm" onclick="collapseDir('above')">↓ Collapse lower</button>`;
+  topHtml += `</div>`;
+
+  // Bottom expand row (show more higher + collapse below)
+  let botHtml = `<div class="expand-row" style="gap:12px;flex-wrap:wrap;">`;
+  botHtml += `<button class="expand-btn-sm" onclick="expandDir('below')">↓ Show more higher</button>`;
+  if(EXPAND_BELOW > 9)
+    botHtml += `<button class="expand-btn-sm" onclick="collapseDir('below')">↑ Collapse higher</button>`;
+  botHtml += `</div>`;
+
+  html = `<div class="table-wrap">` + topHtml + html + botHtml + `</div>`;
 
   document.getElementById('tableArea').innerHTML = html;
 }
@@ -290,6 +299,12 @@ function render(){
 function expandDir(dir){
   if(dir==='above') EXPAND_ABOVE+=9;
   else EXPAND_BELOW+=9;
+  render();
+}
+
+function collapseDir(dir){
+  if(dir==='above') EXPAND_ABOVE=Math.max(9,EXPAND_ABOVE-9);
+  else EXPAND_BELOW=Math.max(9,EXPAND_BELOW-9);
   render();
 }
 
