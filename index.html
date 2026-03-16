@@ -693,8 +693,16 @@ function drawYOYChart(){
     ...filterRange(d.yoy),...filterRange(d.act),...filterRange(d.bud)
   ].map(p=>p[1]).filter(v=>v!=null);
   const rawMax=filteredVals.length>0?Math.max(...filteredVals):1000;
-  // Pick increment: use 25k if max < 200k, else 50k
-  const inc=rawMax<200000?25000:50000;
+  // Pick increment based on scale:
+  // Consolidated: 50k increments
+  // Store level: 2.5k increments
+  const isConsolidated=(YOY_SEL==='consolidated');
+  let inc;
+  if(isConsolidated){
+    inc=rawMax<200000?25000:50000;
+  } else {
+    inc=2500;
+  }
   const yMax=Math.ceil(rawMax*1.15/inc)*inc;
   const yMin=0;
 
@@ -719,7 +727,8 @@ function drawYOYChart(){
     ctx.fillStyle='rgba(255,255,255,0.38)';
     ctx.font=`9px -apple-system,sans-serif`;
     ctx.textAlign='right';
-    const label=v>=1000?'$'+(v/1000).toFixed(0)+'k':'$0';
+    const kv=v/1000;
+    const label=v>=1000?'$'+(kv===Math.floor(kv)?kv.toFixed(0):kv.toFixed(1))+'k':'$0';
     ctx.fillText(label,PAD.left-5,y+3);
   }
 
@@ -816,16 +825,32 @@ function drawYOYChart(){
     ctx.lineWidth=2.2;
     smoothLine(ctx,pts);
     ctx.stroke();
-    // End dot
+    // Pulsing end dot — store pulse state on canvas element
     const last=act[act.length-1];
+    const cx=xp(last[0]), cy=yp(last[1]);
+    if(!canvas._pulseStart) canvas._pulseStart=performance.now();
+    const elapsed=(performance.now()-canvas._pulseStart)/1000;
+    const pulse=0.5+0.5*Math.sin(elapsed*2.5); // 0..1 oscillation
+    const pulseR=5+pulse*7;   // radius 5..12
+    const pulseA=0.35*(1-pulse); // fades out as it expands
+    // Outer pulse ring
     ctx.beginPath();
-    ctx.arc(xp(last[0]),yp(last[1]),4,0,Math.PI*2);
+    ctx.arc(cx,cy,pulseR,0,Math.PI*2);
+    ctx.strokeStyle=`rgba(232,80,58,${pulseA})`;
+    ctx.lineWidth=1.5;
+    ctx.stroke();
+    // Core dot
+    ctx.beginPath();
+    ctx.arc(cx,cy,4,0,Math.PI*2);
     ctx.fillStyle='#e8503a';
     ctx.fill();
+    // Inner glow ring
     ctx.beginPath();
-    ctx.arc(xp(last[0]),yp(last[1]),7,0,Math.PI*2);
-    ctx.fillStyle='rgba(232,80,58,0.25)';
+    ctx.arc(cx,cy,6.5,0,Math.PI*2);
+    ctx.fillStyle='rgba(232,80,58,0.22)';
     ctx.fill();
+    // Schedule next frame to keep pulsing
+    requestAnimationFrame(()=>{if(MODE==='yoy')drawYOYChart();});
   }
 }
 
