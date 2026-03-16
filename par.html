@@ -54,9 +54,43 @@
   .flag-red{color:var(--red);}
   .flag-yel{color:var(--yellow);}
   .flag-grn{color:var(--green);}
+
+  /* ── Side nav ── */
+  .sidenav{width:200px;background:#0a1120;border-right:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;}
+  .sidenav-brand{padding:18px 16px 14px;}
+  .sidenav-logo{font-size:17px;font-weight:900;color:#38bdf8;letter-spacing:-.3px;}
+  .sidenav-sub{font-size:8px;color:#64748b;letter-spacing:.12em;text-transform:uppercase;margin-top:2px;}
+  .sidenav-div{height:1px;background:rgba(255,255,255,0.08);margin:0 16px;}
+  .sidenav-links{padding:12px 8px;}
+  .sidenav-lbl{font-size:8px;font-weight:700;color:#64748b;letter-spacing:.12em;text-transform:uppercase;padding:0 8px;margin-bottom:6px;}
+  .sidenav-link{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:7px;text-decoration:none;color:#64748b;font-size:12px;font-weight:600;margin-bottom:2px;transition:background .15s,color .15s;}
+  .sidenav-link:hover{background:rgba(255,255,255,0.05);color:#e2e8f0;}
+  .sidenav-link.active{background:rgba(56,189,248,0.12);color:#38bdf8;border:1px solid rgba(56,189,248,0.2);}
+  .sidenav-dot{width:6px;height:6px;border-radius:50%;background:#334155;flex-shrink:0;}
+  .sidenav-link.active .sidenav-dot{background:#38bdf8;}
+  .sidenav-footer{margin-top:auto;padding:14px 16px;font-size:9px;color:#1e293b;}
+  @media(max-width:768px){
+    .sidenav{display:none;}
+    body{padding-left:0!important;}
+  }
 </style>
 </head>
-<body>
+<body style="padding-left:200px;">
+<div class="sidenav">
+  <div class="sidenav-brand">
+    <div class="sidenav-logo">HTeaO</div>
+    <div class="sidenav-sub">Franchise Ops</div>
+  </div>
+  <div class="sidenav-div"></div>
+  <div class="sidenav-links">
+    <div class="sidenav-lbl">Tools</div>
+    <a class="sidenav-link" href="index.html"><div class="sidenav-dot"></div>Home</a>
+    <a class="sidenav-link " href="sales.html"><div class="sidenav-dot"></div>Sales Information</a>
+    <a class="sidenav-link active" href="par.html"><div class="sidenav-dot"></div>Par Information</a>
+  </div>
+  <div class="sidenav-footer">HTeaO PCO · Internal Use</div>
+</div>
+
 
 <div class="header">
   <div class="header-top">
