@@ -587,13 +587,23 @@ function ryoy(){
   function stAdj(sid,act){ return BUD_MODE!=='storm'?act:(sid==='consolidated'?act+totalStorm:act+(STORM_YOY[sid]||0)); }
   const vc=p=>p==null?'var(--muted)':p>2?'#4ade80':p>-2?'#94a3b8':p>-8?'#fca5a5':'#f87171';
   const fp2=p=>p==null?'—':(p>=0?'+':'')+p.toFixed(1)+'%';
+
+  // COMP_EXCL must be declared before any use
+  const todayDOY2=Math.floor((new Date()-new Date(new Date().getFullYear(),0,0))/86400000);
+  const COMP_EXCL={
+    "002": todayDOY2<=334,  // Village: through Nov 2026
+    "008": todayDOY2<=212,  // Duncan: through Jul 2026
+    "011": true,            // OU Med: always
+    "014": todayDOY2<=181,  // Webb City: through Jun 2026
+  };
+
   // Adjusted comp: recalculate consolidated excluding comp-adjusted stores
   let cAct, cBud, cYoy;
   if(ADJ_COMP){
     const storeKeys2=['001','002','003','004','005','006','007','008','009','010','011','012','013','014','015','016','017','018','019','020'];
     cAct=0; cBud=0; cYoy=0;
     storeKeys2.forEach(sid=>{
-      if(COMP_EXCL[sid]) return; // skip excluded stores
+      if(COMP_EXCL[sid]) return;
       const sd=YOY_DATA[sid];if(!sd)return;
       cAct+=stAdj(sid,sd.latestAct||0);
       cBud+=sd.latestBud||0;
@@ -608,14 +618,6 @@ function ryoy(){
   const cVsY=cYoy?(cAct/cYoy-1)*100:null;
 
   // Sticky As-Is / Storm / Adjusted Comp toggle
-  const todayDOY2=Math.floor((new Date()-new Date(new Date().getFullYear(),0,0))/86400000);
-  // Stores excluded when ADJ_COMP is on (based on today's DOY)
-  const COMP_EXCL={
-    "002": todayDOY2<=334,  // Village: through Nov 2026 (DOY 334)
-    "008": todayDOY2<=212,  // Duncan: through Jul 2026 (DOY 212)
-    "011": true,            // OU Med: always
-    "014": todayDOY2<=181,  // Webb City: through Jun 2026 (DOY 181)
-  };
   const tog=`<div style="position:sticky;top:97px;z-index:49;background:#080e1a;padding:6px 0 10px;border-bottom:1px solid rgba(255,255,255,0.06)">
     <div style="display:flex;gap:8px;margin-bottom:6px">
       <button onclick="window.BUD_MODE='as-is';render();" style="flex:1;padding:9px;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;box-sizing:border-box;border:1px solid ${BUD_MODE==='as-is'?'rgba(56,189,248,0.5)':'rgba(255,255,255,0.1)'};background:${BUD_MODE==='as-is'?'rgba(56,189,248,0.18)':'transparent'};color:${BUD_MODE==='as-is'?'#38bdf8':'#64748b'}">As-Is</button>
@@ -635,12 +637,12 @@ function ryoy(){
       const vsY=sd.latestYoy?(act/sd.latestYoy-1)*100:null;
       const sname=storeList.find(s=>s.key===sid)?.label||sid;
       const isExcl=ADJ_COMP&&COMP_EXCL[sid];
-      sRows+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);opacity:${isExcl?0.4:1}"><div style="font-size:11px;font-weight:600;color:var(--text);flex:1.5;${isExcl?'text-decoration:line-through':''}">${sname}</div><div style="text-align:right;flex:1;font-size:11px;font-weight:700">${isExcl?'—':fc$(act)}</div><div style="text-align:right;flex:1;font-size:11px;font-weight:700;color:${vc(vsB)}">${isExcl?'—':fp2(vsB)}</div><div style="text-align:right;flex:1;font-size:11px;font-weight:700;color:${vc(vsY)}">${isExcl?'—':fp2(vsY)}</div></div>`;
+      sRows+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);opacity:${isExcl?0.4:1}"><div style="font-size:11px;font-weight:600;color:var(--text);flex:1.5;${isExcl?'text-decoration:line-through':''}">${sname}</div><div style="display:flex"><div style="text-align:right;width:52px;font-size:11px;font-weight:700">${isExcl?'—':fc$(act)}</div><div style="text-align:right;width:52px;font-size:11px;font-weight:700;color:${vc(vsB)}">${isExcl?'—':fp2(vsB)}</div><div style="text-align:right;width:48px;font-size:11px;font-weight:700;color:${vc(vsY)}">${isExcl?'—':fp2(vsY)}</div></div></div>`;
     });
   }
 
   // Collapsible stat bar
-  const statBar=`<div style="background:rgba(255,255,255,0.03);border-radius:12px;border:1px solid rgba(255,255,255,0.08);overflow:hidden;margin-bottom:8px"><div onclick="YOY_STATS_OPEN=!YOY_STATS_OPEN;render();" style="padding:12px 14px;cursor:pointer"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.08em;text-transform:uppercase">YTD Through 03/14/26</div><div style="font-size:11px;color:var(--dim)">${YOY_STATS_OPEN?'▲':'▼'}</div></div>${YOY_STATS_OPEN?`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px"><div><div style="font-size:9px;color:var(--muted);margin-bottom:3px">YTD Actual</div><div style="font-size:16px;font-weight:800">${fc$(cAct)}</div></div><div><div style="font-size:9px;color:var(--muted);margin-bottom:3px">vs Budget</div><div style="font-size:16px;font-weight:800;color:${vc(cVsB)}">${fp2(cVsB)}</div></div><div><div style="font-size:9px;color:var(--muted);margin-bottom:3px">vs 2025</div><div style="font-size:16px;font-weight:800;color:${vc(cVsY)}">${fp2(cVsY)}</div></div></div><div style="height:1px;background:rgba(255,255,255,0.06);margin-bottom:8px"></div><div style="display:flex;padding-bottom:4px"><span style="font-size:9px;color:var(--muted);font-weight:700;flex:1.5">Store</span><span style="font-size:9px;color:var(--muted);font-weight:700;text-align:right;flex:1">Actual</span><span style="font-size:9px;color:var(--muted);font-weight:700;text-align:right;flex:1">vs Bud</span><span style="font-size:9px;color:var(--muted);font-weight:700;text-align:right;flex:1">vs '25</span></div>${sRows}`:`<div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:18px;font-weight:800">${fc$(cAct)}</div><div style="display:flex;gap:12px;align-items:baseline"><div style="text-align:right"><div style="font-size:9px;color:var(--muted)">vs Budget</div><div style="font-size:13px;font-weight:700;color:${vc(cVsB)}">${fp2(cVsB)}</div></div><div style="text-align:right"><div style="font-size:9px;color:var(--muted)">vs YOY</div><div style="font-size:13px;font-weight:700;color:${vc(cVsY)}">${fp2(cVsY)}</div></div></div></div>`}</div></div>`;
+  const statBar=`<div style="background:rgba(255,255,255,0.03);border-radius:12px;border:1px solid rgba(255,255,255,0.08);overflow:hidden;margin-bottom:8px"><div onclick="YOY_STATS_OPEN=!YOY_STATS_OPEN;render();" style="padding:12px 14px;cursor:pointer"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.08em;text-transform:uppercase">YTD Through 03/14/26</div><div style="font-size:11px;color:var(--dim)">${YOY_STATS_OPEN?'▲':'▼'}</div></div>${YOY_STATS_OPEN?`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px"><div><div style="font-size:9px;color:var(--muted);margin-bottom:3px">YTD Actual</div><div style="font-size:16px;font-weight:800">${fc$(cAct)}</div></div><div><div style="font-size:9px;color:var(--muted);margin-bottom:3px">vs Budget</div><div style="font-size:16px;font-weight:800;color:${vc(cVsB)}">${fp2(cVsB)}</div></div><div><div style="font-size:9px;color:var(--muted);margin-bottom:3px">vs 2025</div><div style="font-size:16px;font-weight:800;color:${vc(cVsY)}">${fp2(cVsY)}</div></div></div><div style="height:1px;background:rgba(255,255,255,0.06);margin-bottom:8px"></div><div style="display:flex;justify-content:space-between;padding-bottom:4px"><span style="font-size:9px;color:var(--muted);font-weight:700;flex:1.5">Store</span><div style="display:flex;gap:0"><span style="font-size:9px;color:var(--muted);font-weight:700;text-align:right;width:52px">Actual</span><span style="font-size:9px;color:var(--muted);font-weight:700;text-align:right;width:52px">vs Bud</span><span style="font-size:9px;color:var(--muted);font-weight:700;text-align:right;width:48px">vs '25</span></div></div>${sRows}`:`<div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:18px;font-weight:800">${fc$(cAct)}</div><div style="display:flex;gap:12px;align-items:baseline"><div style="text-align:right"><div style="font-size:9px;color:var(--muted)">vs Budget</div><div style="font-size:13px;font-weight:700;color:${vc(cVsB)}">${fp2(cVsB)}</div></div><div style="text-align:right"><div style="font-size:9px;color:var(--muted)">vs YOY</div><div style="font-size:13px;font-weight:700;color:${vc(cVsY)}">${fp2(cVsY)}</div></div></div></div>`}</div></div>`;
 
   // Store strip
   const strip=storeList.map(s=>`<div onclick="const el=document.getElementById('yoy-strip-scroll');const sx=el?el.scrollLeft:0;YOY_SEL='${s.key}';render();requestAnimationFrame(()=>{const el2=document.getElementById('yoy-strip-scroll');if(el2)el2.scrollLeft=sx;});" style="flex-shrink:0;padding:7px 12px;border-radius:8px;font-size:11px;font-weight:${s.key===YOY_SEL?'800':'500'};white-space:nowrap;cursor:pointer;background:${s.key===YOY_SEL?'rgba(56,189,248,0.18)':'rgba(255,255,255,0.04)'};color:${s.key===YOY_SEL?'#38bdf8':ADJ_COMP&&COMP_EXCL[s.key]?'#64748b':'#94a3b8'};border:1px solid ${s.key===YOY_SEL?'rgba(56,189,248,0.4)':'rgba(255,255,255,0.08)'}"><span style="${ADJ_COMP&&COMP_EXCL[s.key]?'text-decoration:line-through;opacity:0.5':''}"> ${s.label}</span></div>`).join('');
