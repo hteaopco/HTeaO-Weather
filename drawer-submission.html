@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>HTeaO — Drawer Submission</title>
 <style>
-  :root{--bg:#080e1a;--card:#0d1526;--border:rgba(255,255,255,0.08);--text:#e2e8f0;--muted:#64748b;--dim:#334155;--sky:#38bdf8;--green:#4ade80;--yellow:#fbbf24;--red:#f87171;}
+  :root{--bg:#080e1a;--card:#0d1526;--card2:#111c30;--border:rgba(255,255,255,0.08);--text:#e2e8f0;--muted:#64748b;--dim:#334155;--sky:#38bdf8;--green:#4ade80;--yellow:#fbbf24;--red:#f87171;}
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,sans-serif;min-height:100vh;padding-bottom:40px;}
   .header{background:var(--bg);border-bottom:1px solid var(--border);padding:12px 16px;position:sticky;top:0;z-index:50;}
@@ -20,9 +20,14 @@
   .section-sub{font-size:11px;color:var(--muted);margin-bottom:14px;}
   .field{margin-bottom:14px;}
   .label{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px;display:block;}
+  .field-hint{font-size:11px;color:var(--dim);margin-top:4px;}
   input,select{width:100%;padding:11px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:15px;font-family:inherit;-webkit-appearance:none;appearance:none;outline:none;}
   input:focus,select:focus{border-color:rgba(56,189,248,0.5);}
+  input.readonly-field{background:rgba(56,189,248,0.06);border-color:rgba(56,189,248,0.2);color:var(--sky);font-weight:700;}
   .name-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  /* Water sales collapsible */
+  .water-fields{display:none;margin-top:2px;}
+  .water-fields.show{display:block;}
   .currency-table{background:var(--card);border-radius:10px;border:1px solid var(--border);overflow:hidden;margin-bottom:14px;}
   .currency-hdr{display:grid;grid-template-columns:1fr 90px;padding:8px 12px;background:rgba(56,189,248,0.08);border-bottom:1px solid var(--border);}
   .currency-hdr span{font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.08em;text-transform:uppercase;}
@@ -42,10 +47,14 @@
   .total-bar .val{font-size:22px;font-weight:900;color:var(--sky);}
   .calc-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
   .calc-row:last-child{border-bottom:none;}
+  .calc-row.total-line{border-top:1px solid rgba(255,255,255,0.12);margin-top:4px;padding-top:12px;border-bottom:none;}
+  .calc-row.deposit-line{background:rgba(56,189,248,0.06);border-radius:6px;padding:10px 8px;margin:4px -8px;}
   .calc-lbl{color:var(--muted);}
+  .calc-lbl.bold{color:var(--text);font-weight:700;}
   .calc-val{font-weight:700;color:var(--text);}
   .calc-val.pos{color:var(--green);}
   .calc-val.neg{color:var(--red);}
+  .calc-val.sky{color:var(--sky);font-size:18px;}
   .summary-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px;}
   .btn-row{display:flex;gap:8px;}
   .btn{flex:1;padding:14px;border-radius:10px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;border:none;transition:opacity .15s;}
@@ -79,6 +88,7 @@
   <div class="section">
     <div class="section-title">Nightly Cash Count</div>
     <div class="section-sub">Location #001 — Yukon, OK</div>
+
     <div class="field">
       <label class="label">Who is counting?</label>
       <div class="name-row">
@@ -86,30 +96,43 @@
         <input type="text" id="lastName" placeholder="Last" autocomplete="family-name">
       </div>
     </div>
+
     <div class="field">
       <label class="label">Date of Drawer Deposit</label>
       <input type="date" id="depositDate">
     </div>
+
     <div class="field">
       <label class="label">Total Cash Tips</label>
       <input type="number" id="cashTips" placeholder="0.00" step="0.01" min="0">
     </div>
+
     <div class="field">
-      <label class="label">Did you Cash Water Sales Today?</label>
-      <select id="waterSales">
-        <option value="">Please Select</option>
-        <option>Yes</option>
-        <option>No</option>
+      <label class="label">Did you Deposit Cash Water Sales Today?</label>
+      <select id="waterSales" onchange="toggleWater(this.value)">
+        <option value="No" selected>No</option>
+        <option value="Yes">Yes</option>
       </select>
     </div>
-    <div class="field">
-      <label class="label">Amount of Bills into Drawers</label>
-      <input type="number" id="billsIntoDrawers" placeholder="0.00" step="0.01" min="0">
+
+    <!-- Water sales fields — hidden unless Yes -->
+    <div class="water-fields" id="waterFields">
+      <div class="field">
+        <label class="label">Value of Bills</label>
+        <input type="number" id="billsIntoDrawers" placeholder="0.00" step="0.01" min="0" oninput="calcWaterTotal()">
+        <div class="field-hint">Add up the total $ amount of bills from water machine</div>
+      </div>
+      <div class="field">
+        <label class="label">Value of Coin</label>
+        <input type="number" id="coinAtBank" placeholder="0.00" step="0.01" min="0" oninput="calcWaterTotal()">
+        <div class="field-hint">Add up the total $ amount of coin from water machine</div>
+      </div>
+      <div class="field">
+        <label class="label">Total Water Sales</label>
+        <input type="number" id="waterTotal" placeholder="0.00" step="0.01" class="readonly-field" readonly>
+      </div>
     </div>
-    <div class="field">
-      <label class="label">Amount of Coin at Bank</label>
-      <input type="number" id="coinAtBank" placeholder="0.00" step="0.01" min="0">
-    </div>
+
     <button class="btn btn-primary" onclick="go(2)">Next →</button>
   </div>
 </div>
@@ -134,9 +157,9 @@
       <div class="currency-row"><div class="currency-name">$100 Bills</div><div class="stepper"><button class="stepper-btn" onclick="adj('fl_100',-1)">−</button><div class="stepper-val" id="disp_fl_100">0</div><input type="hidden" id="fl_100" value="0"><button class="stepper-btn" onclick="adj('fl_100',1)">+</button></div></div>
     </div>
     <div class="total-bar"><div class="lbl">Front Left Total</div><div class="val" id="fl_total">$0.00</div></div>
-    <div class="field"><label class="label">Starting Day Amount</label><input type="number" id="fl_start" placeholder="150.00" step="0.01" value="150"></div>
-    <div class="field"><label class="label">Amount to Remove From Drawer</label><input type="number" id="fl_remove" placeholder="0.00" step="0.01" min="0" readonly style="color:var(--muted)"></div>
+    <div class="field"><label class="label">Starting Day Amount</label><input type="number" id="fl_start" placeholder="150.00" step="0.01" value="150" oninput="calcDrawerTotal('fl')"></div>
     <div class="field"><label class="label">Amount From Revel Receipt</label><input type="number" id="fl_revel" placeholder="0.00" step="0.01" min="0"></div>
+    <div class="field"><label class="label">Amount to Remove From Drawer #1</label><input type="number" id="fl_remove" class="readonly-field" readonly placeholder="Auto-calculated"><div class="field-hint">= Front Left Total − Starting Day Amount</div></div>
     <div class="btn-row">
       <button class="btn btn-secondary" onclick="go(1)">← Back</button>
       <button class="btn btn-primary" onclick="go(3)">Next →</button>
@@ -164,9 +187,9 @@
       <div class="currency-row"><div class="currency-name">$100 Bills</div><div class="stepper"><button class="stepper-btn" onclick="adj('fr_100',-1)">−</button><div class="stepper-val" id="disp_fr_100">0</div><input type="hidden" id="fr_100" value="0"><button class="stepper-btn" onclick="adj('fr_100',1)">+</button></div></div>
     </div>
     <div class="total-bar"><div class="lbl">Front Right Total</div><div class="val" id="fr_total">$0.00</div></div>
-    <div class="field"><label class="label">Starting Day Amount</label><input type="number" id="fr_start" placeholder="150.00" step="0.01" value="150"></div>
-    <div class="field"><label class="label">Amount to Remove From Drawer</label><input type="number" id="fr_remove" placeholder="0.00" step="0.01" min="0" readonly style="color:var(--muted)"></div>
+    <div class="field"><label class="label">Starting Day Amount</label><input type="number" id="fr_start" placeholder="150.00" step="0.01" value="150" oninput="calcDrawerTotal('fr')"></div>
     <div class="field"><label class="label">Amount From Revel Receipt</label><input type="number" id="fr_revel" placeholder="0.00" step="0.01" min="0"></div>
+    <div class="field"><label class="label">Amount to Remove From Drawer #2</label><input type="number" id="fr_remove" class="readonly-field" readonly placeholder="Auto-calculated"><div class="field-hint">= Front Right Total − Starting Day Amount</div></div>
     <div class="btn-row">
       <button class="btn btn-secondary" onclick="go(2)">← Back</button>
       <button class="btn btn-primary" onclick="go(4)">Next →</button>
@@ -194,9 +217,9 @@
       <div class="currency-row"><div class="currency-name">$100 Bills</div><div class="stepper"><button class="stepper-btn" onclick="adj('dt_100',-1)">−</button><div class="stepper-val" id="disp_dt_100">0</div><input type="hidden" id="dt_100" value="0"><button class="stepper-btn" onclick="adj('dt_100',1)">+</button></div></div>
     </div>
     <div class="total-bar"><div class="lbl">Drive Thru Total</div><div class="val" id="dt_total">$0.00</div></div>
-    <div class="field"><label class="label">Starting Day Amount</label><input type="number" id="dt_start" placeholder="150.00" step="0.01" value="150"></div>
-    <div class="field"><label class="label">Amount to Remove From Drawer</label><input type="number" id="dt_remove" placeholder="0.00" step="0.01" min="0" readonly style="color:var(--muted)"></div>
+    <div class="field"><label class="label">Starting Day Amount</label><input type="number" id="dt_start" placeholder="150.00" step="0.01" value="150" oninput="calcDrawerTotal('dt')"></div>
     <div class="field"><label class="label">Amount From Revel Receipt</label><input type="number" id="dt_revel" placeholder="0.00" step="0.01" min="0"></div>
+    <div class="field"><label class="label">Amount to Remove From Drawer #3</label><input type="number" id="dt_remove" class="readonly-field" readonly placeholder="Auto-calculated"><div class="field-hint">= Drive Thru Total − Starting Day Amount</div></div>
     <div class="btn-row">
       <button class="btn btn-secondary" onclick="go(3)">← Back</button>
       <button class="btn btn-primary" onclick="go(5)">Next →</button>
@@ -213,12 +236,15 @@
       <div class="calc-row"><span class="calc-lbl">Front Left</span><span class="calc-val" id="sum_fl">—</span></div>
       <div class="calc-row"><span class="calc-lbl">Front Right</span><span class="calc-val" id="sum_fr">—</span></div>
       <div class="calc-row"><span class="calc-lbl">Drive Thru</span><span class="calc-val" id="sum_dt">—</span></div>
-      <div class="calc-row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:12px;"><span class="calc-lbl" style="font-weight:700;color:var(--text)">Total Drawer Count</span><span class="calc-val" id="sum_total" style="font-size:18px;">—</span></div>
+      <div class="calc-row total-line"><span class="calc-lbl bold">Total Drawer Count</span><span class="calc-val" id="sum_drawer_total">—</span></div>
+      <div class="calc-row"><span class="calc-lbl">+ Tips</span><span class="calc-val" id="sum_tips">—</span></div>
+      <div class="calc-row" id="sum_water_row"><span class="calc-lbl">+ External Water</span><span class="calc-val" id="sum_water">—</span></div>
+      <div class="calc-row"><span class="calc-lbl">− Less Starting Value</span><span class="calc-val neg" id="sum_starting">—</span></div>
+      <div class="calc-row deposit-line"><span class="calc-lbl bold" style="color:var(--sky)">= Deposit Amount</span><span class="calc-val sky" id="sum_deposit">—</span></div>
     </div>
     <div class="summary-card">
-      <div class="calc-row"><span class="calc-lbl">Amount in Drawers to Start Day</span><span class="calc-val" id="sum_start">$450.00</span></div>
-      <div class="calc-row"><span class="calc-lbl">Amount of Cash in Drawers Per Revel</span><span class="calc-val" id="sum_revel">—</span></div>
-      <div class="calc-row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:12px;"><span class="calc-lbl" style="font-weight:700;color:var(--text)">Cash Over / (Under)</span><span class="calc-val" id="sum_delta" style="font-size:18px;">—</span></div>
+      <div class="calc-row"><span class="calc-lbl">Less: Cash in Drawers Per Revel</span><span class="calc-val neg" id="sum_revel">—</span></div>
+      <div class="calc-row total-line"><span class="calc-lbl bold">Cash Over / (Under)</span><span class="calc-val" id="sum_delta" style="font-size:18px;">—</span></div>
     </div>
     <div class="btn-row">
       <button class="btn btn-secondary" onclick="go(4)">← Back</button>
@@ -241,9 +267,23 @@
 <script>
 document.getElementById('depositDate').valueAsDate = new Date();
 
-const COIN = {penny:.01,nickel:.05,dime:.10,quarter:.25};
-const BILLS = {1:1,2:2,5:5,10:10,20:20,50:50,100:100};
+// ── Water sales toggle ──
+function toggleWater(val){
+  document.getElementById('waterFields').className = val==='Yes' ? 'water-fields show' : 'water-fields';
+  if(val!=='Yes'){
+    document.getElementById('billsIntoDrawers').value='';
+    document.getElementById('coinAtBank').value='';
+    document.getElementById('waterTotal').value='';
+  }
+}
 
+function calcWaterTotal(){
+  const bills = parseFloat(document.getElementById('billsIntoDrawers').value)||0;
+  const coin  = parseFloat(document.getElementById('coinAtBank').value)||0;
+  document.getElementById('waterTotal').value = (bills+coin).toFixed(2);
+}
+
+// ── Stepper ──
 function adj(id, delta){
   const inp = document.getElementById(id);
   const disp = document.getElementById('disp_'+id);
@@ -255,22 +295,20 @@ function adj(id, delta){
   calcDrawerTotal(id.split('_')[0]);
 }
 
+// ── Drawer total + auto-remove ──
 function calcDrawerTotal(prefix){
-  const denoms = {
-    penny:.01,nickel:.05,dime:.10,quarter:.25,
-    1:1,2:2,5:5,10:10,20:20,50:50,100:100
-  };
+  const denoms = {penny:.01,nickel:.05,dime:.10,quarter:.25,1:1,2:2,5:5,10:10,20:20,50:50,100:100};
   let total = 0;
   Object.keys(denoms).forEach(d=>{
     const el = document.getElementById(prefix+'_'+d);
-    if(el) total += (parseInt(el.value)||0) * denoms[d];
+    if(el) total += (parseInt(el.value)||0)*denoms[d];
   });
   const el = document.getElementById(prefix+'_total');
   if(el) el.textContent = '$'+total.toFixed(2);
-  // Auto-calc remove = total - starting
-  const start = parseFloat(document.getElementById(prefix+'_start')?.value||0)||0;
+  // Remove = total - starting (can be negative if underfunded)
+  const start = parseFloat(document.getElementById(prefix+'_start')?.value)||0;
   const removeEl = document.getElementById(prefix+'_remove');
-  if(removeEl) removeEl.value = Math.max(0,(total-start)).toFixed(2);
+  if(removeEl) removeEl.value = (total-start).toFixed(2);
   return total;
 }
 
@@ -278,78 +316,114 @@ function getTotal(prefix){
   const denoms = {penny:.01,nickel:.05,dime:.10,quarter:.25,1:1,2:2,5:5,10:10,20:20,50:50,100:100};
   return Object.keys(denoms).reduce((s,d)=>{
     const el = document.getElementById(prefix+'_'+d);
-    return s + ((parseInt(el?.value)||0)*denoms[d]);
+    return s+((parseInt(el?.value)||0)*denoms[d]);
   },0);
 }
 
+// ── Step navigation ──
 function go(n){
   for(let i=1;i<=5;i++){
-    const el = document.getElementById('step'+i);
-    if(el) el.style.display = i===n?'block':'none';
-    const s = document.getElementById('s'+i);
-    if(s) s.className = i<n?'step done':i===n?'step active':'step';
+    const el=document.getElementById('step'+i);
+    if(el) el.style.display=i===n?'block':'none';
+    const s=document.getElementById('s'+i);
+    if(s) s.className=i<n?'step done':i===n?'step active':'step';
   }
   if(n===5) buildSummary();
   window.scrollTo(0,0);
 }
 
+// ── Build summary ──
 function buildSummary(){
-  const fl = getTotal('fl'), fr = getTotal('fr'), dt = getTotal('dt');
-  const total = fl+fr+dt;
-  const revTotal = (parseFloat(document.getElementById('fl_revel').value)||0)
-                 + (parseFloat(document.getElementById('fr_revel').value)||0)
-                 + (parseFloat(document.getElementById('dt_revel').value)||0);
-  const delta = total - revTotal;
+  const fl  = getTotal('fl');
+  const fr  = getTotal('fr');
+  const dt  = getTotal('dt');
+  const drawerTotal = fl+fr+dt;
+
+  const tips  = parseFloat(document.getElementById('cashTips').value)||0;
+  const water = document.getElementById('waterSales').value==='Yes'
+    ? (parseFloat(document.getElementById('waterTotal').value)||0) : 0;
+
+  const startFL = parseFloat(document.getElementById('fl_start').value)||0;
+  const startFR = parseFloat(document.getElementById('fr_start').value)||0;
+  const startDT = parseFloat(document.getElementById('dt_start').value)||0;
+  const startingTotal = startFL+startFR+startDT;
+
+  const deposit = drawerTotal + tips + water - startingTotal;
+
+  const revelFL = parseFloat(document.getElementById('fl_revel').value)||0;
+  const revelFR = parseFloat(document.getElementById('fr_revel').value)||0;
+  const revelDT = parseFloat(document.getElementById('dt_revel').value)||0;
+  const revelTotal = revelFL+revelFR+revelDT;
+
+  const delta = deposit - revelTotal;
+
+  // Populate
   document.getElementById('sum_fl').textContent = '$'+fl.toFixed(2);
   document.getElementById('sum_fr').textContent = '$'+fr.toFixed(2);
   document.getElementById('sum_dt').textContent = '$'+dt.toFixed(2);
-  document.getElementById('sum_total').textContent = '$'+total.toFixed(2);
-  document.getElementById('sum_revel').textContent = '$'+revTotal.toFixed(2);
+  document.getElementById('sum_drawer_total').textContent = '$'+drawerTotal.toFixed(2);
+  document.getElementById('sum_tips').textContent = '$'+tips.toFixed(2);
+
+  const waterRow = document.getElementById('sum_water_row');
+  waterRow.style.display = document.getElementById('waterSales').value==='Yes' ? 'flex' : 'none';
+  document.getElementById('sum_water').textContent = '$'+water.toFixed(2);
+
+  document.getElementById('sum_starting').textContent = '($'+startingTotal.toFixed(2)+')';
+  document.getElementById('sum_deposit').textContent = '$'+deposit.toFixed(2);
+  document.getElementById('sum_revel').textContent = '($'+revelTotal.toFixed(2)+')';
+
   const deltaEl = document.getElementById('sum_delta');
-  deltaEl.textContent = (delta>=0?'+':'')+'$'+delta.toFixed(2);
+  deltaEl.textContent = (delta>=0?'+$':'($')+Math.abs(delta).toFixed(2)+(delta<0?')':'');
   deltaEl.className = 'calc-val '+(delta>0?'pos':delta<0?'neg':'');
 }
 
+// ── Submit ──
 function submitForm(){
-  const data = {
-    submittedAt: new Date().toISOString(),
-    firstName: document.getElementById('firstName').value,
-    lastName: document.getElementById('lastName').value,
-    depositDate: document.getElementById('depositDate').value,
-    cashTips: document.getElementById('cashTips').value,
-    waterSales: document.getElementById('waterSales').value,
-    flTotal: getTotal('fl').toFixed(2),
-    frTotal: getTotal('fr').toFixed(2),
-    dtTotal: getTotal('dt').toFixed(2),
-    flRevel: document.getElementById('fl_revel').value,
-    frRevel: document.getElementById('fr_revel').value,
-    dtRevel: document.getElementById('dt_revel').value,
+  const fl=getTotal('fl'), fr=getTotal('fr'), dt=getTotal('dt');
+  const tips=parseFloat(document.getElementById('cashTips').value)||0;
+  const water=document.getElementById('waterSales').value==='Yes'
+    ?(parseFloat(document.getElementById('waterTotal').value)||0):0;
+  const startingTotal=(parseFloat(document.getElementById('fl_start').value)||0)
+    +(parseFloat(document.getElementById('fr_start').value)||0)
+    +(parseFloat(document.getElementById('dt_start').value)||0);
+  const deposit=fl+fr+dt+tips+water-startingTotal;
+  const revel=(parseFloat(document.getElementById('fl_revel').value)||0)
+    +(parseFloat(document.getElementById('fr_revel').value)||0)
+    +(parseFloat(document.getElementById('dt_revel').value)||0);
+  const data={
+    submittedAt:new Date().toISOString(),
+    firstName:document.getElementById('firstName').value,
+    lastName:document.getElementById('lastName').value,
+    depositDate:document.getElementById('depositDate').value,
+    cashTips:tips, waterSales:document.getElementById('waterSales').value,
+    waterAmount:water, flTotal:fl.toFixed(2), frTotal:fr.toFixed(2), dtTotal:dt.toFixed(2),
+    depositAmount:deposit.toFixed(2), revelTotal:revel.toFixed(2),
+    cashOverUnder:(deposit-revel).toFixed(2),
   };
-  console.log('Drawer Submission:', JSON.stringify(data, null, 2));
+  console.log('Drawer Submission:', JSON.stringify(data,null,2));
   document.getElementById('step5').style.display='none';
   document.getElementById('success').classList.add('show');
-  const total = (parseFloat(data.flTotal)+parseFloat(data.frTotal)+parseFloat(data.dtTotal)).toFixed(2);
-  document.getElementById('successMsg').textContent =
-    `${data.firstName} ${data.lastName} · ${data.depositDate} · Total $${total}`;
+  document.getElementById('successMsg').textContent=
+    `${data.firstName} ${data.lastName} · ${data.depositDate} · Deposit $${deposit.toFixed(2)}`;
   window.scrollTo(0,0);
 }
 
+// ── Reset ──
 function resetForm(){
   document.getElementById('success').classList.remove('show');
-  // Reset all steppers
   document.querySelectorAll('input[type=hidden]').forEach(el=>{
     el.value=0;
     const d=document.getElementById('disp_'+el.id);
     if(d){d.textContent='0';d.className='stepper-val';}
   });
   ['fl','fr','dt'].forEach(p=>{
-    const t=document.getElementById(p+'_total');
-    if(t)t.textContent='$0.00';
-    const r=document.getElementById(p+'_remove');
-    if(r)r.value='';
-    const rv=document.getElementById(p+'_revel');
-    if(rv)rv.value='';
+    const t=document.getElementById(p+'_total'); if(t)t.textContent='$0.00';
+    const r=document.getElementById(p+'_remove'); if(r)r.value='';
+    const rv=document.getElementById(p+'_revel'); if(rv)rv.value='';
   });
+  document.getElementById('cashTips').value='';
+  document.getElementById('waterSales').value='No';
+  toggleWater('No');
   document.getElementById('depositDate').valueAsDate=new Date();
   go(1);
 }
