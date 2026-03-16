@@ -190,6 +190,15 @@
 <script>
 document.getElementById('safeDate').valueAsDate = new Date();
 
+// Load shared config from cash.html inputs panel
+try {
+  const sp = localStorage.getItem('hteao_safePar');
+  if(sp){
+    const el = document.getElementById('safePar');
+    if(el) el.value = sp;
+  }
+} catch(e){}
+
 const DENOMS = {
   roll_penny:50*.01, roll_nickel:40*.05, roll_dime:50*.10, roll_quarter:40*.25,
   penny:.01, nickel:.05, dime:.10, quarter:.25,

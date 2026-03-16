@@ -282,6 +282,17 @@
 <script>
 document.getElementById('depositDate').valueAsDate = new Date();
 
+// Load shared config from cash.html inputs panel
+try {
+  const ds = localStorage.getItem('hteao_drawerStart');
+  if(ds){
+    ['fl_start','fr_start','dt_start'].forEach(id=>{
+      const el = document.getElementById(id);
+      if(el) el.value = ds;
+    });
+  }
+} catch(e){}
+
 // ── Checks toggle ──
 function toggleChecks(val){
   document.getElementById('checkFields').style.display = val==='Yes'?'block':'none';
