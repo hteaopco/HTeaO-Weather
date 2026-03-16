@@ -137,24 +137,7 @@
     <div class="target-bar-val" id="targetVal">—</div>
   </div>
 
-  <!-- Result cards -->
-  <div class="result-grid" id="resultGrid" style="display:none">
-    <div class="result-card" id="card12">
-      <div class="result-label">12PM Update</div>
-      <div class="result-val flat" id="val12">—</div>
-      <div class="result-sub" id="sub12"></div>
-    </div>
-    <div class="result-card" id="card4">
-      <div class="result-label">4PM Update</div>
-      <div class="result-val flat" id="val4">—</div>
-      <div class="result-sub" id="sub4"></div>
-    </div>
-    <div class="result-card" id="cardTotal">
-      <div class="result-label">Total Day</div>
-      <div class="result-val flat" id="valTotal">—</div>
-      <div class="result-sub" id="subTotal"></div>
-    </div>
-  </div>
+
 
   <!-- Bracket table -->
   <div id="tableArea"></div>
@@ -248,62 +231,58 @@ function targetIdx(salesArr, target){
   return idx;
 }
 
+// ── Lookup: given a sales amount, interpolate 12pm/4pm/total ──
+function lookupAdj(salesAmt){
+  const tbl = getTable();
+  const arr = tbl.sales;
+  let idx=0;
+  for(let i=0;i<arr.length;i++){ if(salesAmt>=arr[i]) idx=i; else break; }
+  return { pm12: tbl.pm12[idx], pm4: tbl.pm4[idx], total: tbl.total[idx] };
+}
+
 // ── Render everything ──
 function render(){
-  const tbl   = getTable();
-  const sales = tbl.sales;
-  const proj  = projSales();
-  const tIdx  = targetIdx(sales, proj);
+  const proj = projSales();
 
   // Target bar
-  document.getElementById('targetBar').style.display='flex';
+  document.getElementById('targetBar').style.display = 'flex';
   document.getElementById('targetVal').textContent = proj ? `$${Math.round(proj).toLocaleString()}` : '—';
 
-  // Cards — use target bracket values
-  const pm12  = tbl.pm12[tIdx];
-  const pm4   = tbl.pm4[tIdx];
-  const total = tbl.total[tIdx];
+  // Build $100-increment rows centered on target
+  // rows = target +/- increments in steps of $100
+  const target = Math.round(proj/100)*100 || 1000;
 
-  document.getElementById('resultGrid').style.display='grid';
-
-  function setCard(cardId, valId, subId, v, label12, label4){
-    const isOnPar = Math.abs(v||0)>30;
-    const card = document.getElementById(cardId);
-    card.className = `result-card ${cardCls(v)}`;
-    const el = document.getElementById(valId);
-    el.textContent = isOnPar?'On Par':Math.abs(v).toFixed(1);
-    el.className = `result-val ${isOnPar?'flat':adjCls(v)}`;
-    document.getElementById(subId).textContent = isOnPar?'no adjustment needed':v<0?'hours to cut':'hours to add';
+  // Generate rows: EXPAND_ABOVE rows below target + target + EXPAND_BELOW rows above
+  const rows = [];
+  for(let i=EXPAND_ABOVE; i>=1; i--){
+    const s = Math.max(0, target - i*100);
+    if(s > 0) rows.push(s);
   }
-  setCard('card12','val12','sub12',pm12);
-  setCard('card4','val4','sub4',pm4);
-  setCard('cardTotal','valTotal','subTotal',total);
-
-  // ── Bracket table ──
-  // Show 9 above and 9 below target by default
-  const lo = Math.max(0, tIdx - EXPAND_ABOVE);
-  const hi = Math.min(sales.length-1, tIdx + EXPAND_BELOW);
+  rows.push(target);
+  for(let i=1; i<=EXPAND_BELOW; i++){
+    rows.push(target + i*100);
+  }
 
   let html = `<div class="table-wrap">
     <div class="table-hdr"><span>Sales Bracket</span><span>12PM</span><span>4PM</span><span>Total Day</span></div>`;
 
-  for(let i=lo; i<=hi; i++){
-    const isTarget = i===tIdx;
+  rows.forEach(s => {
+    const isTarget = s === target;
+    const adj = lookupAdj(s);
     html += `<div class="t-row${isTarget?' target':''}">
-      <div class="t-sales${isTarget?' target':''}">$${Math.round(sales[i]).toLocaleString()}</div>
-      <div class="t-adj ${adjCls(tbl.pm12[i])}">${fmtAdj(tbl.pm12[i])}</div>
-      <div class="t-adj ${adjCls(tbl.pm4[i])}">${fmtAdj(tbl.pm4[i])}</div>
-      <div class="t-adj ${adjCls(tbl.total[i])}">${fmtAdj(tbl.total[i])}</div>
+      <div class="t-sales${isTarget?' target':''}">$${s.toLocaleString()}</div>
+      <div class="t-adj ${adjCls(adj.pm12)}">${fmtAdj(adj.pm12)}</div>
+      <div class="t-adj ${adjCls(adj.pm4)}">${fmtAdj(adj.pm4)}</div>
+      <div class="t-adj ${adjCls(adj.total)}">${fmtAdj(adj.total)}</div>
     </div>`;
-  }
+  });
 
-  // Expand buttons
-  html += '<div class="expand-row" style="gap:12px;flex-wrap:wrap;">';
-  if(lo > 0)
+  // Always show both expand buttons (below can always expand, above limited to >0)
+  html += `<div class="expand-row" style="gap:12px;flex-wrap:wrap;">`;
+  if(rows[0] > 100)
     html += `<button class="expand-btn-sm" onclick="expandDir('above')">↑ Show more lower</button>`;
-  if(hi < sales.length-1)
-    html += `<button class="expand-btn-sm" onclick="expandDir('below')">↓ Show more higher</button>`;
-  html += '</div></div>';
+  html += `<button class="expand-btn-sm" onclick="expandDir('below')">↓ Show more higher</button>`;
+  html += `</div></div>`;
 
   document.getElementById('tableArea').innerHTML = html;
 }
