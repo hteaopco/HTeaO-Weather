@@ -65,10 +65,10 @@
   </div>
   <div class="tabs">
     
-    <div class="tab" onclick="setTab('home')" id="tab-home">🏠 Home</div>
-    <div class="tab active" onclick="setTab('waste')" id="tab-waste">🗑️ Waste</div>
-    <div class="tab" onclick="setTab('gallon')" id="tab-gallon">🧊 Gallon<br>Prep</div>
-    <div class="tab" onclick="setTab('jugs')" id="tab-jugs">🫙 Jugs</div>
+    <div class="tab" onclick="setTab('home')" id="tab-home">Home</div>
+    <div class="tab active" onclick="setTab('waste')" id="tab-waste">Waste</div>
+    <div class="tab" onclick="setTab('gallon')" id="tab-gallon">Gallon<br>Prep</div>
+    <div class="tab" onclick="setTab('jugs')" id="tab-jugs">Jugs</div>
   </div>
 </div>
 
@@ -602,14 +602,13 @@ function renderJugs(){
 // ── Render ──────────────────────────────────────────────────────────────────
 function renderHome(){
   const links = [
-    { label:'Submit Daily 2.5g Jug Builds', icon:'🫙', url:'#TODO_JUG_BUILDS_URL', color:'var(--sky)' },
-    { label:'Submit Waste — Gallons',        icon:'🧊', url:'#TODO_WASTE_GALLONS_URL', color:'var(--yellow)' },
-    { label:'Submit Waste — Jugs',           icon:'🗑️', url:'#TODO_WASTE_JUGS_URL', color:'var(--yellow)' },
-    { label:'Audit Log',                     icon:'📋', url:'#TODO_AUDIT_LOG_URL', color:'var(--muted)' },
+    { label:'Submit Daily 2.5g Jug Builds', icon:'', url:'#TODO_JUG_BUILDS_URL', color:'var(--sky)' },
+    { label:'Submit Waste — Gallons',        icon:'', url:'#TODO_WASTE_GALLONS_URL', color:'var(--yellow)' },
+    { label:'Submit Waste — Jugs',           icon:'', url:'#TODO_WASTE_JUGS_URL', color:'var(--yellow)' },
+    { label:'Audit Log',                     icon:'', url:'#TODO_AUDIT_LOG_URL', color:'var(--muted)' },
   ];
   const cards = links.map(l => `
     <a href="${l.url}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:14px;padding:18px 16px;background:var(--card);border-radius:12px;border:1px solid var(--border);text-decoration:none;margin-bottom:10px;-webkit-tap-highlight-color:transparent;">
-      <div style="font-size:26px;line-height:1;width:32px;text-align:center">${l.icon}</div>
       <div style="font-size:15px;font-weight:700;color:${l.color};flex:1">${l.label}</div>
       <div style="font-size:18px;color:var(--dim)">›</div>
     </a>`).join('');
