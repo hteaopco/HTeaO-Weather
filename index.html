@@ -615,11 +615,11 @@ function ryoy(){
         <div style="font-size:16px;font-weight:800">${f$(d.latestAct)}</div>
       </div>
       <div style="background:rgba(56,189,248,0.06);border-radius:10px;padding:10px 12px;border:1px solid rgba(56,189,248,0.15)">
-        <div style="font-size:9px;color:var(--muted);margin-bottom:3px">vs Budget</div>
+        <div style="font-size:9px;color:var(--muted);margin-bottom:3px">L7 vs Budget</div>
         <div style="font-size:16px;font-weight:800;color:${vc(vsB)}">${fp2(vsB)}</div>
       </div>
       <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:10px 12px">
-        <div style="font-size:9px;color:var(--muted);margin-bottom:3px">vs YOY</div>
+        <div style="font-size:9px;color:var(--muted);margin-bottom:3px">L7 vs 2025</div>
         <div style="font-size:16px;font-weight:800;color:${vc(vsY)}">${fp2(vsY)}</div>
       </div>
     </div>
@@ -652,7 +652,7 @@ function ryoy(){
 
     ${!d.hasFullYoy?`<div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:8px;padding:8px 12px;margin-top:8px;font-size:10px;color:#fbbf24;text-align:center">⚠ 2025 YOY data is partial — store opened mid-year</div>`:''}
     <div style="font-size:9px;color:var(--dim);text-align:center;margin-top:8px">
-      Rolling 7-day total · As of 03/14/26
+      Rolling 7-day total · As of 03/14/26 · Note: L7 vs Budget ≠ YTD vs Budget
     </div>
   </div>`;
 }
@@ -728,7 +728,7 @@ function drawYOYChart(){
     ctx.font=`9px -apple-system,sans-serif`;
     ctx.textAlign='right';
     const kv=v/1000;
-    const label=v>=1000?'$'+(kv===Math.floor(kv)?kv.toFixed(0):kv.toFixed(1))+'k':'$0';
+    const label=v>=1000?'$'+kv.toFixed(1)+'k':'$0';
     ctx.fillText(label,PAD.left-5,y+3);
   }
 
