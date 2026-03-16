@@ -273,34 +273,46 @@ function renderWaste(){
     color:${p===period?'#38bdf8':'#64748b'}">${p}</button>`).join('');
 
   // 4 summary cards
-  function card(icon, label, units, dollars, extra='') {
-    return `<div style="background:var(--card);border-radius:12px;border:1px solid var(--border);padding:12px 14px">
-      <div style="font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">${icon} ${label}</div>
-      <div style="display:flex;justify-content:space-between;align-items:flex-end">
-        <div>
-          ${units!==null?`<div style="font-size:22px;font-weight:800;line-height:1">${typeof units==='number'?units.toFixed(1):units}</div>
-          <div style="font-size:9px;color:var(--muted);margin-top:2px">units</div>`:''}
+  function card(icon, label, units, dollars) {
+    const showUnits = units !== null;
+    return `<div style="background:var(--card);border-radius:12px;border:1px solid var(--border);padding:14px 16px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:0">
+        <!-- Left: label -->
+        <div style="flex:1.2">
+          <div style="font-size:22px;font-weight:900;color:var(--text);line-height:1">${icon}</div>
+          <div style="font-size:15px;font-weight:800;color:var(--text);margin-top:3px;line-height:1">${label}</div>
         </div>
-        <div style="text-align:right">
-          <div style="font-size:18px;font-weight:800;color:var(--yellow)">$${Math.round(dollars).toLocaleString()}</div>
-          <div style="font-size:9px;color:var(--muted);margin-top:2px">wasted</div>
+        <!-- Middle: units -->
+        <div style="flex:1;text-align:center;border-left:1px solid var(--border);padding-left:12px">
+          <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">Units</div>
+          <div style="font-size:22px;font-weight:800;line-height:1;color:${showUnits?'var(--text)':'var(--dim)'}">${showUnits?(typeof units==='number'?units.toFixed(1):units):'—'}</div>
+        </div>
+        <!-- Right: wasted $ -->
+        <div style="flex:1;text-align:center;border-left:1px solid var(--border);padding-left:12px">
+          <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">Wasted</div>
+          <div style="font-size:22px;font-weight:800;line-height:1;color:var(--yellow)">$${Math.round(dollars).toLocaleString()}</div>
         </div>
       </div>
-      ${extra}
     </div>`;
   }
 
   const cogsColor = cogsAffect<=0.0025?'var(--green)':cogsAffect<=0.004?'var(--yellow)':'var(--red)';
-  const totalCard = `<div style="background:var(--card);border-radius:12px;border:1px solid rgba(56,189,248,0.2);padding:12px 14px">
-    <div style="font-size:9px;font-weight:700;color:var(--sky);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">💰 Total Waste</div>
-    <div style="display:flex;justify-content:space-between;align-items:flex-end">
-      <div>
-        <div style="font-size:22px;font-weight:800;line-height:1;color:var(--yellow)">$${Math.round(totalDollars).toLocaleString()}</div>
-        <div style="font-size:9px;color:var(--muted);margin-top:2px">total dollars wasted</div>
+  const totalCard = `<div style="background:rgba(56,189,248,0.07);border-radius:12px;border:1px solid rgba(56,189,248,0.25);padding:16px 16px;margin-bottom:10px">
+    <div style="display:flex;align-items:center;gap:0">
+      <!-- Left: label -->
+      <div style="flex:1.2">
+        <div style="font-size:22px;font-weight:900;line-height:1">💰</div>
+        <div style="font-size:15px;font-weight:800;color:var(--sky);margin-top:3px;line-height:1">Total Waste</div>
       </div>
-      <div style="text-align:right">
-        <div style="font-size:18px;font-weight:800;color:${cogsColor}">${(cogsAffect*100).toFixed(2)}%</div>
-        <div style="font-size:9px;color:var(--muted);margin-top:2px">COGS impact</div>
+      <!-- Middle: total dollars -->
+      <div style="flex:1;text-align:center;border-left:1px solid rgba(56,189,248,0.2);padding-left:12px">
+        <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">Wasted</div>
+        <div style="font-size:22px;font-weight:800;line-height:1;color:var(--yellow)">$${Math.round(totalDollars).toLocaleString()}</div>
+      </div>
+      <!-- Right: COGS -->
+      <div style="flex:1;text-align:center;border-left:1px solid rgba(56,189,248,0.2);padding-left:12px">
+        <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">COGS</div>
+        <div style="font-size:22px;font-weight:800;line-height:1;color:${cogsColor}">${(cogsAffect*100).toFixed(2)}%</div>
       </div>
     </div>
   </div>`;
@@ -365,9 +377,9 @@ function renderWaste(){
     ${card('🧊','Gallons', totGal, galDollars)}
     ${card('🫙','2.5g Jugs', totJug, jugDollars)}
     ${card('🍿','Snacks', null, totSnacks)}
-    <div style="height:1px;background:rgba(255,255,255,0.08);margin:4px 0"></div>
+    <div style="height:1px;background:rgba(255,255,255,0.08);margin:16px 0"></div>
     ${totalCard}
-    <div style="height:1px;background:rgba(255,255,255,0.08);margin:4px 0"></div>
+    <div style="height:1px;background:rgba(255,255,255,0.08);margin:16px 0"></div>
 
     <!-- Store drill-down -->
     ${drillDown}
@@ -517,7 +529,7 @@ function renderJugs(){
     function jugRows(flavors) {
       return Object.entries(flavors).map(([name,v]) => {
         const isEmpty = v.sw===0 && v.ts===0;
-        return `<div style="display:grid;grid-template-columns:1fr 70px 70px;padding:5px 14px;border-bottom:1px solid rgba(255,255,255,0.03)">
+        return `<div style="display:grid;grid-template-columns:1fr 64px 64px;padding:5px 14px;border-bottom:1px solid rgba(255,255,255,0.03)">
           <div style="font-size:11px;${isEmpty?'color:var(--dim)':''}">${name}</div>
           <div style="text-align:center;font-size:12px;font-weight:700;${isEmpty?'color:var(--dim)':''}">${v.sw||'—'}</div>
           <div style="text-align:center;font-size:12px;font-weight:700;${isEmpty?'color:var(--dim)':''}">${v.ts||'—'}</div>
@@ -553,13 +565,13 @@ function renderJugs(){
 
       <!-- Left: Jug par table -->
       <div class="card" style="flex:1;margin-bottom:0;min-width:0">
-        <div style="display:grid;grid-template-columns:1fr 70px 70px;padding:7px 14px 5px;border-bottom:1px solid var(--border)">
+        <div style="display:grid;grid-template-columns:1fr 64px 64px;padding:7px 14px 5px;border-bottom:1px solid var(--border)">
           <div style="font-size:9px;color:var(--muted);font-weight:700">Flavor</div>
           <div style="font-size:9px;color:var(--muted);font-weight:700;text-align:center">Sun–Wed</div>
           <div style="font-size:9px;color:var(--muted);font-weight:700;text-align:center">Thu–Sat</div>
         </div>
         <!-- Total row -->
-        <div style="display:grid;grid-template-columns:1fr 70px 70px;padding:6px 14px;background:rgba(56,189,248,0.07);border-bottom:1px solid rgba(56,189,248,0.2)">
+        <div style="display:grid;grid-template-columns:1fr 64px 64px;padding:6px 14px;background:rgba(56,189,248,0.07);border-bottom:1px solid rgba(56,189,248,0.2)">
           <div style="font-size:11px;font-weight:800;color:var(--sky)">Total Pars</div>
           <div style="text-align:center;font-size:13px;font-weight:800;color:var(--sky)">${totalSW}</div>
           <div style="text-align:center;font-size:13px;font-weight:800;color:var(--sky)">${totalTS}</div>
@@ -571,8 +583,7 @@ function renderJugs(){
 
       <!-- Right: Matrix -->
       <div style="width:130px;flex-shrink:0">
-        <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;text-align:center">Sales Range</div>
-        <div style="font-size:8px;color:var(--dim);text-align:center;margin-bottom:8px">(${totalSW}×4)+(${totalTS}×3)<br>= ${weeklyVal} ÷ %</div>
+        <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;text-align:center">Sales Range</div>
         <div>${matrixRows}</div>
         <div style="font-size:8px;color:var(--dim);text-align:center;margin-top:8px">🟢 Target 2.25–2.75%</div>
       </div>
