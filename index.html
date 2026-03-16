@@ -673,115 +673,158 @@ function drawYOYChart(){
   canvas.height=H*dpr;
   ctx.scale(dpr,dpr);
 
-  const PAD={top:10,right:10,bottom:30,left:52};
-  const cw=W-PAD.left-PAD.right;
-  const ch=H-PAD.top-PAD.bottom;
-
-  // X range based on YOY_RANGE setting
+  // X range
   const todayDoyX=Math.floor((new Date()-new Date(new Date().getFullYear(),0,0))/86400000);
   let xMin,xMax;
   if(YOY_RANGE===3){
     xMin=Math.max(1, todayDoyX-45);
     xMax=Math.min(365, todayDoyX+45);
   } else if(YOY_RANGE===6){
-    xMin=1; // cap at Jan 1 — no 2026 data before that
+    xMin=1;
     xMax=Math.min(365, todayDoyX+90);
   } else {
     xMin=1; xMax=365;
   }
 
-  // Filter data to x range
   function filterRange(pts){ return pts.filter(p=>p[0]>=xMin&&p[0]<=xMax); }
 
-  // Scales — use filtered data for y range
+  // Y scale — round to nearest 25k or 50k increment
   const filteredVals=[
     ...filterRange(d.yoy),...filterRange(d.act),...filterRange(d.bud)
   ].map(p=>p[1]).filter(v=>v!=null);
+  const rawMax=filteredVals.length>0?Math.max(...filteredVals):1000;
+  // Pick increment: use 25k if max < 200k, else 50k
+  const inc=rawMax<200000?25000:50000;
+  const yMax=Math.ceil(rawMax*1.15/inc)*inc;
   const yMin=0;
-  const yMax=filteredVals.length>0?Math.max(...filteredVals)*1.18:1000;
+
+  // Padding — enough room for y-axis labels on the LEFT outside the chart
+  const PAD={top:14,right:12,bottom:30,left:58};
+  const cw=W-PAD.left-PAD.right;
+  const ch=H-PAD.top-PAD.bottom;
 
   function xp(doy){return PAD.left+((doy-xMin)/(xMax-xMin))*cw;}
   function yp(v){return PAD.top+ch-(v-yMin)/(yMax-yMin)*ch;}
 
-  // Grid lines
-  ctx.strokeStyle='rgba(255,255,255,0.05)';
+  // Grid lines + Y labels (outside chart area, left of PAD.left)
+  const yTicks=Math.round(yMax/inc);
+  ctx.strokeStyle='rgba(255,255,255,0.06)';
   ctx.lineWidth=0.5;
-  const yTicks=5;
   for(let i=0;i<=yTicks;i++){
-    const v=yMin+(yMax-yMin)*i/yTicks;
+    const v=i*inc;
     const y=yp(v);
+    // Grid line spans full chart width
     ctx.beginPath();ctx.moveTo(PAD.left,y);ctx.lineTo(PAD.left+cw,y);ctx.stroke();
-    ctx.fillStyle='rgba(255,255,255,0.35)';
-    ctx.font=`${9*dpr/dpr}px -apple-system`;
+    // Label left of chart
+    ctx.fillStyle='rgba(255,255,255,0.38)';
+    ctx.font=`9px -apple-system,sans-serif`;
     ctx.textAlign='right';
-    const label=v>=1000?'$'+(v/1000).toFixed(0)+'k':'$'+Math.round(v);
-    ctx.fillText(label,PAD.left-4,y+3);
+    const label=v>=1000?'$'+(v/1000).toFixed(0)+'k':'$0';
+    ctx.fillText(label,PAD.left-5,y+3);
   }
 
   // Month labels on x-axis
   const months=['J','F','M','A','M','J','J','A','S','O','N','D'];
   const mDoys=[1,32,60,91,121,152,182,213,244,274,305,335];
-  ctx.fillStyle='rgba(255,255,255,0.35)';
-  ctx.font=`9px -apple-system`;
+  ctx.fillStyle='rgba(255,255,255,0.38)';
+  ctx.font='9px -apple-system,sans-serif';
   ctx.textAlign='center';
   mDoys.forEach((doy,i)=>{
-    ctx.fillText(months[i],xp(doy),H-PAD.bottom+12);
+    if(doy>=xMin&&doy<=xMax)
+      ctx.fillText(months[i],xp(doy),H-PAD.bottom+12);
   });
 
   // Today vertical line
   const todayDoy=todayDoyX;
-  ctx.strokeStyle='rgba(255,255,255,0.2)';
-  ctx.lineWidth=1;
-  ctx.setLineDash([3,3]);
-  ctx.beginPath();ctx.moveTo(xp(todayDoy),PAD.top);ctx.lineTo(xp(todayDoy),PAD.top+ch);ctx.stroke();
-  ctx.setLineDash([]);
+  if(todayDoy>=xMin&&todayDoy<=xMax){
+    ctx.strokeStyle='rgba(255,255,255,0.18)';
+    ctx.lineWidth=1;
+    ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(xp(todayDoy),PAD.top);ctx.lineTo(xp(todayDoy),PAD.top+ch);ctx.stroke();
+    ctx.setLineDash([]);
+  }
 
-  // 2025 YOY — filled area
-  const yoy=d.yoy.filter(p=>p[1]!=null);
+  // Smooth curve helper
+  function smoothLine(ctx,pts,tension=0.4){
+    if(pts.length<2) return;
+    ctx.moveTo(pts[0][0],pts[0][1]);
+    for(let i=0;i<pts.length-1;i++){
+      const p0=pts[Math.max(0,i-1)];
+      const p1=pts[i];
+      const p2=pts[i+1];
+      const p3=pts[Math.min(pts.length-1,i+2)];
+      const cp1x=p1[0]+(p2[0]-p0[0])*tension;
+      const cp1y=p1[1]+(p2[1]-p0[1])*tension;
+      const cp2x=p2[0]-(p3[0]-p1[0])*tension;
+      const cp2y=p2[1]-(p3[1]-p1[1])*tension;
+      ctx.bezierCurveTo(cp1x,cp1y,cp2x,cp2y,p2[0],p2[1]);
+    }
+  }
+
+  // 2025 YOY — 25% opacity fill (more transparent)
+  const yoy=filterRange(d.yoy).filter(p=>p[1]!=null);
   if(yoy.length>1){
+    const pts=yoy.map(p=>[xp(p[0]),yp(p[1])]);
     ctx.beginPath();
-    ctx.moveTo(xp(yoy[0][0]),yp(yoy[0][1]));
-    yoy.forEach(p=>ctx.lineTo(xp(p[0]),yp(p[1])));
+    smoothLine(ctx,pts);
     ctx.lineTo(xp(yoy[yoy.length-1][0]),yp(yMin));
     ctx.lineTo(xp(yoy[0][0]),yp(yMin));
     ctx.closePath();
-    ctx.fillStyle='rgba(56,189,248,0.12)';
+    ctx.fillStyle='rgba(56,189,248,0.10)';  // 25% more transparent
     ctx.fill();
     ctx.beginPath();
-    ctx.moveTo(xp(yoy[0][0]),yp(yoy[0][1]));
-    yoy.forEach(p=>ctx.lineTo(xp(p[0]),yp(p[1])));
-    ctx.strokeStyle='rgba(56,189,248,0.4)';
+    smoothLine(ctx,pts);
+    ctx.strokeStyle='rgba(56,189,248,0.35)';
     ctx.lineWidth=1;
     ctx.stroke();
   }
 
   // Budget dotted line
-  const bud=d.bud.filter(p=>p[1]!=null);
+  const bud=filterRange(d.bud).filter(p=>p[1]!=null);
   if(bud.length>1){
+    const pts=bud.map(p=>[xp(p[0]),yp(p[1])]);
     ctx.beginPath();
     ctx.setLineDash([4,3]);
-    ctx.strokeStyle='rgba(200,200,200,0.5)';
+    ctx.strokeStyle='rgba(200,200,200,0.45)';
     ctx.lineWidth=1.5;
-    ctx.moveTo(xp(bud[0][0]),yp(bud[0][1]));
-    bud.forEach(p=>ctx.lineTo(xp(p[0]),yp(p[1])));
+    smoothLine(ctx,pts);
     ctx.stroke();
     ctx.setLineDash([]);
   }
 
-  // 2026 Actual red line
-  const act=d.act.filter(p=>p[1]!=null);
+  // 2026 Actual red line — with glow effect
+  const act=filterRange(d.act).filter(p=>p[1]!=null);
   if(act.length>1){
+    const pts=act.map(p=>[xp(p[0]),yp(p[1])]);
+    // Outer glow — wide, soft
     ctx.beginPath();
-    ctx.strokeStyle='#c0392b';
-    ctx.lineWidth=2.5;
-    ctx.moveTo(xp(act[0][0]),yp(act[0][1]));
-    act.forEach(p=>ctx.lineTo(xp(p[0]),yp(p[1])));
+    ctx.strokeStyle='rgba(192,57,43,0.18)';
+    ctx.lineWidth=8;
+    ctx.lineJoin='round';
+    ctx.lineCap='round';
+    smoothLine(ctx,pts);
     ctx.stroke();
-    // Dot at end
+    // Inner glow
+    ctx.beginPath();
+    ctx.strokeStyle='rgba(220,80,60,0.35)';
+    ctx.lineWidth=4;
+    smoothLine(ctx,pts);
+    ctx.stroke();
+    // Core line
+    ctx.beginPath();
+    ctx.strokeStyle='#e8503a';
+    ctx.lineWidth=2.2;
+    smoothLine(ctx,pts);
+    ctx.stroke();
+    // End dot
     const last=act[act.length-1];
     ctx.beginPath();
     ctx.arc(xp(last[0]),yp(last[1]),4,0,Math.PI*2);
-    ctx.fillStyle='#c0392b';
+    ctx.fillStyle='#e8503a';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(xp(last[0]),yp(last[1]),7,0,Math.PI*2);
+    ctx.fillStyle='rgba(232,80,58,0.25)';
     ctx.fill();
   }
 }
