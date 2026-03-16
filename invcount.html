@@ -185,16 +185,21 @@ async function loadProducts(){
     const iPrice    = cols.findIndex(c => c.toLowerCase().includes('price'));
     const iPackSize = cols.findIndex(c => c.toLowerCase().includes('pack'));
 
+    // Debug: log first few rows to console so we can see raw data
+    console.log('Sheet cols:', cols);
+    console.log('First 3 rows raw:', rows.slice(0,3).map(r=>r.c.map(c=>c?.v)));
+    console.log('Col indices — product:', iProduct, 'cogs:', iCOGS, 'active:', iActive, 'price:', iPrice, 'pack:', iPackSize);
+
     PRODUCTS = rows
       .map((r, idx) => ({
         idx,
         name:     r.c[iProduct]?.v  || '',
         category: r.c[iCOGS]?.v    || 'Other',
-        active:   String(r.c[iActive]?.v  || '').toLowerCase(),
+        active:   String(r.c[iActive]?.v  || '').toLowerCase().trim(),
         price:    parseFloat(r.c[iPrice]?.v)    || 0,
         packSize: parseFloat(r.c[iPackSize]?.v) || 0,
       }))
-      .filter(p => p.name && p.active === 'yes');
+      .filter(p => p.name && (iActive === -1 || !['no','false','0',''].includes(p.active)));
 
     if(PRODUCTS.length === 0){
       showError('No active products found in the catalog. Make sure Active = "Yes" for items in the sheet.');
