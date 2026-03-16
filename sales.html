@@ -270,16 +270,16 @@ const C2F=c=>c*9/5+32;
 
 function cloudTier(p){
   if(p<=20)return{n:"Clear",   a:0};
-  if(p<=50)return{n:"Partly",  a:-0.04};
+  if(p<=50)return{n:"Partly",  a:-0.10};
   if(p<=80)return{n:"Mostly",  a:-0.25};
   return       {n:"Overcast",a:-0.75};
 }
 function rainTier(mm){
   const i=(mm||0)/25.4;
   if(i<=0)  return{n:"None",    a:0};
-  if(i<0.25)return{n:"Light",   a:-0.10};
-  if(i<0.75)return{n:"Moderate",a:-0.15};
-  return       {n:"Heavy",   a:-0.20};
+  if(i<0.25)return{n:"Light",   a:-0.05};
+  if(i<0.75)return{n:"Moderate",a:-0.10};
+  return       {n:"Heavy",   a:-0.15};
 }
 
 // ── DOW lookup helper ──────────────────────────────────────────────────────
@@ -292,8 +292,8 @@ function getDOW(storeId, jsDay){ const v=(DOW[storeId]||[])[jsDay]; return(v==nu
 function getHours(dateStr){
   const dow=new Date(dateStr+"T12:00:00").getDay(); // 0=Sun
   if(dow===0) return {amS:11,amE:12,pmS:12,pmE:20,amWt:0.05,pmWt:0.95};
-  if(dow===6) return {amS:7, amE:12,pmS:12,pmE:20,amWt:0.20,pmWt:0.80};
-  return            {amS:6, amE:12,pmS:12,pmE:20,amWt:0.20,pmWt:0.80};
+  if(dow===6) return {amS:7, amE:12,pmS:12,pmE:20,amWt:0.80,pmWt:0.20};
+  return            {amS:6, amE:12,pmS:12,pmE:20,amWt:0.80,pmWt:0.20};
 }
 function hAvg(arr,s,e){const v=(arr||[]).slice(s,e).filter(x=>x!=null);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;}
 function hSum(arr,s,e){return(arr||[]).slice(s,e).reduce((a,b)=>a+(b||0),0);}
@@ -303,7 +303,7 @@ function hSum(arr,s,e){return(arr||[]).slice(s,e).reduce((a,b)=>a+(b||0),0);}
 function calcHourly(sid,tArr,clArr,prArr,dateStr){
   const mo=new Date(dateStr+"T12:00:00").getMonth();
   const base=NORMALS[STATION[sid]][mo];
-  const te=sid==="011"?0:0.01;
+  const te=sid==="011"?0:0.0125;
   const h=getHours(dateStr);
 
   function block(tF,cl,raIn){
@@ -344,7 +344,7 @@ function calcHourly(sid,tArr,clArr,prArr,dateStr){
 function calc(sid,tF,cl,ra,dateStr){
   const mo=new Date(dateStr+"T12:00:00").getMonth();
   const base=NORMALS[STATION[sid]][mo];
-  const te=sid==="011"?0:0.01;
+  const te=sid==="011"?0:0.0125;
   const tA=te*(tF-base);
   const cT=cloudTier(cl||0),rT=rainTier(ra||0);
   return{
