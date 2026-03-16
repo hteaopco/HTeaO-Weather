@@ -566,6 +566,7 @@ let YOY_SEL='consolidated';
 let YOY_RANGE=12;
 let YOY_CHART_OPEN=false;
 let YOY_STATS_OPEN=false;
+let YOY_ALL_STORES=false;
 let YOY_MW_OPEN=false;    // Midwest section expanded
 let YOY_MW_STORES=false;  // Midwest stores list
 let YOY_WTX_OPEN=false;   // West TX section expanded
@@ -697,11 +698,15 @@ function ryoy(){
         <div style="font-size:11px;color:var(--dim)">${YOY_STATS_OPEN?'▲':'▼'}</div>
       </div>
       ${YOY_STATS_OPEN?`
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
         <div><div style="font-size:9px;color:var(--muted);margin-bottom:3px">YTD Actual</div><div style="font-size:16px;font-weight:800">${fc$(cAct)}</div></div>
         <div><div style="font-size:9px;color:var(--muted);margin-bottom:3px">vs Budget</div><div style="font-size:16px;font-weight:800;color:${vc(cVsB)}">${fp2(cVsB)}</div></div>
         <div><div style="font-size:9px;color:var(--muted);margin-bottom:3px">vs 2025</div><div style="font-size:16px;font-weight:800;color:${vc(cVsY)}">${fp2(cVsY)}</div></div>
-      </div>`:`
+      </div>
+      <button onclick="event.stopPropagation();YOY_ALL_STORES=!YOY_ALL_STORES;render();" style="width:100%;padding:7px;border-radius:7px;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;box-sizing:border-box;border:1px solid rgba(255,255,255,0.1);background:${YOY_ALL_STORES?'rgba(56,189,248,0.1)':'rgba(255,255,255,0.04)'};color:${YOY_ALL_STORES?'#38bdf8':'#64748b'}">
+        ${YOY_ALL_STORES?'▲ Hide Stores':'▼ All Stores'}
+      </button>
+      ${YOY_ALL_STORES?colHdr+'<div style="margin-top:4px">'+allKeys.map(storeRow).join('')+'</div>':''}`:`
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div style="font-size:18px;font-weight:800">${fc$(cAct)}</div>
         <div style="display:flex;gap:12px">
