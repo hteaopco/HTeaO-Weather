@@ -7,7 +7,9 @@
 <style>
   :root{--bg:#080e1a;--card:#0d1526;--border:rgba(255,255,255,0.08);--text:#e2e8f0;--muted:#64748b;--dim:#334155;--sky:#38bdf8;--green:#4ade80;--yellow:#fbbf24;--red:#f87171;}
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,sans-serif;min-height:100vh;}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,sans-serif;min-height:100vh;padding-bottom:60px;}
+
+  /* Side nav */
   .sidenav{width:200px;background:#0a1120;border-right:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;}
   .sidenav-brand{padding:18px 16px 14px;}
   .sidenav-logo{font-size:17px;font-weight:900;color:#38bdf8;}
@@ -20,13 +22,51 @@
   .sidenav-dot{width:6px;height:6px;border-radius:50%;background:#334155;flex-shrink:0;}
   .sidenav-link.active .sidenav-dot{background:#38bdf8;}
   .sidenav-footer{margin-top:auto;padding:14px 16px;font-size:9px;color:#1e293b;}
-  @media(max-width:768px){.sidenav{display:none;}.main{margin-left:0!important;}}
+  @media(max-width:768px){.sidenav{display:none;}.main{margin-left:0!important;padding:16px 16px 60px!important;}}
+
+  /* Main */
   .main{margin-left:200px;padding:28px 28px 60px;}
-  .page-title{font-size:22px;font-weight:900;color:var(--text);margin-bottom:20px;}
-  .placeholder{background:var(--card);border:1px dashed var(--border);border-radius:12px;padding:48px 24px;text-align:center;color:var(--muted);font-size:13px;line-height:1.6;}
+  .page-title{font-size:22px;font-weight:900;color:var(--text);margin-bottom:16px;}
+
+  /* Store strip */
+  .store-strip-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:12px;padding-bottom:2px;}
+  .store-strip{display:flex;gap:6px;min-width:max-content;}
+  .store-pill{flex-shrink:0;padding:7px 12px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--muted);white-space:nowrap;transition:background .15s,color .15s,border-color .15s;}
+  .store-pill.active{background:rgba(56,189,248,0.18);border-color:rgba(56,189,248,0.4);color:var(--sky);font-weight:800;}
+
+  /* Inputs + Audit — shared unified wrap */
+  .panel-wrap{background:#0a1628;border:1px solid rgba(56,189,248,0.18);border-radius:10px;margin-bottom:8px;overflow:hidden;}
+  .panel-btn{width:100%;padding:12px 14px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:none;background:transparent;color:var(--muted);display:flex;align-items:center;justify-content:space-between;transition:color .15s;}
+  .panel-btn:hover{color:var(--text);}
+  .panel-btn .arr{font-size:10px;transition:transform .2s;}
+  .panel-btn.open .arr{transform:rotate(180deg);}
+  .panel-btn.open{color:var(--sky);}
+  .panel-body{display:none;border-top:1px solid rgba(56,189,248,0.12);padding:14px;}
+  .panel-body.open{display:block;}
+  .panel-empty{font-size:12px;color:var(--muted);text-align:center;padding:8px 0;}
+
+  /* Audit table */
+  .audit-row{display:grid;grid-template-columns:1fr 1fr 1fr auto;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.04);gap:8px;font-size:12px;}
+  .audit-row:last-child{border-bottom:none;}
+  .audit-hdr{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
+  .audit-edit{padding:4px 10px;border-radius:5px;border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--muted);font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;}
+  .audit-edit:hover{border-color:rgba(56,189,248,0.4);color:var(--sky);}
+
+  /* Divider */
+  .divider{height:1px;background:var(--border);margin:16px 0 20px;}
+
+  /* Action cards */
+  .action-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:8px;}
+  .action-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 16px;text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:border-color .2s,background .2s;cursor:pointer;}
+  .action-card:hover{border-color:rgba(56,189,248,0.35);background:rgba(56,189,248,0.04);}
+  .action-card-label{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
+  .action-card-title{font-size:15px;font-weight:800;color:var(--text);line-height:1.2;}
+  .action-card-arrow{font-size:18px;color:var(--sky);margin-top:4px;}
+  @media(max-width:600px){.action-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
+
 <div class="sidenav">
   <div class="sidenav-brand">
     <div class="sidenav-logo">HTeaO</div>
@@ -43,11 +83,96 @@
   </div>
   <div class="sidenav-footer">HTeaO PCO · Internal Use</div>
 </div>
+
 <div class="main">
   <div class="page-title">Inventory</div>
-  <div class="placeholder">
-    Inventory layout coming soon — drop your design here.
+
+  <!-- Store strip -->
+  <div class="store-strip-wrap">
+    <div class="store-strip" id="storeStrip"></div>
   </div>
+
+  <!-- Inputs -->
+  <div class="panel-wrap">
+    <button class="panel-btn" id="inputsBtn" onclick="togglePanel('inputs')">
+      <span>⚙ Inputs</span>
+      <span class="arr">▼</span>
+    </button>
+    <div class="panel-body" id="inputsBody">
+      <div class="panel-empty">No inputs configured yet</div>
+    </div>
+  </div>
+
+  <!-- Audit Log -->
+  <div class="panel-wrap">
+    <button class="panel-btn" id="auditBtn" onclick="togglePanel('audit')">
+      <span>📋 Audit Log</span>
+      <span class="arr">▼</span>
+    </button>
+    <div class="panel-body" id="auditBody">
+      <div class="audit-row audit-hdr">
+        <span>Date</span><span>Time</span><span>Type</span><span>Action</span>
+      </div>
+      <div class="panel-empty">No submissions yet</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 3 Action cards -->
+  <div class="action-grid">
+    <a class="action-card" href="#TODO_PAR_ORDER_SHEET">
+      <div class="action-card-label">Inventory</div>
+      <div class="action-card-title">Par Order Sheet</div>
+      <div class="action-card-arrow">→</div>
+    </a>
+    <a class="action-card" href="#TODO_ENTER_INVENTORY">
+      <div class="action-card-label">Inventory</div>
+      <div class="action-card-title">Enter Inventory</div>
+      <div class="action-card-arrow">→</div>
+    </a>
+    <a class="action-card" href="#TODO_ORDER_TRACKER">
+      <div class="action-card-label">Inventory</div>
+      <div class="action-card-title">Enter Order Tracker</div>
+      <div class="action-card-arrow">→</div>
+    </a>
+  </div>
+
 </div>
+
+<script>
+const STORES = [
+  {id:'01',name:'Yukon'},{id:'02',name:'The Village'},{id:'03',name:'Bartlesville'},
+  {id:'04',name:'SW OKC'},{id:'05',name:'Uptown'},{id:'06',name:'Norman1'},
+  {id:'07',name:'Shawnee'},{id:'08',name:'Duncan'},{id:'09',name:'Lawton'},
+  {id:'10',name:'Chickasha'},{id:'11',name:'OU Med'},{id:'12',name:'Moore'},
+  {id:'13',name:'Norman2'},{id:'14',name:'Webb City'},{id:'15',name:'Pecos'},
+  {id:'16',name:'Carlsbad'},{id:'17',name:'Las Cruces'},{id:'18',name:'Hutchinson'},
+  {id:'19',name:'Clovis'},{id:'20',name:'Hereford'},
+];
+let ACTIVE_STORE = 'all';
+
+function buildStoreStrip(){
+  const strip = document.getElementById('storeStrip');
+  const allPill = `<div class="store-pill${ACTIVE_STORE==='all'?' active':''}" onclick="selectStore('all')">All Stores</div>`;
+  strip.innerHTML = allPill + STORES.map(s=>
+    `<div class="store-pill${s.id===ACTIVE_STORE?' active':''}" onclick="selectStore('${s.id}')">${s.id} - ${s.name}</div>`
+  ).join('');
+}
+
+function selectStore(id){
+  ACTIVE_STORE = id;
+  buildStoreStrip();
+}
+
+function togglePanel(key){
+  const btn  = document.getElementById(key+'Btn');
+  const body = document.getElementById(key+'Body');
+  btn.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+buildStoreStrip();
+</script>
 </body>
 </html>
