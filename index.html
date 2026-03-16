@@ -562,6 +562,7 @@ async function runHistorical(){
 // ── Render YOY ─────────────────────────────────────────────────────────────
 // Selected YOY store key — 'consolidated' or store id '001'-'020'
 let YOY_SEL='consolidated';
+let YOY_RANGE=12; // 3, 6, or 12 months
 
 function ryoy(){
   const storeList=[
@@ -623,6 +624,11 @@ function ryoy(){
       </div>
     </div>
 
+    <!-- Range selector -->
+    <div style="display:flex;gap:6px;margin-bottom:10px">
+      ${[3,6,12].map(r=>`<button onclick="YOY_RANGE=${r};render();" style="flex:1;padding:7px;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;box-sizing:border-box;border:1px solid ${YOY_RANGE===r?'rgba(56,189,248,0.4)':'rgba(255,255,255,0.08)'};background:${YOY_RANGE===r?'rgba(56,189,248,0.15)':'rgba(255,255,255,0.04)'};color:${YOY_RANGE===r?'#38bdf8':'#94a3b8'}">${r === 3 ? '3 Month' : r === 6 ? '6 Month' : '12 Month'}</button>`).join('')}
+    </div>
+
     <!-- Chart canvas -->
     <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:12px;border:1px solid rgba(255,255,255,0.08)">
       <canvas id="${chartId}" style="width:100%;height:300px"></canvas>
@@ -671,11 +677,28 @@ function drawYOYChart(){
   const cw=W-PAD.left-PAD.right;
   const ch=H-PAD.top-PAD.bottom;
 
-  // Scales
-  const allVals=[...d.yoy,...d.act,...d.bud].map(p=>p[1]).filter(v=>v!=null);
+  // X range based on YOY_RANGE setting
+  const todayDoyX=Math.floor((new Date()-new Date(new Date().getFullYear(),0,0))/86400000);
+  let xMin,xMax;
+  if(YOY_RANGE===3){
+    xMin=Math.max(1, todayDoyX-45);
+    xMax=Math.min(365, todayDoyX+45);
+  } else if(YOY_RANGE===6){
+    xMin=1; // cap at Jan 1 — no 2026 data before that
+    xMax=Math.min(365, todayDoyX+90);
+  } else {
+    xMin=1; xMax=365;
+  }
+
+  // Filter data to x range
+  function filterRange(pts){ return pts.filter(p=>p[0]>=xMin&&p[0]<=xMax); }
+
+  // Scales — use filtered data for y range
+  const filteredVals=[
+    ...filterRange(d.yoy),...filterRange(d.act),...filterRange(d.bud)
+  ].map(p=>p[1]).filter(v=>v!=null);
   const yMin=0;
-  const yMax=Math.max(...allVals)*1.18;
-  const xMin=1, xMax=365;
+  const yMax=filteredVals.length>0?Math.max(...filteredVals)*1.18:1000;
 
   function xp(doy){return PAD.left+((doy-xMin)/(xMax-xMin))*cw;}
   function yp(v){return PAD.top+ch-(v-yMin)/(yMax-yMin)*ch;}
@@ -706,8 +729,7 @@ function drawYOYChart(){
   });
 
   // Today vertical line
-  const now=new Date();
-  const todayDoy=Math.floor((now-new Date(now.getFullYear(),0,0))/86400000);
+  const todayDoy=todayDoyX;
   ctx.strokeStyle='rgba(255,255,255,0.2)';
   ctx.lineWidth=1;
   ctx.setLineDash([3,3]);
