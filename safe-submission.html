@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HTeaO — Safe Submission</title>
+<style>
+  :root{--bg:#080e1a;--card:#0d1526;--border:rgba(255,255,255,0.08);--text:#e2e8f0;--muted:#64748b;--dim:#334155;--sky:#38bdf8;--green:#4ade80;--yellow:#fbbf24;--red:#f87171;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,sans-serif;min-height:100vh;padding-bottom:40px;}
+  .header{background:var(--bg);border-bottom:1px solid var(--border);padding:12px 16px;position:sticky;top:0;z-index:50;}
+  .logo{font-size:18px;font-weight:900;color:var(--sky);}
+  .sub{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;}
+  .steps{display:flex;gap:3px;padding:10px 16px 0;}
+  .step{flex:1;height:3px;border-radius:2px;background:var(--dim);transition:background .3s;}
+  .step.done{background:var(--green);}
+  .step.active{background:var(--sky);}
+  .section{padding:16px;}
+  .section-title{font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+  .section-sub{font-size:11px;color:var(--muted);margin-bottom:14px;}
+  .field{margin-bottom:14px;}
+  .label{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px;display:block;}
+  input,select{width:100%;padding:11px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:15px;font-family:inherit;-webkit-appearance:none;appearance:none;outline:none;}
+  input:focus,select:focus{border-color:rgba(56,189,248,0.5);}
+  .name-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .currency-table{background:var(--card);border-radius:10px;border:1px solid var(--border);overflow:hidden;margin-bottom:14px;}
+  .currency-hdr{display:grid;grid-template-columns:1fr 90px;padding:8px 12px;background:rgba(56,189,248,0.08);border-bottom:1px solid var(--border);}
+  .currency-hdr span{font-size:10px;font-weight:700;color:var(--sky);letter-spacing:.08em;text-transform:uppercase;}
+  .currency-hdr span:last-child{text-align:center;}
+  .currency-row{display:grid;grid-template-columns:1fr 90px;padding:0 12px;border-bottom:1px solid var(--border);align-items:center;min-height:44px;}
+  .currency-row:last-child{border-bottom:none;}
+  .currency-name{font-size:13px;color:var(--text);}
+  .stepper{display:flex;align-items:center;width:84px;}
+  .stepper-btn{width:26px;height:34px;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;user-select:none;flex-shrink:0;}
+  .stepper-btn:first-child{border-radius:6px 0 0 6px;}
+  .stepper-btn:last-child{border-radius:0 6px 6px 0;}
+  .stepper-btn:active{background:rgba(56,189,248,0.2);}
+  .stepper-val{flex:1;text-align:center;font-size:14px;font-weight:700;color:var(--text);background:rgba(255,255,255,0.03);border-top:1px solid var(--border);border-bottom:1px solid var(--border);height:34px;line-height:34px;pointer-events:none;}
+  .stepper-val.nz{color:var(--sky);}
+  .total-bar{background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+  .total-bar .lbl{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
+  .total-bar .val{font-size:22px;font-weight:900;color:var(--sky);}
+  .delta-bar{border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;border:1px solid var(--border);}
+  .calc-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .calc-row:last-child{border-bottom:none;}
+  .calc-lbl{color:var(--muted);}
+  .calc-val{font-weight:700;color:var(--text);}
+  .calc-val.pos{color:var(--green);}
+  .calc-val.neg{color:var(--red);}
+  .summary-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px;}
+  .btn-row{display:flex;gap:8px;}
+  .btn{flex:1;padding:14px;border-radius:10px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;border:none;transition:opacity .15s;}
+  .btn-primary{background:var(--sky);color:#080e1a;}
+  .btn-secondary{background:var(--card);color:var(--muted);border:1px solid var(--border);}
+  .btn:active{opacity:.75;}
+  .success{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:32px;}
+  .success.show{display:flex;}
+  .success-icon{font-size:56px;margin-bottom:16px;}
+  .success h2{font-size:22px;font-weight:900;color:var(--green);margin-bottom:8px;}
+  .success p{font-size:14px;color:var(--muted);margin-bottom:24px;}
+  .info-box{background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.25);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--yellow);line-height:1.5;margin-bottom:14px;}
+</style>
+</head>
+<body>
+<div class="header">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div><div class="logo">HTeaO</div><div class="sub">Safe Submission</div></div>
+    <a href="cash.html" style="margin-left:auto;font-size:11px;color:var(--muted);text-decoration:none;">← Back</a>
+  </div>
+  <div class="steps">
+    <div class="step active" id="s1"></div>
+    <div class="step" id="s2"></div>
+    <div class="step" id="s3"></div>
+  </div>
+</div>
+
+<!-- Step 1: Info -->
+<div id="step1">
+  <div class="section">
+    <div class="section-title">Safe Count</div>
+    <div class="section-sub">Location #001 — Yukon, OK</div>
+    <div class="field">
+      <label class="label">Who is counting?</label>
+      <div class="name-row">
+        <input type="text" id="firstName" placeholder="First" autocomplete="given-name">
+        <input type="text" id="lastName" placeholder="Last" autocomplete="family-name">
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">Date of Safe Count</label>
+      <input type="date" id="safeDate">
+    </div>
+    <div class="field">
+      <label class="label">Last Count of Month?</label>
+      <select id="lastCount">
+        <option value="No">No</option>
+        <option value="Yes">Yes — Final count on last day of month</option>
+      </select>
+    </div>
+    <div class="field">
+      <label class="label">Total Deposit Bags in Safe (not yet banked)</label>
+      <input type="number" id="depositBags" placeholder="0.00" step="0.01" min="0">
+    </div>
+    <button class="btn btn-primary" onclick="go(2)">Next →</button>
+  </div>
+</div>
+
+<!-- Step 2: Safe Count -->
+<div id="step2" style="display:none">
+  <div class="section">
+    <div class="section-title">Safe Count</div>
+    <div class="section-sub">Enter the NUMBER of each currency</div>
+    <div class="currency-table">
+      <div class="currency-hdr"><span>Currency</span><span>Count</span></div>
+      <div class="currency-row"><div class="currency-name">Rolls — Pennies</div><div class="stepper"><button class="stepper-btn" onclick="adj('roll_penny',-1)">−</button><div class="stepper-val" id="disp_roll_penny">0</div><input type="hidden" id="roll_penny" value="0"><button class="stepper-btn" onclick="adj('roll_penny',1)">+</button></div></div>
+      <div class="currency-row"><div class="currency-name">Rolls — Nickels</div><div class="stepper"><button class="stepper-btn" onclick="adj('roll_nickel',-1)">−</button><div class="stepper-val" id="disp_roll_nickel">0</div><input type="hidden" id="roll_nickel" value="0"><button class="stepper-btn" onclick="adj('roll_nickel',1)">+</button></div></div>
+      <div class="currency-row"><div class="currency-name">Rolls — Dimes</div><div class="stepper"><button class="stepper-btn" onclick="adj('roll_dime',-1)">−</button><div class="stepper-val" id="disp_roll_dime">0</div><input type="hidden" id="roll_dime" value="0"><button class="stepper-btn" onclick="adj('roll_dime',1)">+</button></div></div>
+      <div class="currency-row"><div class="currency-name">Rolls — Quarters</div><div class="stepper"><button class="stepper-btn" onclick="adj('roll_quarter',-1)">−</button><div class="stepper-val" id="disp_roll_quarter">0</div><input type="hidden" id="roll_quarter" value="0"><button class="stepper-btn" onclick="adj('roll_quarter',1)">+</button></div></div>
+      <div class="currency-row"><div class="currency-name">Pennies (loose)</div><div class="stepper"><button class="stepper-btn" onclick="adj('penny',-1)">−</button><div class="stepper-val" id="disp_penny">0</div><input type="hidden" id="penny" value="0"><button class="stepper-btn" onclick="adj('penny',1)">+</button></div></div>
+      <div class="currency-row"><div class="currency-name">Nickels (loose)</div><div class="stepper"><button class="stepper-btn" onclick="adj('nickel',-1)">−</button><div class="stepper-val" id="disp_nickel">0</div><input type="hidden" id="nickel" value="0"><button class="stepper-btn" onclick="adj('nickel',1)">+</button></div></div>
+      <div class="currency-row"><div class="currency-name">Dimes (loose)</div><div class="stepper"><button class="stepper-btn" onclick="adj('dime',-1)">−</button><div class="stepper-val" id="disp_dime">0</div><input type="hidden" id="dime" value="0"><button class="stepper-btn" onclick="adj('dime',1)">+</button></div></div>
+      <div class="currency-row"><div class="currency-name">Quarters (loose)</div><div class="stepper"><button class="stepper-btn" onclick="adj('quarter',-1)">−</button><div class="stepper-val" id="disp_quarter">0</div><input type="hidden" id="quarter" value="0"><button class="stepper-btn" onclick="adj('quarter',1)">+</button></div></div>
+      <div class="currency-row"><div class="currency-name">$1 Bills</div><div class="stepper"><button class="stepper-btn" onclick="adj('b1',-1)">−</button><div class="stepper-val" id="disp_b1">0</div><input type="hidden" id="b1" value="0"><button class="stepper-btn" onclick="adj('b1',1)">+</button></div></div>
+      <div class="currency-row"><div class="currency-name">$5 Bills</div><div class="stepper"><button class="stepper-btn" onclick="adj('b5',-1)">−</button><div class="stepper-val" id="disp_b5">0</div><input type="hidden" id="b5" value="0"><button class="stepper-btn" onclick="adj('b5',1)">+</button></div></div>
+      <div class="currency-row"><div class="currency-name">$10 Bills</div><div class="stepper"><button class="stepper-btn" onclick="adj('b10',-1)">−</button><div class="stepper-val" id="disp_b10">0</div><input type="hidden" id="b10" value="0"><button class="stepper-btn" onclick="adj('b10',1)">+</button></div></div>
+      <div class="currency-row"><div class="currency-name">$20 Bills</div><div class="stepper"><button class="stepper-btn" onclick="adj('b20',-1)">−</button><div class="stepper-val" id="disp_b20">0</div><input type="hidden" id="b20" value="0"><button class="stepper-btn" onclick="adj('b20',1)">+</button></div></div>
+      <div class="currency-row"><div class="currency-name">$100 Bills</div><div class="stepper"><button class="stepper-btn" onclick="adj('b100',-1)">−</button><div class="stepper-val" id="disp_b100">0</div><input type="hidden" id="b100" value="0"><button class="stepper-btn" onclick="adj('b100',1)">+</button></div></div>
+    </div>
+    <div class="field"><label class="label">Safe Par Level</label><input type="number" id="safePar" placeholder="1500.00" step="0.01" value="1500"></div>
+    <div class="total-bar"><div class="lbl">Current Safe Value</div><div class="val" id="safeTotal">$0.00</div></div>
+    <div id="deltaBanner" class="delta-bar" style="background:rgba(100,116,139,0.08);">
+      <div class="lbl" style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;">Safe Over / (Under)</div>
+      <div id="safeDelta" style="font-size:22px;font-weight:900;color:var(--muted);">$0.00</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="go(1)">← Back</button>
+      <button class="btn btn-primary" onclick="go(3)">Review →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Step 3: Summary -->
+<div id="step3" style="display:none">
+  <div class="section">
+    <div class="section-title">Summary</div>
+    <div class="section-sub">Review before submitting</div>
+    <div class="summary-card">
+      <div class="calc-row"><span class="calc-lbl">Counted By</span><span class="calc-val" id="sum_name">—</span></div>
+      <div class="calc-row"><span class="calc-lbl">Date</span><span class="calc-val" id="sum_date">—</span></div>
+      <div class="calc-row"><span class="calc-lbl">Last Count of Month</span><span class="calc-val" id="sum_last">—</span></div>
+      <div class="calc-row"><span class="calc-lbl">Deposit Bags in Safe</span><span class="calc-val" id="sum_bags">—</span></div>
+    </div>
+    <div class="summary-card">
+      <div class="calc-row"><span class="calc-lbl">Safe Par Level</span><span class="calc-val" id="sum_par">—</span></div>
+      <div class="calc-row"><span class="calc-lbl">Current Safe Value</span><span class="calc-val" id="sum_val">—</span></div>
+      <div class="calc-row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:12px;"><span class="calc-lbl" style="font-weight:700;color:var(--text)">Safe Over / (Under)</span><span class="calc-val" id="sum_delta" style="font-size:18px;">—</span></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="go(2)">← Back</button>
+      <button class="btn btn-primary" onclick="submitForm()">Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Success -->
+<div class="success" id="success">
+  <div class="success-icon">✅</div>
+  <h2>Submitted!</h2>
+  <p id="successMsg"></p>
+  <div style="display:flex;gap:10px;margin-top:8px;">
+    <a href="cash.html" style="flex:1;padding:12px;border-radius:10px;background:var(--card);color:var(--muted);text-decoration:none;text-align:center;font-weight:700;font-size:14px;border:1px solid var(--border);">← Dashboard</a>
+    <button class="btn btn-primary" style="flex:1" onclick="resetForm()">New Submission</button>
+  </div>
+</div>
+
+<script>
+document.getElementById('safeDate').valueAsDate = new Date();
+
+const DENOMS = {
+  roll_penny:50*.01, roll_nickel:40*.05, roll_dime:50*.10, roll_quarter:40*.25,
+  penny:.01, nickel:.05, dime:.10, quarter:.25,
+  b1:1, b5:5, b10:10, b20:20, b100:100
+};
+
+function adj(id, delta){
+  const inp = document.getElementById(id);
+  const disp = document.getElementById('disp_'+id);
+  let val = parseInt(inp.value)||0;
+  val = Math.max(0, val+delta);
+  inp.value = val;
+  disp.textContent = val;
+  disp.className = val>0?'stepper-val nz':'stepper-val';
+  calcTotal();
+}
+
+function calcTotal(){
+  let total = 0;
+  Object.keys(DENOMS).forEach(id=>{
+    total += (parseInt(document.getElementById(id)?.value)||0)*DENOMS[id];
+  });
+  document.getElementById('safeTotal').textContent = '$'+total.toFixed(2);
+  const par = parseFloat(document.getElementById('safePar').value)||1500;
+  const delta = total - par;
+  const el = document.getElementById('safeDelta');
+  el.textContent = (delta>=0?'+':'')+'$'+delta.toFixed(2);
+  el.style.color = delta>0?'var(--green)':delta<0?'var(--red)':'var(--muted)';
+  const banner = document.getElementById('deltaBanner');
+  banner.style.background = delta>0?'rgba(74,222,128,0.07)':delta<0?'rgba(248,113,113,0.07)':'rgba(100,116,139,0.08)';
+  banner.style.borderColor = delta>0?'rgba(74,222,128,0.25)':delta<0?'rgba(248,113,113,0.25)':'var(--border)';
+  return total;
+}
+
+function go(n){
+  for(let i=1;i<=3;i++){
+    const el=document.getElementById('step'+i);
+    if(el)el.style.display=i===n?'block':'none';
+    const s=document.getElementById('s'+i);
+    if(s)s.className=i<n?'step done':i===n?'step active':'step';
+  }
+  if(n===3) buildSummary();
+  window.scrollTo(0,0);
+}
+
+function buildSummary(){
+  const total = calcTotal();
+  const par = parseFloat(document.getElementById('safePar').value)||1500;
+  const delta = total - par;
+  document.getElementById('sum_name').textContent =
+    (document.getElementById('firstName').value||'—')+' '+(document.getElementById('lastName').value||'');
+  document.getElementById('sum_date').textContent = document.getElementById('safeDate').value||'—';
+  document.getElementById('sum_last').textContent = document.getElementById('lastCount').value;
+  const bags = document.getElementById('depositBags').value;
+  document.getElementById('sum_bags').textContent = bags?'$'+parseFloat(bags).toFixed(2):'$0.00';
+  document.getElementById('sum_par').textContent = '$'+par.toFixed(2);
+  document.getElementById('sum_val').textContent = '$'+total.toFixed(2);
+  const dEl = document.getElementById('sum_delta');
+  dEl.textContent = (delta>=0?'+':'')+'$'+delta.toFixed(2);
+  dEl.className = 'calc-val '+(delta>0?'pos':delta<0?'neg':'');
+}
+
+function submitForm(){
+  const total = calcTotal();
+  const par = parseFloat(document.getElementById('safePar').value)||1500;
+  const data = {
+    submittedAt: new Date().toISOString(),
+    firstName: document.getElementById('firstName').value,
+    lastName: document.getElementById('lastName').value,
+    safeDate: document.getElementById('safeDate').value,
+    lastCountOfMonth: document.getElementById('lastCount').value,
+    depositBags: document.getElementById('depositBags').value,
+    safePar: par,
+    safeValue: total.toFixed(2),
+    safeOverUnder: (total-par).toFixed(2),
+  };
+  console.log('Safe Submission:', JSON.stringify(data, null, 2));
+  document.getElementById('step3').style.display='none';
+  document.getElementById('success').classList.add('show');
+  const delta = total - par;
+  document.getElementById('successMsg').textContent =
+    `${data.firstName} ${data.lastName} · ${data.safeDate} · Safe ${delta>=0?'+':''}\$${delta.toFixed(2)}`;
+  window.scrollTo(0,0);
+}
+
+function resetForm(){
+  document.getElementById('success').classList.remove('show');
+  document.querySelectorAll('input[type=hidden]').forEach(el=>{
+    el.value=0;
+    const d=document.getElementById('disp_'+el.id);
+    if(d){d.textContent='0';d.className='stepper-val';}
+  });
+  document.getElementById('safeDate').valueAsDate=new Date();
+  document.getElementById('depositBags').value='';
+  calcTotal();
+  go(1);
+}
+</script>
+</body>
+</html>
