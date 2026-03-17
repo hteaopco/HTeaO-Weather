@@ -108,6 +108,20 @@
 
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#0d1f3a;border:1px solid rgba(74,222,128,0.4);color:var(--green);padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;z-index:999;transition:transform .25s ease;pointer-events:none;}
   .toast.show{transform:translateX(-50%) translateY(0);}
+
+  /* Store stat numbers above sales target row */
+  .store-stats{display:grid;grid-template-columns:1.6fr 1fr 1fr 60px;gap:4px;padding:4px 14px 2px;background:rgba(56,189,248,0.03);border-bottom:1px solid rgba(255,255,255,0.03);}
+  .stat-cell{display:flex;flex-direction:column;align-items:flex-end;gap:1px;}
+  .stat-label{font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);}
+  .stat-val{font-size:11px;font-weight:700;color:var(--muted);}
+  .store-stats .stat-cell:first-child{align-items:flex-start;}
+
+  .store-stats-wrap{border-bottom:1px solid rgba(255,255,255,0.04);}
+  .store-stats{display:grid;grid-template-columns:1.6fr 1fr 1fr 60px;gap:4px;padding:6px 14px 3px;background:rgba(0,0,0,0.1);}
+  .store-name-stat{font-size:11px;font-weight:700;color:var(--text);display:flex;align-items:flex-end;padding-bottom:2px;}
+  .stat-cell{display:flex;flex-direction:column;align-items:flex-end;gap:1px;}
+  .stat-label{font-size:8px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);}
+  .stat-val{font-size:11px;font-weight:700;color:var(--muted);}
 </style>
 </head>
 <body>
@@ -153,6 +167,32 @@ const STORES = [
   {id:'16',name:'Carlsbad'},{id:'17',name:'Las Cruces'},{id:'18',name:'Hutchinson'},
   {id:'19',name:'Clovis'},{id:'20',name:'Hereford'},
 ];
+
+// ── Hardcoded store stats (L7 actual, N7 forecast, F7 forecast) ──────────────
+// Swap these out for live API calls when going to production
+const STORE_STATS = {
+  '01': {l7:90352,  n7:14560, f7:14840},
+  '02': {l7:127885, n7:21840, f7:22260},
+  '03': {l7:134816, n7:21840, f7:22260},
+  '04': {l7:106728, n7:17680, f7:18020},
+  '05': {l7:62539,  n7:10400, f7:10600},
+  '06': {l7:87144,  n7:14560, f7:14840},
+  '07': {l7:104023, n7:18720, f7:19080},
+  '08': {l7:78530,  n7:13520, f7:13780},
+  '09': {l7:91558,  n7:13520, f7:13780},
+  '10': {l7:77617,  n7:13520, f7:13780},
+  '11': {l7:33512,  n7:0,     f7:0},
+  '12': {l7:74844,  n7:13520, f7:13780},
+  '13': {l7:73398,  n7:13520, f7:13780},
+  '14': {l7:55992,  n7:10400, f7:10600},
+  '15': {l7:128464, n7:17680, f7:18020},
+  '16': {l7:159242, n7:21840, f7:22260},
+  '17': {l7:243696, n7:41600, f7:42400},
+  '18': {l7:143945, n7:22880, f7:23320},
+  '19': {l7:220630, n7:31200, f7:31800},
+  '20': {l7:104043, n7:16640, f7:16960},
+};
+
 
 const DEFAULT_SALES = {
   '01':14000,'02':21000,'03':21000,'04':17000,'05':10000,
@@ -280,7 +320,16 @@ function renderWeekBody(w){
 function renderStoreRow(wk,store,entry){
   const sales=entry?.sales??DEFAULT_SALES[store.id]??0;
   const dev=entry?.dev??-14;
-  return `<div class="store-row" id="row_${wk}_${store.id}">
+  const st=STORE_STATS[store.id]||{l7:null,n7:null,f7:null};
+  const fs=v=>(v==null||v===0)?'—':'$'+Number(v).toLocaleString('en-US');
+  return `
+  <div class="store-stats-wrap" id="row_${wk}_${store.id}">
+    <div class="store-name-stat">${store.id} &ndash; ${store.name}</div>
+    <div class="stat-cell"><span class="stat-label">Actual L7</span><span class="stat-val">${fs(st.l7)}</span></div>
+    <div class="stat-cell"><span class="stat-label">Fcst N7 &bull; F7</span><span class="stat-val">${fs(st.n7)} &bull; ${fs(st.f7)}</span></div>
+    <div></div>
+  </div>
+  <div class="store-row">
     <div class="store-name">${store.id} &ndash; ${store.name}</div>
     <div class="val val-sales">${fmtSales(sales)}</div>
     <div class="val ${devClass(dev)}">${fmtDev(dev)}</div>
@@ -295,7 +344,8 @@ function renderEditForm(wk,store){
   const dClass=stepperValClass(s.dev);
 
   return `
-  <div class="store-row" style="background:rgba(56,189,248,0.05);border-bottom:none;opacity:0.6;" id="row_${wk}_${store.id}">
+  <div class="store-stats-wrap" id="row_${wk}_${store.id}" style="background:rgba(56,189,248,0.05);">
+  <div class="store-row" style="border-bottom:none;opacity:0.6;padding-top:6px;padding-bottom:6px;">
     <div class="store-name" style="color:var(--muted)">${store.id} &ndash; ${store.name}</div>
     <div></div><div></div><div></div>
   </div>
@@ -314,7 +364,7 @@ function renderEditForm(wk,store){
         <div class="stepper">
           <button class="stepper-btn" onclick="stepDev(-0.25)">−</button>
           <div class="stepper-val${dClass}" id="disp_dev">${devFmt}</div>
-          <button class="stepper-btn" onclick="stepDev(0.25)">+</button>
+          <button class="stepper-btn" onclick="stepDev(+0.25)">+</button>
         </div>
       </div>
     </div>
