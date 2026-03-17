@@ -71,9 +71,7 @@
   .store-table-hdr span{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
   .store-table-hdr .col-r{text-align:right;}
 
-  .store-row{display:grid;grid-template-columns:1.6fr 1fr 1fr 60px;gap:4px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,0.04);align-items:center;}
-  .store-row:last-child{border-bottom:none;}
-  .store-row:hover{background:rgba(255,255,255,0.02);}
+  .store-row{display:none;}
 
   .store-name{font-size:12px;font-weight:600;color:var(--text);}
   .val{font-size:13px;font-weight:700;text-align:right;}
@@ -109,19 +107,20 @@
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#0d1f3a;border:1px solid rgba(74,222,128,0.4);color:var(--green);padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;z-index:999;transition:transform .25s ease;pointer-events:none;}
   .toast.show{transform:translateX(-50%) translateY(0);}
 
-  /* Store stat numbers above sales target row */
-  .store-stats{display:grid;grid-template-columns:1.6fr 1fr 1fr 60px;gap:4px;padding:4px 14px 2px;background:rgba(56,189,248,0.03);border-bottom:1px solid rgba(255,255,255,0.03);}
-  .stat-cell{display:flex;flex-direction:column;align-items:flex-end;gap:1px;}
-  .stat-label{font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);}
-  .stat-val{font-size:11px;font-weight:700;color:var(--muted);}
-  .store-stats .stat-cell:first-child{align-items:flex-start;}
+  /* Single-row store block: name+intel in col1, sales/dev/edit in cols 2-4 */
+  .store-block{display:grid;grid-template-columns:1.6fr 1fr 1fr 60px;gap:4px;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.05);align-items:center;}
+  .store-block:last-child{border-bottom:none;}
+  .store-block:hover{background:rgba(255,255,255,0.02);}
 
-  .store-stats-wrap{border-bottom:1px solid rgba(255,255,255,0.04);}
-  .store-stats{display:grid;grid-template-columns:1.6fr 1fr 1fr 60px;gap:4px;padding:6px 14px 3px;background:rgba(0,0,0,0.1);}
-  .store-name-stat{font-size:11px;font-weight:700;color:var(--text);display:flex;align-items:flex-end;padding-bottom:2px;}
-  .stat-cell{display:flex;flex-direction:column;align-items:flex-end;gap:1px;}
-  .stat-label{font-size:8px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);}
-  .stat-val{font-size:11px;font-weight:700;color:var(--muted);}
+  /* Left column: name on top, intel numbers below */
+  .store-name-col{display:flex;flex-direction:column;gap:5px;}
+  .store-name-main{font-size:12px;font-weight:700;color:var(--text);}
+  .store-intel-row{display:flex;flex-direction:column;gap:2px;}
+  .intel-line{display:flex;align-items:baseline;gap:5px;}
+  .intel-lbl{font-size:8px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);white-space:nowrap;min-width:16px;}
+  .intel-num{font-size:12px;font-weight:800;color:#e2e8f0;}
+  .intel-num-fcst{font-size:12px;font-weight:800;color:#38bdf8;}
+  .intel-sep{font-size:10px;color:var(--muted);font-weight:400;margin:0 1px;}
 </style>
 </head>
 <body>
@@ -322,15 +321,20 @@ function renderStoreRow(wk,store,entry){
   const dev=entry?.dev??-14;
   const st=STORE_STATS[store.id]||{l7:null,n7:null,f7:null};
   const fs=v=>(v==null||v===0)?'—':'$'+Number(v).toLocaleString('en-US');
+  const fk=v=>(v==null||v===0)?'—':'$'+(v>=1000?(v/1000).toFixed(0)+'k':Number(v).toLocaleString());
+  const l7html=`<span class="intel-lbl">L7</span><span class="intel-num">${fs(st.l7)}</span>`;
+  const n7html=st.n7&&st.f7
+    ?`<span class="intel-lbl">N7</span><span class="intel-num-fcst">${fk(st.n7)}</span><span class="intel-sep">&bull;</span><span class="intel-num-fcst">${fk(st.f7)}</span>`
+    :`<span class="intel-lbl">N7</span><span class="intel-num-fcst">—</span>`;
   return `
-  <div class="store-stats-wrap" id="row_${wk}_${store.id}">
-    <div class="store-name-stat">${store.id} &ndash; ${store.name}</div>
-    <div class="stat-cell"><span class="stat-label">Actual L7</span><span class="stat-val">${fs(st.l7)}</span></div>
-    <div class="stat-cell"><span class="stat-label">Fcst N7 &bull; F7</span><span class="stat-val">${fs(st.n7)} &bull; ${fs(st.f7)}</span></div>
-    <div></div>
-  </div>
-  <div class="store-row">
-    <div class="store-name">${store.id} &ndash; ${store.name}</div>
+  <div class="store-block" id="row_${wk}_${store.id}">
+    <div class="store-name-col">
+      <div class="store-name-main">${store.id} &ndash; ${store.name}</div>
+      <div class="store-intel-row">
+        <div class="intel-line">${l7html}</div>
+        <div class="intel-line">${n7html}</div>
+      </div>
+    </div>
     <div class="val val-sales">${fmtSales(sales)}</div>
     <div class="val ${devClass(dev)}">${fmtDev(dev)}</div>
     <div><button class="btn-edit" onclick="startEdit('${wk}','${store.id}')">Edit</button></div>
@@ -344,11 +348,8 @@ function renderEditForm(wk,store){
   const dClass=stepperValClass(s.dev);
 
   return `
-  <div class="store-stats-wrap" id="row_${wk}_${store.id}" style="background:rgba(56,189,248,0.05);">
-  <div class="store-row" style="border-bottom:none;opacity:0.6;padding-top:6px;padding-bottom:6px;">
-    <div class="store-name" style="color:var(--muted)">${store.id} &ndash; ${store.name}</div>
-    <div></div><div></div><div></div>
-  </div>
+  <div id="row_${wk}_${store.id}" style="background:rgba(56,189,248,0.05);border-bottom:1px solid rgba(56,189,248,0.2);">
+  <div style="padding:8px 14px 4px;opacity:0.55;font-size:12px;font-weight:700;color:var(--muted);">${store.id} &ndash; ${store.name}</div>
   <div class="edit-form" id="editform_${wk}_${store.id}">
     <div class="edit-fields">
       <div class="edit-field">
