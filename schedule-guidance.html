@@ -44,59 +44,68 @@
   .page-title{font-size:22px;font-weight:900;color:var(--text);}
   .page-sub{font-size:12px;color:var(--muted);margin-top:4px;}
 
+  /* Separator between week 1 and 2 */
+  .week-separator{height:1px;background:rgba(56,189,248,0.15);margin:16px 0;}
+
   /* Week blocks */
-  .week-block{border-radius:12px;margin-bottom:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:var(--card);}
-  .week-block.current{background:var(--card-current);border-color:rgba(56,189,248,0.3);box-shadow:0 0 0 1px rgba(56,189,248,0.1) inset;}
+  .week-block{border-radius:12px;margin-bottom:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:var(--card);}
+  .week-block.current{background:var(--card-current);border-color:rgba(56,189,248,0.3);box-shadow:0 0 0 1px rgba(56,189,248,0.08) inset;}
 
   .week-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none;gap:12px;}
   .week-hdr:hover{background:rgba(255,255,255,0.02);}
-
   .week-dates{font-size:14px;font-weight:800;color:var(--text);white-space:nowrap;}
   .week-block.current .week-dates{color:var(--sky);}
 
+  /* Meta — stacked: "Last updated" label above date */
   .week-meta-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:1px;flex:1;}
-  .week-meta-line{font-size:10px;color:var(--muted);white-space:nowrap;}
-  .week-meta-line.updated{color:var(--text);font-weight:600;font-size:11px;}
+  .week-meta-label{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+  .week-meta-date{font-size:11px;font-weight:700;color:var(--text);}
+  .week-meta-time{font-size:10px;color:var(--muted);}
+  .week-meta-none{font-size:10px;color:var(--dim);}
 
   .week-chevron{font-size:11px;color:var(--muted);flex-shrink:0;}
 
   /* Store table */
   .store-table{border-top:1px solid var(--border);}
-  /* 4 cols: name | sales | dev | action */
-  .store-row{display:grid;grid-template-columns:1.6fr 1fr 1fr 72px;gap:4px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,0.04);align-items:center;}
-  .store-row:last-child{border-bottom:none;}
-  .store-row:hover{background:rgba(255,255,255,0.02);}
-  .store-row.editing{background:rgba(56,189,248,0.05);border-bottom:1px solid rgba(56,189,248,0.15);}
-
-  .store-table-hdr{display:grid;grid-template-columns:1.6fr 1fr 1fr 72px;gap:4px;padding:7px 14px;background:rgba(56,189,248,0.06);border-bottom:1px solid rgba(56,189,248,0.15);}
+  .store-table-hdr{display:grid;grid-template-columns:1.6fr 1fr 1fr 60px;gap:4px;padding:7px 14px;background:rgba(56,189,248,0.06);border-bottom:1px solid rgba(56,189,248,0.15);}
   .store-table-hdr span{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
   .store-table-hdr .col-r{text-align:right;}
 
-  .store-name{font-size:12px;font-weight:600;color:var(--text);}
+  .store-row{display:grid;grid-template-columns:1.6fr 1fr 1fr 60px;gap:4px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,0.04);align-items:center;}
+  .store-row:last-child{border-bottom:none;}
+  .store-row:hover{background:rgba(255,255,255,0.02);}
 
-  /* Display values */
+  .store-name{font-size:12px;font-weight:600;color:var(--text);}
   .val{font-size:13px;font-weight:700;text-align:right;}
   .val-sales{color:var(--sky);}
   .val-dev-neg{color:var(--red);}
   .val-dev-pos{color:var(--green);}
   .val-dev-zero{color:var(--muted);}
 
-  /* Edit form — inline, full row */
-  .edit-form{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:center;padding:10px 14px;background:rgba(56,189,248,0.06);border-bottom:1px solid rgba(56,189,248,0.15);}
-  .edit-field{display:flex;flex-direction:column;gap:3px;}
-  .edit-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
-  .edit-input{padding:7px 10px;border-radius:8px;border:1px solid rgba(56,189,248,0.35);background:rgba(56,189,248,0.08);color:var(--text);font-size:14px;font-weight:700;outline:none;width:100%;}
-  .edit-input:focus{border-color:rgba(56,189,248,0.7);background:rgba(56,189,248,0.12);}
-  .edit-actions{display:flex;flex-direction:column;gap:6px;padding-top:14px;}
-  .btn-save{padding:7px 14px;border-radius:8px;border:1px solid rgba(74,222,128,0.4);background:rgba(74,222,128,0.1);color:var(--green);font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap;}
-  .btn-save:hover{background:rgba(74,222,128,0.2);}
-  .btn-cancel{padding:4px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--muted);font-size:10px;font-weight:700;cursor:pointer;text-align:center;}
-
-  /* Edit button on row */
-  .btn-edit{padding:4px 11px;border-radius:7px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--muted);font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;float:right;}
+  .btn-edit{padding:4px 10px;border-radius:7px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--muted);font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;float:right;}
   .btn-edit:hover{border-color:rgba(56,189,248,0.4);color:var(--sky);background:rgba(56,189,248,0.08);}
 
-  /* Toast */
+  /* Edit form — expands below the row */
+  .edit-form{padding:12px 14px 14px;background:rgba(56,189,248,0.05);border-bottom:1px solid rgba(56,189,248,0.15);}
+  .edit-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+  .edit-field{display:flex;flex-direction:column;gap:5px;}
+  .edit-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+
+  /* Stepper control */
+  .stepper{display:flex;align-items:center;border:1px solid rgba(56,189,248,0.35);border-radius:9px;overflow:hidden;background:rgba(56,189,248,0.06);}
+  .stepper-btn{width:38px;height:40px;background:rgba(56,189,248,0.1);border:none;color:var(--sky);font-size:20px;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .12s;line-height:1;padding-bottom:1px;}
+  .stepper-btn:hover{background:rgba(56,189,248,0.2);}
+  .stepper-btn:active{background:rgba(56,189,248,0.3);}
+  .stepper-val{flex:1;text-align:center;font-size:14px;font-weight:800;color:var(--text);padding:0 4px;user-select:none;}
+  .stepper-val.neg{color:var(--red);}
+  .stepper-val.pos{color:var(--green);}
+
+  /* Save / Cancel row */
+  .edit-actions{display:flex;gap:8px;}
+  .btn-save{flex:1;padding:9px;border-radius:8px;border:1px solid rgba(74,222,128,0.4);background:rgba(74,222,128,0.1);color:var(--green);font-size:12px;font-weight:800;cursor:pointer;transition:background .15s;}
+  .btn-save:hover{background:rgba(74,222,128,0.22);}
+  .btn-cancel{padding:9px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;}
+
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#0d1f3a;border:1px solid rgba(74,222,128,0.4);color:var(--green);padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;z-index:999;transition:transform .25s ease;pointer-events:none;}
   .toast.show{transform:translateX(-50%) translateY(0);}
 </style>
@@ -153,40 +162,31 @@ const DEFAULT_SALES = {
 };
 
 // ── Weeks ─────────────────────────────────────────────────────────────
-function getWeekStart(date) {
-  const d = new Date(date); d.setHours(0,0,0,0);
-  d.setDate(d.getDate() - d.getDay()); return d;
+function getWeekStart(d) {
+  const r=new Date(d); r.setHours(0,0,0,0); r.setDate(r.getDate()-r.getDay()); return r;
 }
-function addDays(d, n) { const r=new Date(d); r.setDate(r.getDate()+n); return r; }
-function fmtShort(d) {
-  return (d.getMonth()+1).toString().padStart(2,'0')+'/'+
-         d.getDate().toString().padStart(2,'0')+'/'+
-         d.getFullYear().toString().slice(-2);
-}
-function weekKey(d) { return d.toISOString().split('T')[0]; }
-
-function generateWeeks() {
-  const ws = getWeekStart(new Date());
+function addDays(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r;}
+function fmtShort(d){return (d.getMonth()+1).toString().padStart(2,'0')+'/'+d.getDate().toString().padStart(2,'0')+'/'+d.getFullYear().toString().slice(-2);}
+function weekKey(d){return d.toISOString().split('T')[0];}
+function generateWeeks(){
+  const ws=getWeekStart(new Date());
   return Array.from({length:8},(_,i)=>{
-    const sun=addDays(ws,i*7), sat=addDays(sun,6);
-    return {sun,sat,key:weekKey(sun),isCurrent:i===0};
+    const sun=addDays(ws,i*7),sat=addDays(sun,6);
+    return{sun,sat,key:weekKey(sun),isCurrent:i===0};
   });
 }
 
 // ── Storage ────────────────────────────────────────────────────────────
-function loadData(wk) {
-  const raw = localStorage.getItem('sched_'+wk);
-  if (raw) return JSON.parse(raw);
+function loadData(wk){
+  const r=localStorage.getItem('sched_'+wk);
+  if(r) return JSON.parse(r);
   const d={};
-  STORES.forEach(s=>{ d[s.id]={sales:DEFAULT_SALES[s.id]||0,dev:-14,updatedAt:null}; });
+  STORES.forEach(s=>{d[s.id]={sales:DEFAULT_SALES[s.id]||0,dev:-14};});
   return d;
 }
-function saveData(wk,data) { localStorage.setItem('sched_'+wk,JSON.stringify(data)); }
-function getMeta(wk) {
-  const r=localStorage.getItem('sched_meta_'+wk);
-  return r?JSON.parse(r):null;
-}
-function setMeta(wk) {
+function saveData(wk,d){localStorage.setItem('sched_'+wk,JSON.stringify(d));}
+function getMeta(wk){const r=localStorage.getItem('sched_meta_'+wk);return r?JSON.parse(r):null;}
+function setMeta(wk){
   const now=new Date();
   localStorage.setItem('sched_meta_'+wk,JSON.stringify({
     date:now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
@@ -194,47 +194,61 @@ function setMeta(wk) {
   }));
 }
 
-// ── Format helpers ─────────────────────────────────────────────────────
-function fmtSales(v) {
-  if(!v) return '—';
+// ── Format ─────────────────────────────────────────────────────────────
+function fmtSales(v){
+  if(!v&&v!==0) return '—';
   return '$'+Number(v).toLocaleString('en-US');
 }
-function fmtDev(v) {
+function fmtDev(v){
   const n=parseFloat(v);
   if(isNaN(n)) return '—';
-  return (n>=0?'+':'')+n+'%';
+  return (n>0?'+':'')+n.toFixed(2).replace(/\.00$/,'')+'%';
 }
-function devClass(v) {
+function devClass(v){
   const n=parseFloat(v);
   if(isNaN(n)||n===0) return 'val-dev-zero';
   return n<0?'val-dev-neg':'val-dev-pos';
 }
-
-// ── State ──────────────────────────────────────────────────────────────
-const OPEN_WEEKS = new Set();
-let EDITING_ROW = null; // {wk, storeId}
-
-// ── Render ─────────────────────────────────────────────────────────────
-function render() {
-  const c = document.getElementById('weeks-container');
-  c.innerHTML = generateWeeks().map(renderWeek).join('');
+function stepperValClass(v){
+  const n=parseFloat(v);
+  if(isNaN(n)||n===0) return '';
+  return n<0?' neg':' pos';
 }
 
-function renderWeek(w) {
-  const meta = getMeta(w.key);
-  const isOpen = OPEN_WEEKS.has(w.key);
+// ── Stepper state (for active edit form) ──────────────────────────────
+let EDIT_STATE = null; // {wk, storeId, sales, dev}
+
+// ── Open weeks ─────────────────────────────────────────────────────────
+const OPEN_WEEKS = new Set();
+
+// ── Render ─────────────────────────────────────────────────────────────
+function render(){
+  const c=document.getElementById('weeks-container');
+  const weeks=generateWeeks();
+  let html='';
+  weeks.forEach((w,i)=>{
+    if(i===1) html+=`<div class="week-separator"></div>`;
+    html+=renderWeek(w);
+  });
+  c.innerHTML=html;
+}
+
+function renderWeek(w){
+  const meta=getMeta(w.key);
+  const isOpen=OPEN_WEEKS.has(w.key);
 
   let metaHtml;
-  if (meta) {
-    metaHtml = `<div class="week-meta-wrap">
-      <div class="week-meta-line updated">Last updated ${meta.date}</div>
-      <div class="week-meta-line">${meta.time}</div>
+  if(meta){
+    metaHtml=`<div class="week-meta-wrap">
+      <div class="week-meta-label">Last updated</div>
+      <div class="week-meta-date">${meta.date}</div>
+      <div class="week-meta-time">${meta.time}</div>
     </div>`;
   } else {
-    metaHtml = `<div class="week-meta-wrap"><div class="week-meta-line" style="color:var(--dim)">Not yet saved</div></div>`;
+    metaHtml=`<div class="week-meta-wrap"><div class="week-meta-none">Not yet saved</div></div>`;
   }
 
-  const bodyHtml = isOpen ? renderWeekBody(w) : '';
+  const bodyHtml=isOpen?renderWeekBody(w):'';
 
   return `<div class="week-block${w.isCurrent?' current':''}" id="week_${w.key}">
     <div class="week-hdr" onclick="toggleWeek('${w.key}')">
@@ -246,9 +260,12 @@ function renderWeek(w) {
   </div>`;
 }
 
-function renderWeekBody(w) {
-  const data = loadData(w.key);
-  const rows = STORES.map(s => renderStoreRow(w.key, s, data[s.id])).join('');
+function renderWeekBody(w){
+  const data=loadData(w.key);
+  const rows=STORES.map(s=>{
+    const isEditing=EDIT_STATE&&EDIT_STATE.wk===w.key&&EDIT_STATE.storeId===s.id;
+    return isEditing?renderEditForm(w.key,s):renderStoreRow(w.key,s,data[s.id]);
+  }).join('');
   return `<div class="store-table">
     <div class="store-table-hdr">
       <span>Store</span>
@@ -260,33 +277,9 @@ function renderWeekBody(w) {
   </div>`;
 }
 
-function renderStoreRow(wk, store, entry) {
-  const isEditing = EDITING_ROW && EDITING_ROW.wk===wk && EDITING_ROW.storeId===store.id;
-  const sales = entry?.sales ?? DEFAULT_SALES[store.id] ?? 0;
-  const dev = entry?.dev ?? -14;
-
-  if (isEditing) {
-    return `
-    <div class="store-row editing" id="row_${wk}_${store.id}">
-      <div class="store-name" style="color:var(--muted);font-size:11px">${store.id} &ndash; ${store.name}</div>
-      <div></div><div></div><div></div>
-    </div>
-    <div class="edit-form" id="editform_${wk}_${store.id}">
-      <div class="edit-field">
-        <div class="edit-label">Sales Target</div>
-        <input class="edit-input" id="inp_sales_${wk}_${store.id}" type="number" value="${sales}" min="0" max="200000" step="500" onkeydown="handleKey(event,'${wk}','${store.id}')">
-      </div>
-      <div class="edit-field">
-        <div class="edit-label">Labor Dev %</div>
-        <input class="edit-input" id="inp_dev_${wk}_${store.id}" type="number" value="${dev}" min="-50" max="50" step="1" onkeydown="handleKey(event,'${wk}','${store.id}')">
-      </div>
-      <div class="edit-actions">
-        <button class="btn-save" onclick="commitEdit('${wk}','${store.id}')">Save</button>
-        <button class="btn-cancel" onclick="cancelEdit('${wk}','${store.id}')">Cancel</button>
-      </div>
-    </div>`;
-  }
-
+function renderStoreRow(wk,store,entry){
+  const sales=entry?.sales??DEFAULT_SALES[store.id]??0;
+  const dev=entry?.dev??-14;
   return `<div class="store-row" id="row_${wk}_${store.id}">
     <div class="store-name">${store.id} &ndash; ${store.name}</div>
     <div class="val val-sales">${fmtSales(sales)}</div>
@@ -295,98 +288,138 @@ function renderStoreRow(wk, store, entry) {
   </div>`;
 }
 
+function renderEditForm(wk,store){
+  const s=EDIT_STATE;
+  const salesFmt='$'+Number(s.sales).toLocaleString('en-US');
+  const devFmt=(s.dev>0?'+':'')+parseFloat(s.dev).toFixed(2).replace(/\.00$/,'')+'%';
+  const dClass=stepperValClass(s.dev);
+
+  return `
+  <div class="store-row" style="background:rgba(56,189,248,0.05);border-bottom:none;opacity:0.6;" id="row_${wk}_${store.id}">
+    <div class="store-name" style="color:var(--muted)">${store.id} &ndash; ${store.name}</div>
+    <div></div><div></div><div></div>
+  </div>
+  <div class="edit-form" id="editform_${wk}_${store.id}">
+    <div class="edit-fields">
+      <div class="edit-field">
+        <div class="edit-label">Sales Target</div>
+        <div class="stepper">
+          <button class="stepper-btn" onclick="stepSales(-1000)">−</button>
+          <div class="stepper-val" id="disp_sales">${salesFmt}</div>
+          <button class="stepper-btn" onclick="stepSales(1000)">+</button>
+        </div>
+      </div>
+      <div class="edit-field">
+        <div class="edit-label">Labor Dev %</div>
+        <div class="stepper">
+          <button class="stepper-btn" onclick="stepDev(-0.25)">−</button>
+          <div class="stepper-val${dClass}" id="disp_dev">${devFmt}</div>
+          <button class="stepper-btn" onclick="stepDev(0.25)">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="edit-actions">
+      <button class="btn-save" onclick="commitEdit()">Save</button>
+      <button class="btn-cancel" onclick="cancelEdit()">Cancel</button>
+    </div>
+  </div>`;
+}
+
+// ── Stepper actions ────────────────────────────────────────────────────
+function stepSales(delta){
+  if(!EDIT_STATE) return;
+  EDIT_STATE.sales = Math.max(0, EDIT_STATE.sales + delta);
+  const el=document.getElementById('disp_sales');
+  if(el) el.textContent='$'+Number(EDIT_STATE.sales).toLocaleString('en-US');
+}
+
+function stepDev(delta){
+  if(!EDIT_STATE) return;
+  // Round to 2 decimal places to avoid floating point drift
+  EDIT_STATE.dev = Math.round((EDIT_STATE.dev + delta) * 100) / 100;
+  const el=document.getElementById('disp_dev');
+  if(el){
+    const n=EDIT_STATE.dev;
+    el.textContent=(n>0?'+':'')+n.toFixed(2).replace(/\.00$/,'')+'%';
+    el.className='stepper-val'+(n<0?' neg':n>0?' pos':'');
+  }
+}
+
 // ── Interactions ───────────────────────────────────────────────────────
-function toggleWeek(wk) {
-  // Cancel any open edit when collapsing
-  if (OPEN_WEEKS.has(wk)) {
+function toggleWeek(wk){
+  if(OPEN_WEEKS.has(wk)){
     OPEN_WEEKS.delete(wk);
-    EDITING_ROW = null;
+    EDIT_STATE=null;
   } else {
     OPEN_WEEKS.add(wk);
   }
   render();
 }
 
-function startEdit(wk, storeId) {
-  EDITING_ROW = {wk, storeId};
-  // Re-render just this week body
+function startEdit(wk,storeId){
+  const data=loadData(wk);
+  const entry=data[storeId]||{sales:DEFAULT_SALES[storeId]||0,dev:-14};
+  EDIT_STATE={wk,storeId,sales:entry.sales,dev:entry.dev};
   rerenderWeekBody(wk);
-  setTimeout(()=>{
-    const inp = document.getElementById(`inp_sales_${wk}_${storeId}`);
-    if(inp){ inp.focus(); inp.select(); }
-  }, 30);
 }
 
-function commitEdit(wk, storeId) {
-  const salesInp = document.getElementById(`inp_sales_${wk}_${storeId}`);
-  const devInp = document.getElementById(`inp_dev_${wk}_${storeId}`);
-  if (!salesInp || !devInp) return;
-
-  const salesVal = parseFloat(salesInp.value);
-  const devVal = parseFloat(devInp.value);
-  const data = loadData(wk);
-  if (!data[storeId]) data[storeId] = {sales:DEFAULT_SALES[storeId]||0,dev:-14};
-  if (!isNaN(salesVal)) data[storeId].sales = salesVal;
-  if (!isNaN(devVal)) data[storeId].dev = devVal;
-  saveData(wk, data);
+function commitEdit(){
+  if(!EDIT_STATE) return;
+  const{wk,storeId,sales,dev}=EDIT_STATE;
+  const data=loadData(wk);
+  data[storeId]={sales,dev};
+  saveData(wk,data);
   setMeta(wk);
-  EDITING_ROW = null;
+  EDIT_STATE=null;
   rerenderWeekBody(wk);
   refreshWeekHeader(wk);
   showToast();
 }
 
-function cancelEdit(wk, storeId) {
-  EDITING_ROW = null;
+function cancelEdit(){
+  if(!EDIT_STATE) return;
+  const wk=EDIT_STATE.wk;
+  EDIT_STATE=null;
   rerenderWeekBody(wk);
 }
 
-function handleKey(e, wk, storeId) {
-  if (e.key==='Enter') commitEdit(wk, storeId);
-  if (e.key==='Escape') cancelEdit(wk, storeId);
-}
-
-function rerenderWeekBody(wk) {
-  const weeks = generateWeeks();
-  const w = weeks.find(x=>x.key===wk);
-  if (!w) return;
-  const el = document.getElementById(`week_${wk}`);
-  if (!el) return;
-  // Remove existing body
-  const existing = el.querySelector('.store-table');
-  if (existing) existing.remove();
-  // Also remove any dangling edit forms
+function rerenderWeekBody(wk){
+  const weeks=generateWeeks();
+  const w=weeks.find(x=>x.key===wk);
+  if(!w) return;
+  const el=document.getElementById(`week_${wk}`);
+  if(!el) return;
+  const existing=el.querySelector('.store-table');
+  if(existing) existing.remove();
   el.querySelectorAll('.edit-form').forEach(f=>f.remove());
-  // Inject new body after hdr
-  const hdr = el.querySelector('.week-hdr');
-  hdr.insertAdjacentHTML('afterend', renderWeekBody(w));
+  const hdr=el.querySelector('.week-hdr');
+  hdr.insertAdjacentHTML('afterend',renderWeekBody(w));
 }
 
-function refreshWeekHeader(wk) {
-  const meta = getMeta(wk);
-  const el = document.getElementById(`week_${wk}`);
-  if (!el) return;
-  const wrap = el.querySelector('.week-meta-wrap');
-  if (!wrap) return;
-  if (meta) {
-    wrap.innerHTML = `<div class="week-meta-line updated">Last updated ${meta.date}</div>
-      <div class="week-meta-line">${meta.time}</div>`;
-  }
+function refreshWeekHeader(wk){
+  const meta=getMeta(wk);
+  if(!meta) return;
+  const el=document.getElementById(`week_${wk}`);
+  if(!el) return;
+  const wrap=el.querySelector('.week-meta-wrap');
+  if(!wrap) return;
+  wrap.innerHTML=`<div class="week-meta-label">Last updated</div>
+    <div class="week-meta-date">${meta.date}</div>
+    <div class="week-meta-time">${meta.time}</div>`;
 }
 
-function showToast() {
-  const t = document.getElementById('toast');
+function showToast(){
+  const t=document.getElementById('toast');
   t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2000);
+  setTimeout(()=>t.classList.remove('show'),2000);
 }
 
-function toggleNav() {
+function toggleNav(){
   document.getElementById('nav').classList.toggle('open');
-  document.getElementById('overlay').style.display =
+  document.getElementById('overlay').style.display=
     document.getElementById('nav').classList.contains('open')?'block':'none';
 }
 
-// Init — auto-open current week
 OPEN_WEEKS.add(generateWeeks()[0].key);
 render();
 </script>
