@@ -8,29 +8,83 @@
   :root{--bg:#080e1a;--card:#0d1526;--border:rgba(255,255,255,0.08);--text:#e2e8f0;--muted:#64748b;--dim:#334155;--sky:#38bdf8;--green:#4ade80;--yellow:#fbbf24;--red:#f87171;}
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,sans-serif;min-height:100vh;padding-bottom:60px;}
-  .sidenav{width:200px;background:#0a1120;border-right:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;}
+
+  /* ── Side nav ── */
+  .sidenav{width:200px;background:#0a1120;border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;}
   .sidenav-brand{padding:18px 16px 14px;}
-  .sidenav-logo{font-size:17px;font-weight:900;color:#38bdf8;}
-  .sidenav-sub{font-size:8px;color:#64748b;letter-spacing:.12em;text-transform:uppercase;margin-top:2px;}
-  .sidenav-div{height:1px;background:rgba(255,255,255,0.08);margin:0 16px;}
+  .sidenav-logo{font-size:17px;font-weight:900;color:var(--sky);}
+  .sidenav-sub{font-size:8px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-top:2px;}
+  .sidenav-div{height:1px;background:var(--border);margin:0 16px;}
   .sidenav-links{padding:12px 8px;}
-  .sidenav-lbl{font-size:8px;font-weight:700;color:#64748b;letter-spacing:.12em;text-transform:uppercase;padding:0 8px;margin-bottom:6px;}
-  .sidenav-link{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:7px;text-decoration:none;color:#64748b;font-size:12px;font-weight:600;margin-bottom:2px;}
-  .sidenav-link.active{background:rgba(56,189,248,0.12);color:#38bdf8;border:1px solid rgba(56,189,248,0.2);}
-  .sidenav-dot{width:6px;height:6px;border-radius:50%;background:#334155;flex-shrink:0;}
-  .sidenav-link.active .sidenav-dot{background:#38bdf8;}
+  .sidenav-lbl{font-size:8px;font-weight:700;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;padding:0 8px;margin-bottom:6px;}
+  .sidenav-link{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:7px;text-decoration:none;color:var(--muted);font-size:12px;font-weight:600;margin-bottom:2px;}
+  .sidenav-link.active{background:rgba(56,189,248,0.12);color:var(--sky);border:1px solid rgba(56,189,248,0.2);}
+  .sidenav-dot{width:6px;height:6px;border-radius:50%;background:var(--dim);flex-shrink:0;}
+  .sidenav-link.active .sidenav-dot{background:var(--sky);}
   .sidenav-footer{margin-top:auto;padding:14px 16px;font-size:9px;color:#1e293b;}
   @media(max-width:768px){.sidenav{display:none;}.main{margin-left:0!important;padding:16px!important;}}
+
+  /* ── Main content ── */
   .main{margin-left:200px;padding:28px 28px 60px;}
-  .page-title{font-size:22px;font-weight:900;color:var(--text);margin-bottom:20px;}
+  .page-title{font-size:22px;font-weight:900;margin-bottom:6px;}
+  .page-sub{font-size:12px;color:var(--muted);margin-bottom:20px;}
+
+  /* ── 3-card grid ── */
   .action-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
-  .action-btn{padding:13px 8px;border-radius:9px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;text-decoration:none;border:1px solid var(--border);background:var(--card);color:var(--text);display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.35;transition:border-color .15s,background .15s;}
+  .action-btn{padding:16px 8px;border-radius:10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;text-decoration:none;border:1px solid var(--border);background:var(--card);color:var(--text);display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.4;transition:border-color .15s,background .15s,color .15s;}
   .action-btn:hover{border-color:rgba(56,189,248,0.4);background:rgba(56,189,248,0.07);color:var(--sky);}
+  .action-btn.open{border-color:rgba(56,189,248,0.55);background:rgba(56,189,248,0.1);color:var(--sky);}
+
+  /* ── Labor Inputs panel ── */
+  .inputs-panel{margin-top:12px;background:var(--card);border:1px solid rgba(56,189,248,0.2);border-radius:12px;overflow:hidden;display:none;}
+  .inputs-panel.open{display:block;}
+
+  /* Section header */
+  .sec-hdr{padding:11px 16px;background:rgba(56,189,248,0.06);border-bottom:1px solid rgba(56,189,248,0.12);}
+  .sec-hdr-title{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--sky);}
+
+  /* Input rows */
+  .input-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 16px;border-bottom:1px solid rgba(255,255,255,0.04);}
+  .input-row:last-of-type{border-bottom:none;}
+  .input-label{font-size:13px;font-weight:600;color:var(--text);}
+  .input-sub{font-size:10px;color:var(--muted);margin-top:1px;}
+  .input-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .input-val{font-size:14px;font-weight:800;color:var(--sky);min-width:54px;text-align:right;}
+
+  .btn-edit{padding:4px 11px;border-radius:7px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--muted);font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap;}
+  .btn-edit:hover{border-color:rgba(56,189,248,0.4);color:var(--sky);background:rgba(56,189,248,0.08);}
+
+  /* Inline stepper edit */
+  .inline-edit{display:none;padding:10px 16px 14px;background:rgba(56,189,248,0.04);border-bottom:1px solid rgba(56,189,248,0.12);}
+  .inline-edit.open{display:block;}
+  .inline-edit-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+
+  .stepper{display:inline-flex;align-items:center;border:1px solid rgba(56,189,248,0.35);border-radius:9px;overflow:hidden;background:rgba(56,189,248,0.06);}
+  .step-btn{width:40px;height:42px;background:rgba(56,189,248,0.1);border:none;color:var(--sky);font-size:22px;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .12s;line-height:1;}
+  .step-btn:hover{background:rgba(56,189,248,0.22);}
+  .step-btn:active{background:rgba(56,189,248,0.32);}
+  .step-val{width:80px;text-align:center;font-size:15px;font-weight:800;color:var(--sky);user-select:none;}
+  .step-val.neg{color:var(--red);}
+  .step-val.pos{color:var(--green);}
+
+  .inline-actions{display:flex;gap:8px;margin-top:10px;}
+  .btn-save{padding:8px 20px;border-radius:8px;border:1px solid rgba(74,222,128,0.4);background:rgba(74,222,128,0.1);color:var(--green);font-size:12px;font-weight:800;cursor:pointer;transition:background .15s;}
+  .btn-save:hover{background:rgba(74,222,128,0.22);}
+  .btn-cancel{padding:8px 16px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;}
+
+  /* Toast */
+  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:#0d1f3a;border:1px solid rgba(74,222,128,0.4);color:var(--green);padding:10px 22px;border-radius:10px;font-size:13px;font-weight:700;z-index:999;transition:transform .25s;pointer-events:none;}
+  .toast.show{transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
+
+<!-- Side nav -->
 <div class="sidenav">
-  <div class="sidenav-brand"><div class="sidenav-logo">HTeaO</div><div class="sidenav-sub">Franchise Ops</div></div>
+  <div class="sidenav-brand">
+    <div class="sidenav-logo">HTeaO</div>
+    <div class="sidenav-sub">Franchise Ops</div>
+  </div>
   <div class="sidenav-div"></div>
   <div class="sidenav-links">
     <div class="sidenav-lbl">Tools</div>
@@ -43,13 +97,237 @@
   </div>
   <div class="sidenav-footer">HTeaO PCO · Internal Use</div>
 </div>
+
+<!-- Main -->
 <div class="main">
   <div class="page-title">Labor Management</div>
+  <div class="page-sub">Schedule guidance, intraday lookup, and labor model inputs</div>
+
+  <!-- 3 cards -->
   <div class="action-grid">
     <a class="action-btn" href="intraday.html">Intra Day<br>Labor</a>
     <a class="action-btn" href="schedule-guidance.html">Schedule<br>Guidance</a>
-    <a class="action-btn" href="#TODO_LABOR_3">TBD 2</a>
+    <button class="action-btn" id="inputs-card" onclick="togglePanel()">Labor<br>Inputs</button>
   </div>
-</div>
+
+  <!-- Expandable Labor Inputs panel -->
+  <div class="inputs-panel" id="inputs-panel">
+
+    <!-- ── Section 1: Overall deviation ── -->
+    <div class="sec-hdr"><div class="sec-hdr-title">Model Settings</div></div>
+
+    <div class="input-row" id="row-dev">
+      <div>
+        <div class="input-label">Overall Model Deviation</div>
+        <div class="input-sub">Applied across all stores by default</div>
+      </div>
+      <div class="input-right">
+        <div class="input-val neg" id="val-dev">-14%</div>
+        <button class="btn-edit" onclick="openEdit('dev')">Edit</button>
+      </div>
+    </div>
+    <div class="inline-edit" id="edit-dev">
+      <div class="inline-edit-lbl">Overall Model Deviation %</div>
+      <div class="stepper">
+        <button class="step-btn" onclick="step('dev',-0.25)">−</button>
+        <div class="step-val neg" id="sv-dev">-14%</div>
+        <button class="step-btn" onclick="step('dev',+0.25)">+</button>
+      </div>
+      <div class="inline-actions">
+        <button class="btn-save" onclick="save('dev')">Save</button>
+        <button class="btn-cancel" onclick="closeEdit('dev')">Cancel</button>
+      </div>
+    </div>
+
+    <!-- ── Section 2: Hourly wages ── -->
+    <div class="sec-hdr" style="margin-top:0;border-top:1px solid var(--border);">
+      <div class="sec-hdr-title">Avg Hourly Wage per EE (excl. GM)</div>
+    </div>
+
+    <!-- OK -->
+    <div class="input-row" id="row-ok">
+      <div><div class="input-label">Oklahoma</div></div>
+      <div class="input-right">
+        <div class="input-val" id="val-ok">$9.75</div>
+        <button class="btn-edit" onclick="openEdit('ok')">Edit</button>
+      </div>
+    </div>
+    <div class="inline-edit" id="edit-ok">
+      <div class="inline-edit-lbl">Hourly Wage — Oklahoma</div>
+      <div class="stepper">
+        <button class="step-btn" onclick="step('ok',-0.25)">−</button>
+        <div class="step-val" id="sv-ok">$9.75</div>
+        <button class="step-btn" onclick="step('ok',+0.25)">+</button>
+      </div>
+      <div class="inline-actions">
+        <button class="btn-save" onclick="save('ok')">Save</button>
+        <button class="btn-cancel" onclick="closeEdit('ok')">Cancel</button>
+      </div>
+    </div>
+
+    <!-- MO -->
+    <div class="input-row" id="row-mo">
+      <div><div class="input-label">Missouri</div></div>
+      <div class="input-right">
+        <div class="input-val" id="val-mo">$14.00</div>
+        <button class="btn-edit" onclick="openEdit('mo')">Edit</button>
+      </div>
+    </div>
+    <div class="inline-edit" id="edit-mo">
+      <div class="inline-edit-lbl">Hourly Wage — Missouri</div>
+      <div class="stepper">
+        <button class="step-btn" onclick="step('mo',-0.25)">−</button>
+        <div class="step-val" id="sv-mo">$14.00</div>
+        <button class="step-btn" onclick="step('mo',+0.25)">+</button>
+      </div>
+      <div class="inline-actions">
+        <button class="btn-save" onclick="save('mo')">Save</button>
+        <button class="btn-cancel" onclick="closeEdit('mo')">Cancel</button>
+      </div>
+    </div>
+
+    <!-- KS -->
+    <div class="input-row" id="row-ks">
+      <div><div class="input-label">Kansas</div></div>
+      <div class="input-right">
+        <div class="input-val" id="val-ks">$9.75</div>
+        <button class="btn-edit" onclick="openEdit('ks')">Edit</button>
+      </div>
+    </div>
+    <div class="inline-edit" id="edit-ks">
+      <div class="inline-edit-lbl">Hourly Wage — Kansas</div>
+      <div class="stepper">
+        <button class="step-btn" onclick="step('ks',-0.25)">−</button>
+        <div class="step-val" id="sv-ks">$9.75</div>
+        <button class="step-btn" onclick="step('ks',+0.25)">+</button>
+      </div>
+      <div class="inline-actions">
+        <button class="btn-save" onclick="save('ks')">Save</button>
+        <button class="btn-cancel" onclick="closeEdit('ks')">Cancel</button>
+      </div>
+    </div>
+
+    <!-- NM -->
+    <div class="input-row" id="row-nm">
+      <div><div class="input-label">New Mexico</div></div>
+      <div class="input-right">
+        <div class="input-val" id="val-nm">$12.25</div>
+        <button class="btn-edit" onclick="openEdit('nm')">Edit</button>
+      </div>
+    </div>
+    <div class="inline-edit" id="edit-nm">
+      <div class="inline-edit-lbl">Hourly Wage — New Mexico</div>
+      <div class="stepper">
+        <button class="step-btn" onclick="step('nm',-0.25)">−</button>
+        <div class="step-val" id="sv-nm">$12.25</div>
+        <button class="step-btn" onclick="step('nm',+0.25)">+</button>
+      </div>
+      <div class="inline-actions">
+        <button class="btn-save" onclick="save('nm')">Save</button>
+        <button class="btn-cancel" onclick="closeEdit('nm')">Cancel</button>
+      </div>
+    </div>
+
+    <!-- TX -->
+    <div class="input-row" id="row-tx">
+      <div><div class="input-label">Texas</div></div>
+      <div class="input-right">
+        <div class="input-val" id="val-tx">$11.00</div>
+        <button class="btn-edit" onclick="openEdit('tx')">Edit</button>
+      </div>
+    </div>
+    <div class="inline-edit" id="edit-tx">
+      <div class="inline-edit-lbl">Hourly Wage — Texas</div>
+      <div class="stepper">
+        <button class="step-btn" onclick="step('tx',-0.25)">−</button>
+        <div class="step-val" id="sv-tx">$11.00</div>
+        <button class="step-btn" onclick="step('tx',+0.25)">+</button>
+      </div>
+      <div class="inline-actions">
+        <button class="btn-save" onclick="save('tx')">Save</button>
+        <button class="btn-cancel" onclick="closeEdit('tx')">Cancel</button>
+      </div>
+    </div>
+
+  </div><!-- /inputs-panel -->
+</div><!-- /main -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Data store ─────────────────────────────────────────────────────────
+const FIELDS = {
+  dev: { v: -14,   type: 'pct',  step: 0.25 },
+  ok:  { v:  9.75, type: 'wage', step: 0.25 },
+  mo:  { v: 14.00, type: 'wage', step: 0.25 },
+  ks:  { v:  9.75, type: 'wage', step: 0.25 },
+  nm:  { v: 12.25, type: 'wage', step: 0.25 },
+  tx:  { v: 11.00, type: 'wage', step: 0.25 },
+};
+let activeEdit = null;
+let tempVal    = 0;
+
+// Format helpers
+function fmtPct(v)  { return (v > 0 ? '+' : '') + parseFloat(v).toFixed(2).replace(/\.00$/, '') + '%'; }
+function fmtWage(v) { return '$' + parseFloat(v).toFixed(2); }
+function fmt(id, v) { return FIELDS[id].type === 'pct' ? fmtPct(v) : fmtWage(v); }
+
+// Step-val color class
+function valClass(id, v) {
+  if (FIELDS[id].type === 'pct') return v < 0 ? ' neg' : v > 0 ? ' pos' : '';
+  return '';
+}
+
+// ── Panel toggle ────────────────────────────────────────────────────────
+function togglePanel() {
+  const panel = document.getElementById('inputs-panel');
+  const card  = document.getElementById('inputs-card');
+  const isOpen = panel.classList.toggle('open');
+  card.classList.toggle('open', isOpen);
+  if (!isOpen && activeEdit) closeEdit(activeEdit);
+}
+
+// ── Edit controls ───────────────────────────────────────────────────────
+function openEdit(id) {
+  if (activeEdit && activeEdit !== id) closeEdit(activeEdit);
+  activeEdit = id;
+  tempVal    = FIELDS[id].v;
+  const sv = document.getElementById('sv-' + id);
+  sv.textContent  = fmt(id, tempVal);
+  sv.className    = 'step-val' + valClass(id, tempVal);
+  document.getElementById('edit-' + id).classList.add('open');
+  // Scroll into view on mobile
+  setTimeout(() => document.getElementById('edit-' + id).scrollIntoView({behavior:'smooth',block:'nearest'}), 50);
+}
+
+function closeEdit(id) {
+  document.getElementById('edit-' + id).classList.remove('open');
+  if (activeEdit === id) activeEdit = null;
+}
+
+function step(id, delta) {
+  tempVal = Math.round((tempVal + delta) * 100) / 100;
+  const sv = document.getElementById('sv-' + id);
+  sv.textContent = fmt(id, tempVal);
+  sv.className   = 'step-val' + valClass(id, tempVal);
+}
+
+function save(id) {
+  FIELDS[id].v = tempVal;
+  const valEl = document.getElementById('val-' + id);
+  valEl.textContent = fmt(id, tempVal);
+  valEl.className   = 'input-val' + valClass(id, tempVal);
+  closeEdit(id);
+  toast('Saved');
+}
+
+// ── Toast ────────────────────────────────────────────────────────────────
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 1800);
+}
+</script>
 </body>
 </html>
