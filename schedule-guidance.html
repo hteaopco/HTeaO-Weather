@@ -6,7 +6,7 @@
 <title>HTeaO — Schedule Guidance</title>
 <style>
   :root{
-    --bg:#080e1a;--card:#0d1526;--border:rgba(255,255,255,0.08);
+    --bg:#080e1a;--card:#0d1526;--card-current:#0a1f3a;--border:rgba(255,255,255,0.08);
     --text:#e2e8f0;--muted:#64748b;--dim:#1e293b;
     --sky:#38bdf8;--green:#4ade80;--yellow:#fbbf24;--red:#f87171;
     --nav-w:220px;
@@ -14,10 +14,9 @@
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,sans-serif;min-height:100vh;padding-bottom:60px;}
 
-  /* Nav */
   .nav{width:var(--nav-w);background:#0a1120;border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;}
   .nav-brand{padding:24px 20px 20px;}
-  .nav-logo{font-size:22px;font-weight:900;color:var(--sky);letter-spacing:-.5px;}
+  .nav-logo{font-size:22px;font-weight:900;color:var(--sky);}
   .nav-sub{font-size:9px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-top:2px;}
   .nav-divider{height:1px;background:var(--border);margin:0 20px;}
   .nav-section{padding:16px 12px 8px;}
@@ -29,7 +28,6 @@
   .nav-link.active .dot{background:var(--sky);}
   .nav-footer{margin-top:auto;padding:16px 20px;font-size:10px;color:var(--dim);}
 
-  /* Main */
   .main{margin-left:var(--nav-w);padding:32px 28px 60px;}
   @media(max-width:768px){
     .nav{transform:translateX(-100%);transition:transform .25s;}
@@ -42,60 +40,72 @@
   .hamburger span{display:block;width:18px;height:2px;background:var(--text);border-radius:2px;}
   .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99;}
 
-  /* Page header */
   .page-hdr{margin-bottom:24px;}
   .page-title{font-size:22px;font-weight:900;color:var(--text);}
   .page-sub{font-size:12px;color:var(--muted);margin-top:4px;}
 
-  /* Week accordion */
+  /* Week blocks */
   .week-block{border-radius:12px;margin-bottom:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:var(--card);}
-  .week-block.current{border-color:rgba(56,189,248,0.25);}
-  .week-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none;}
+  .week-block.current{background:var(--card-current);border-color:rgba(56,189,248,0.3);box-shadow:0 0 0 1px rgba(56,189,248,0.1) inset;}
+
+  .week-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none;gap:12px;}
   .week-hdr:hover{background:rgba(255,255,255,0.02);}
-  .week-left{display:flex;align-items:center;gap:10px;}
-  .week-badge{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(56,189,248,0.12);color:var(--sky);border:1px solid rgba(56,189,248,0.2);}
-  .week-dates{font-size:14px;font-weight:700;color:var(--text);}
-  .week-right{display:flex;align-items:center;gap:16px;}
-  .week-meta{font-size:10px;color:var(--muted);text-align:right;}
-  .week-meta-val{font-size:11px;color:var(--text);font-weight:600;}
-  .week-chevron{font-size:11px;color:var(--muted);}
+
+  .week-dates{font-size:14px;font-weight:800;color:var(--text);white-space:nowrap;}
+  .week-block.current .week-dates{color:var(--sky);}
+
+  .week-meta-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:1px;flex:1;}
+  .week-meta-line{font-size:10px;color:var(--muted);white-space:nowrap;}
+  .week-meta-line.updated{color:var(--text);font-weight:600;font-size:11px;}
+
+  .week-chevron{font-size:11px;color:var(--muted);flex-shrink:0;}
 
   /* Store table */
   .store-table{border-top:1px solid var(--border);}
-  .store-table-hdr{display:grid;grid-template-columns:1.8fr 1fr 1fr 80px;gap:8px;padding:8px 16px;background:rgba(56,189,248,0.06);border-bottom:1px solid rgba(56,189,248,0.15);}
-  .store-table-hdr span{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
-  .store-row{display:grid;grid-template-columns:1.8fr 1fr 1fr 80px;gap:8px;padding:11px 16px;border-bottom:1px solid rgba(255,255,255,0.04);align-items:center;}
+  /* 4 cols: name | sales | dev | action */
+  .store-row{display:grid;grid-template-columns:1.6fr 1fr 1fr 72px;gap:4px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,0.04);align-items:center;}
   .store-row:last-child{border-bottom:none;}
   .store-row:hover{background:rgba(255,255,255,0.02);}
+  .store-row.editing{background:rgba(56,189,248,0.05);border-bottom:1px solid rgba(56,189,248,0.15);}
+
+  .store-table-hdr{display:grid;grid-template-columns:1.6fr 1fr 1fr 72px;gap:4px;padding:7px 14px;background:rgba(56,189,248,0.06);border-bottom:1px solid rgba(56,189,248,0.15);}
+  .store-table-hdr span{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+  .store-table-hdr .col-r{text-align:right;}
+
   .store-name{font-size:12px;font-weight:600;color:var(--text);}
 
-  /* Editable cell */
-  .cell-wrap{position:relative;display:flex;align-items:center;gap:6px;}
-  .cell-val{font-size:13px;font-weight:700;color:var(--text);min-width:60px;}
-  .cell-val.sales{color:var(--sky);}
-  .cell-val.dev{color:var(--yellow);}
-  .cell-val.dev.neg{color:var(--red);}
-  .edit-btn{padding:3px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--muted);font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;}
-  .edit-btn:hover{border-color:rgba(56,189,248,0.4);color:var(--sky);background:rgba(56,189,248,0.08);}
+  /* Display values */
+  .val{font-size:13px;font-weight:700;text-align:right;}
+  .val-sales{color:var(--sky);}
+  .val-dev-neg{color:var(--red);}
+  .val-dev-pos{color:var(--green);}
+  .val-dev-zero{color:var(--muted);}
 
-  /* Inline editor */
-  .cell-input{width:90px;padding:4px 8px;border-radius:6px;border:1px solid rgba(56,189,248,0.4);background:rgba(56,189,248,0.08);color:var(--text);font-size:13px;font-weight:700;outline:none;}
-  .save-btn{padding:3px 8px;border-radius:6px;border:1px solid rgba(74,222,128,0.4);background:rgba(74,222,128,0.08);color:var(--green);font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;}
-  .save-btn:hover{background:rgba(74,222,128,0.18);}
-  .cancel-btn{padding:3px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--muted);font-size:10px;font-weight:700;cursor:pointer;}
+  /* Edit form — inline, full row */
+  .edit-form{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:center;padding:10px 14px;background:rgba(56,189,248,0.06);border-bottom:1px solid rgba(56,189,248,0.15);}
+  .edit-field{display:flex;flex-direction:column;gap:3px;}
+  .edit-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+  .edit-input{padding:7px 10px;border-radius:8px;border:1px solid rgba(56,189,248,0.35);background:rgba(56,189,248,0.08);color:var(--text);font-size:14px;font-weight:700;outline:none;width:100%;}
+  .edit-input:focus{border-color:rgba(56,189,248,0.7);background:rgba(56,189,248,0.12);}
+  .edit-actions{display:flex;flex-direction:column;gap:6px;padding-top:14px;}
+  .btn-save{padding:7px 14px;border-radius:8px;border:1px solid rgba(74,222,128,0.4);background:rgba(74,222,128,0.1);color:var(--green);font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap;}
+  .btn-save:hover{background:rgba(74,222,128,0.2);}
+  .btn-cancel{padding:4px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--muted);font-size:10px;font-weight:700;cursor:pointer;text-align:center;}
 
-  /* Save toast */
+  /* Edit button on row */
+  .btn-edit{padding:4px 11px;border-radius:7px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--muted);font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;float:right;}
+  .btn-edit:hover{border-color:rgba(56,189,248,0.4);color:var(--sky);background:rgba(56,189,248,0.08);}
+
+  /* Toast */
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#0d1f3a;border:1px solid rgba(74,222,128,0.4);color:var(--green);padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;z-index:999;transition:transform .25s ease;pointer-events:none;}
   .toast.show{transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
 
-<!-- Hamburger -->
-<button class="hamburger" onclick="toggleNav()" aria-label="Menu"><span></span><span></span><span></span></button>
+<button class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></button>
 <div class="overlay" id="overlay" onclick="toggleNav()"></div>
 
-<!-- Nav -->
 <div class="nav" id="nav">
   <div class="nav-brand">
     <div class="nav-logo">HTeaO</div>
@@ -125,31 +135,16 @@
 <div class="toast" id="toast">✓ Saved</div>
 
 <script>
-// ── Stores ──────────────────────────────────────────────────────────────────
 const STORES = [
-  {id:'01',name:'Yukon'},
-  {id:'02',name:'The Village'},
-  {id:'03',name:'Bartlesville'},
-  {id:'04',name:'SW OKC'},
-  {id:'05',name:'Uptown'},
-  {id:'06',name:'Norman 1'},
-  {id:'07',name:'Shawnee'},
-  {id:'08',name:'Duncan'},
-  {id:'09',name:'Lawton'},
-  {id:'10',name:'Chickasha'},
-  {id:'11',name:'OU Med'},
-  {id:'12',name:'Moore'},
-  {id:'13',name:'Norman 2'},
-  {id:'14',name:'Webb City'},
-  {id:'15',name:'Pecos'},
-  {id:'16',name:'Carlsbad'},
-  {id:'17',name:'Las Cruces'},
-  {id:'18',name:'Hutchinson'},
-  {id:'19',name:'Clovis'},
-  {id:'20',name:'Hereford'},
+  {id:'01',name:'Yukon'},{id:'02',name:'The Village'},{id:'03',name:'Bartlesville'},
+  {id:'04',name:'SW OKC'},{id:'05',name:'Uptown'},{id:'06',name:'Norman 1'},
+  {id:'07',name:'Shawnee'},{id:'08',name:'Duncan'},{id:'09',name:'Lawton'},
+  {id:'10',name:'Chickasha'},{id:'11',name:'OU Med'},{id:'12',name:'Moore'},
+  {id:'13',name:'Norman 2'},{id:'14',name:'Webb City'},{id:'15',name:'Pecos'},
+  {id:'16',name:'Carlsbad'},{id:'17',name:'Las Cruces'},{id:'18',name:'Hutchinson'},
+  {id:'19',name:'Clovis'},{id:'20',name:'Hereford'},
 ];
 
-// Default sales targets from ScheduleGuide (current week 03/22/26)
 const DEFAULT_SALES = {
   '01':14000,'02':21000,'03':21000,'04':17000,'05':10000,
   '06':14000,'07':18000,'08':13000,'09':13000,'10':13000,
@@ -157,261 +152,241 @@ const DEFAULT_SALES = {
   '16':21000,'17':40000,'18':22000,'19':30000,'20':16000,
 };
 
-// ── Week generation ──────────────────────────────────────────────────────────
-// Weeks always run Sunday–Saturday
+// ── Weeks ─────────────────────────────────────────────────────────────
 function getWeekStart(date) {
-  const d = new Date(date);
-  const day = d.getDay(); // 0=Sun
-  d.setDate(d.getDate() - day);
-  d.setHours(0,0,0,0);
-  return d;
+  const d = new Date(date); d.setHours(0,0,0,0);
+  d.setDate(d.getDate() - d.getDay()); return d;
 }
-
-function addDays(date, n) {
-  const d = new Date(date);
-  d.setDate(d.getDate() + n);
-  return d;
-}
-
-function fmtDate(d) {
-  return (d.getMonth()+1).toString().padStart(2,'0') + '/' +
-         d.getDate().toString().padStart(2,'0') + '/' +
+function addDays(d, n) { const r=new Date(d); r.setDate(r.getDate()+n); return r; }
+function fmtShort(d) {
+  return (d.getMonth()+1).toString().padStart(2,'0')+'/'+
+         d.getDate().toString().padStart(2,'0')+'/'+
          d.getFullYear().toString().slice(-2);
 }
-
-function fmtDateLong(d) {
-  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-}
-
-function weekKey(sundayDate) {
-  return sundayDate.toISOString().split('T')[0];
-}
+function weekKey(d) { return d.toISOString().split('T')[0]; }
 
 function generateWeeks() {
-  const today = new Date();
-  const currentWeekStart = getWeekStart(today);
-  const weeks = [];
-  for (let i = 0; i < 8; i++) {
-    const sun = addDays(currentWeekStart, i * 7);
-    const sat = addDays(sun, 6);
-    weeks.push({ sun, sat, key: weekKey(sun), isCurrent: i === 0 });
-  }
-  return weeks;
-}
-
-// ── Storage ──────────────────────────────────────────────────────────────────
-function loadData(weekKey) {
-  const raw = localStorage.getItem('sched_' + weekKey);
-  if (raw) return JSON.parse(raw);
-  // Build defaults
-  const data = {};
-  STORES.forEach(s => {
-    data[s.id] = {
-      sales: DEFAULT_SALES[s.id] || 0,
-      dev: -14,
-      updatedAt: null,
-    };
+  const ws = getWeekStart(new Date());
+  return Array.from({length:8},(_,i)=>{
+    const sun=addDays(ws,i*7), sat=addDays(sun,6);
+    return {sun,sat,key:weekKey(sun),isCurrent:i===0};
   });
-  return data;
 }
 
-function saveData(weekKey, data) {
-  localStorage.setItem('sched_' + weekKey, JSON.stringify(data));
+// ── Storage ────────────────────────────────────────────────────────────
+function loadData(wk) {
+  const raw = localStorage.getItem('sched_'+wk);
+  if (raw) return JSON.parse(raw);
+  const d={};
+  STORES.forEach(s=>{ d[s.id]={sales:DEFAULT_SALES[s.id]||0,dev:-14,updatedAt:null}; });
+  return d;
 }
-
-function getLastUpdated(weekKey) {
-  const raw = localStorage.getItem('sched_meta_' + weekKey);
-  return raw ? JSON.parse(raw) : null;
+function saveData(wk,data) { localStorage.setItem('sched_'+wk,JSON.stringify(data)); }
+function getMeta(wk) {
+  const r=localStorage.getItem('sched_meta_'+wk);
+  return r?JSON.parse(r):null;
 }
-
-function setLastUpdated(weekKey) {
-  const now = new Date();
-  localStorage.setItem('sched_meta_' + weekKey, JSON.stringify({
-    date: now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
-    time: now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),
+function setMeta(wk) {
+  const now=new Date();
+  localStorage.setItem('sched_meta_'+wk,JSON.stringify({
+    date:now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
+    time:now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),
   }));
 }
 
-// ── Render ────────────────────────────────────────────────────────────────────
-const OPEN_WEEKS = new Set();
-const EDITING = {}; // weekKey_storeId_field → true
+// ── Format helpers ─────────────────────────────────────────────────────
+function fmtSales(v) {
+  if(!v) return '—';
+  return '$'+Number(v).toLocaleString('en-US');
+}
+function fmtDev(v) {
+  const n=parseFloat(v);
+  if(isNaN(n)) return '—';
+  return (n>=0?'+':'')+n+'%';
+}
+function devClass(v) {
+  const n=parseFloat(v);
+  if(isNaN(n)||n===0) return 'val-dev-zero';
+  return n<0?'val-dev-neg':'val-dev-pos';
+}
 
+// ── State ──────────────────────────────────────────────────────────────
+const OPEN_WEEKS = new Set();
+let EDITING_ROW = null; // {wk, storeId}
+
+// ── Render ─────────────────────────────────────────────────────────────
 function render() {
-  const container = document.getElementById('weeks-container');
-  const weeks = generateWeeks();
-  container.innerHTML = weeks.map(w => renderWeek(w)).join('');
+  const c = document.getElementById('weeks-container');
+  c.innerHTML = generateWeeks().map(renderWeek).join('');
 }
 
 function renderWeek(w) {
-  const data = loadData(w.key);
-  const meta = getLastUpdated(w.key);
+  const meta = getMeta(w.key);
   const isOpen = OPEN_WEEKS.has(w.key);
-  const totalSales = STORES.reduce((sum,s) => sum + (data[s.id]?.sales || 0), 0);
 
-  const metaHtml = meta
-    ? `<div class="week-meta"><div class="week-meta-val">Last updated ${meta.date}</div><div>${meta.time}</div></div>`
-    : `<div class="week-meta"><div style="color:var(--dim)">Not yet saved</div></div>`;
-
-  const bodyHtml = isOpen ? `
-    <div class="store-table">
-      <div class="store-table-hdr">
-        <span>Store</span>
-        <span>Sales Target</span>
-        <span>Labor Dev %</span>
-        <span></span>
-      </div>
-      ${STORES.map(s => renderStoreRow(w.key, s, data[s.id])).join('')}
-    </div>` : '';
-
-  return `
-    <div class="week-block${w.isCurrent ? ' current' : ''}" id="week_${w.key}">
-      <div class="week-hdr" onclick="toggleWeek('${w.key}')">
-        <div class="week-left">
-          ${w.isCurrent ? '<div class="week-badge">Current Week</div>' : ''}
-          <div class="week-dates">${fmtDate(w.sun)} &ndash; ${fmtDate(w.sat)}</div>
-        </div>
-        <div class="week-right">
-          ${metaHtml}
-          <div class="week-chevron">${isOpen ? '▲' : '▼'}</div>
-        </div>
-      </div>
-      ${bodyHtml}
+  let metaHtml;
+  if (meta) {
+    metaHtml = `<div class="week-meta-wrap">
+      <div class="week-meta-line updated">Last updated ${meta.date}</div>
+      <div class="week-meta-line">${meta.time}</div>
     </div>`;
+  } else {
+    metaHtml = `<div class="week-meta-wrap"><div class="week-meta-line" style="color:var(--dim)">Not yet saved</div></div>`;
+  }
+
+  const bodyHtml = isOpen ? renderWeekBody(w) : '';
+
+  return `<div class="week-block${w.isCurrent?' current':''}" id="week_${w.key}">
+    <div class="week-hdr" onclick="toggleWeek('${w.key}')">
+      <div class="week-dates">${fmtShort(w.sun)} &ndash; ${fmtShort(w.sat)}</div>
+      ${metaHtml}
+      <div class="week-chevron">${isOpen?'▲':'▼'}</div>
+    </div>
+    ${bodyHtml}
+  </div>`;
+}
+
+function renderWeekBody(w) {
+  const data = loadData(w.key);
+  const rows = STORES.map(s => renderStoreRow(w.key, s, data[s.id])).join('');
+  return `<div class="store-table">
+    <div class="store-table-hdr">
+      <span>Store</span>
+      <span class="col-r">Sales Target</span>
+      <span class="col-r">Labor Dev %</span>
+      <span></span>
+    </div>
+    ${rows}
+  </div>`;
 }
 
 function renderStoreRow(wk, store, entry) {
-  const editSalesKey = `${wk}_${store.id}_sales`;
-  const editDevKey = `${wk}_${store.id}_dev`;
-  const isEditingSales = !!EDITING[editSalesKey];
-  const isEditingDev = !!EDITING[editDevKey];
-  const sales = entry?.sales ?? 0;
+  const isEditing = EDITING_ROW && EDITING_ROW.wk===wk && EDITING_ROW.storeId===store.id;
+  const sales = entry?.sales ?? DEFAULT_SALES[store.id] ?? 0;
   const dev = entry?.dev ?? -14;
-  const devColor = dev < 0 ? 'neg' : '';
 
-  const salesCell = isEditingSales
-    ? `<div class="cell-wrap">
-        <input class="cell-input" id="inp_${editSalesKey}" type="number" value="${sales}" min="0" max="100000" step="500" onkeydown="handleKey(event,'${wk}','${store.id}','sales')">
-        <button class="save-btn" onclick="commitEdit('${wk}','${store.id}','sales')">Save</button>
-        <button class="cancel-btn" onclick="cancelEdit('${wk}','${store.id}','sales')">✕</button>
-       </div>`
-    : `<div class="cell-wrap">
-        <span class="cell-val sales">${sales > 0 ? '$' + sales.toLocaleString() : '—'}</span>
-       </div>`;
-
-  const devCell = isEditingDev
-    ? `<div class="cell-wrap">
-        <input class="cell-input" id="inp_${editDevKey}" type="number" value="${dev}" min="-50" max="50" step="1" onkeydown="handleKey(event,'${wk}','${store.id}','dev')">
-        <button class="save-btn" onclick="commitEdit('${wk}','${store.id}','dev')">Save</button>
-        <button class="cancel-btn" onclick="cancelEdit('${wk}','${store.id}','dev')">✕</button>
-       </div>`
-    : `<div class="cell-wrap">
-        <span class="cell-val dev ${devColor}">${dev > 0 ? '+' : ''}${dev}%</span>
-       </div>`;
-
-  const editBtnHtml = (!isEditingSales && !isEditingDev)
-    ? `<button class="edit-btn" onclick="startEdit('${wk}','${store.id}')">Edit</button>`
-    : '';
-
-  return `
-    <div class="store-row" id="row_${wk}_${store.id}">
-      <div class="store-name">${store.id} &ndash; ${store.name}</div>
-      ${salesCell}
-      ${devCell}
-      <div>${editBtnHtml}</div>
+  if (isEditing) {
+    return `
+    <div class="store-row editing" id="row_${wk}_${store.id}">
+      <div class="store-name" style="color:var(--muted);font-size:11px">${store.id} &ndash; ${store.name}</div>
+      <div></div><div></div><div></div>
+    </div>
+    <div class="edit-form" id="editform_${wk}_${store.id}">
+      <div class="edit-field">
+        <div class="edit-label">Sales Target</div>
+        <input class="edit-input" id="inp_sales_${wk}_${store.id}" type="number" value="${sales}" min="0" max="200000" step="500" onkeydown="handleKey(event,'${wk}','${store.id}')">
+      </div>
+      <div class="edit-field">
+        <div class="edit-label">Labor Dev %</div>
+        <input class="edit-input" id="inp_dev_${wk}_${store.id}" type="number" value="${dev}" min="-50" max="50" step="1" onkeydown="handleKey(event,'${wk}','${store.id}')">
+      </div>
+      <div class="edit-actions">
+        <button class="btn-save" onclick="commitEdit('${wk}','${store.id}')">Save</button>
+        <button class="btn-cancel" onclick="cancelEdit('${wk}','${store.id}')">Cancel</button>
+      </div>
     </div>`;
+  }
+
+  return `<div class="store-row" id="row_${wk}_${store.id}">
+    <div class="store-name">${store.id} &ndash; ${store.name}</div>
+    <div class="val val-sales">${fmtSales(sales)}</div>
+    <div class="val ${devClass(dev)}">${fmtDev(dev)}</div>
+    <div><button class="btn-edit" onclick="startEdit('${wk}','${store.id}')">Edit</button></div>
+  </div>`;
 }
 
-// ── Interactions ──────────────────────────────────────────────────────────────
+// ── Interactions ───────────────────────────────────────────────────────
 function toggleWeek(wk) {
-  if (OPEN_WEEKS.has(wk)) OPEN_WEEKS.delete(wk);
-  else OPEN_WEEKS.add(wk);
+  // Cancel any open edit when collapsing
+  if (OPEN_WEEKS.has(wk)) {
+    OPEN_WEEKS.delete(wk);
+    EDITING_ROW = null;
+  } else {
+    OPEN_WEEKS.add(wk);
+  }
   render();
 }
 
 function startEdit(wk, storeId) {
-  EDITING[`${wk}_${storeId}_sales`] = true;
-  EDITING[`${wk}_${storeId}_dev`] = true;
-  // Re-render just this row
+  EDITING_ROW = {wk, storeId};
+  // Re-render just this week body
+  rerenderWeekBody(wk);
+  setTimeout(()=>{
+    const inp = document.getElementById(`inp_sales_${wk}_${storeId}`);
+    if(inp){ inp.focus(); inp.select(); }
+  }, 30);
+}
+
+function commitEdit(wk, storeId) {
+  const salesInp = document.getElementById(`inp_sales_${wk}_${storeId}`);
+  const devInp = document.getElementById(`inp_dev_${wk}_${storeId}`);
+  if (!salesInp || !devInp) return;
+
+  const salesVal = parseFloat(salesInp.value);
+  const devVal = parseFloat(devInp.value);
   const data = loadData(wk);
-  const store = STORES.find(s => s.id === storeId);
-  document.getElementById(`row_${wk}_${storeId}`).outerHTML = renderStoreRow(wk, store, data[storeId]);
-  // Focus sales input
-  setTimeout(() => {
-    const inp = document.getElementById(`inp_${wk}_${storeId}_sales`);
-    if (inp) inp.focus();
-  }, 10);
+  if (!data[storeId]) data[storeId] = {sales:DEFAULT_SALES[storeId]||0,dev:-14};
+  if (!isNaN(salesVal)) data[storeId].sales = salesVal;
+  if (!isNaN(devVal)) data[storeId].dev = devVal;
+  saveData(wk, data);
+  setMeta(wk);
+  EDITING_ROW = null;
+  rerenderWeekBody(wk);
+  refreshWeekHeader(wk);
+  showToast();
 }
 
-function commitEdit(wk, storeId, field) {
-  const key = `${wk}_${storeId}_${field}`;
-  const inp = document.getElementById(`inp_${key}`);
-  if (!inp) return;
-
-  const val = parseFloat(inp.value);
-  const data = loadData(wk);
-  if (!data[storeId]) data[storeId] = { sales: DEFAULT_SALES[storeId] || 0, dev: -14 };
-
-  if (!isNaN(val)) {
-    data[storeId][field] = val;
-    saveData(wk, data);
-    setLastUpdated(wk);
-    showToast();
-  }
-
-  // Clear editing state for this field
-  delete EDITING[key];
-  // If other field is also done, re-render row
-  const otherField = field === 'sales' ? 'dev' : 'sales';
-  if (!EDITING[`${wk}_${storeId}_${otherField}`]) {
-    const store = STORES.find(s => s.id === storeId);
-    document.getElementById(`row_${wk}_${storeId}`).outerHTML = renderStoreRow(wk, store, data[storeId]);
-    // Also refresh week header meta
-    refreshWeekHeader(wk);
-  }
+function cancelEdit(wk, storeId) {
+  EDITING_ROW = null;
+  rerenderWeekBody(wk);
 }
 
-function cancelEdit(wk, storeId, field) {
-  delete EDITING[`${wk}_${storeId}_sales`];
-  delete EDITING[`${wk}_${storeId}_dev`];
-  const data = loadData(wk);
-  const store = STORES.find(s => s.id === storeId);
-  document.getElementById(`row_${wk}_${storeId}`).outerHTML = renderStoreRow(wk, store, data[storeId]);
+function handleKey(e, wk, storeId) {
+  if (e.key==='Enter') commitEdit(wk, storeId);
+  if (e.key==='Escape') cancelEdit(wk, storeId);
 }
 
-function handleKey(e, wk, storeId, field) {
-  if (e.key === 'Enter') commitEdit(wk, storeId, field);
-  if (e.key === 'Escape') cancelEdit(wk, storeId, field);
-}
-
-function refreshWeekHeader(wk) {
-  // Re-render just the header to update "Last Updated"
+function rerenderWeekBody(wk) {
   const weeks = generateWeeks();
-  const w = weeks.find(x => x.key === wk);
+  const w = weeks.find(x=>x.key===wk);
   if (!w) return;
   const el = document.getElementById(`week_${wk}`);
   if (!el) return;
-  // Only touch the hdr div
-  const meta = getLastUpdated(wk);
-  const metaHtml = meta
-    ? `<div class="week-meta"><div class="week-meta-val">Last updated ${meta.date}</div><div>${meta.time}</div></div>`
-    : `<div class="week-meta"><div style="color:var(--dim)">Not yet saved</div></div>`;
-  el.querySelector('.week-right').innerHTML = metaHtml + '<div class="week-chevron">▲</div>';
+  // Remove existing body
+  const existing = el.querySelector('.store-table');
+  if (existing) existing.remove();
+  // Also remove any dangling edit forms
+  el.querySelectorAll('.edit-form').forEach(f=>f.remove());
+  // Inject new body after hdr
+  const hdr = el.querySelector('.week-hdr');
+  hdr.insertAdjacentHTML('afterend', renderWeekBody(w));
+}
+
+function refreshWeekHeader(wk) {
+  const meta = getMeta(wk);
+  const el = document.getElementById(`week_${wk}`);
+  if (!el) return;
+  const wrap = el.querySelector('.week-meta-wrap');
+  if (!wrap) return;
+  if (meta) {
+    wrap.innerHTML = `<div class="week-meta-line updated">Last updated ${meta.date}</div>
+      <div class="week-meta-line">${meta.time}</div>`;
+  }
 }
 
 function showToast() {
   const t = document.getElementById('toast');
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
+  setTimeout(()=>t.classList.remove('show'), 2000);
 }
 
 function toggleNav() {
   document.getElementById('nav').classList.toggle('open');
   document.getElementById('overlay').style.display =
-    document.getElementById('nav').classList.contains('open') ? 'block' : 'none';
+    document.getElementById('nav').classList.contains('open')?'block':'none';
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
-// Auto-open current week
+// Init — auto-open current week
 OPEN_WEEKS.add(generateWeeks()[0].key);
 render();
 </script>
