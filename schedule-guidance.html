@@ -324,8 +324,8 @@ function renderStoreRow(wk,store,entry){
   const fk=v=>(v==null||v===0)?'—':'$'+(v>=1000?(v/1000).toFixed(0)+'k':Number(v).toLocaleString());
   const l7html=`<span class="intel-lbl">L7</span><span class="intel-num">${fs(st.l7)}</span>`;
   const n7html=st.n7&&st.f7
-    ?`<span class="intel-lbl">N7</span><span class="intel-num-fcst">${fk(st.n7)}</span><span class="intel-sep">&bull;</span><span class="intel-num-fcst">${fk(st.f7)}</span>`
-    :`<span class="intel-lbl">N7</span><span class="intel-num-fcst">—</span>`;
+    ?`<span class="intel-lbl">N7</span><span class="intel-num-fcst">${fk(st.n7)}</span><span class="intel-sep">&bull;</span><span class="intel-lbl">F7</span><span class="intel-num-fcst">${fk(st.f7)}</span>`
+    :`<span class="intel-lbl">N7/F7</span><span class="intel-num-fcst">—</span>`;
   return `
   <div class="store-block" id="row_${wk}_${store.id}">
     <div class="store-name-col">
